@@ -1132,56 +1132,64 @@ details.sp > summary::-webkit-details-marker {
     </div>
 
     <div class="card">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+        <h3 style="margin:0;">Supplementary Charges (Optional)</h3>
+        <button type="button" class="sec" onclick="addSupCharge()" style="min-height:30px;padding:4px 9px;font-size:11px;display:flex;align-items:center;gap:4px;">+ Add Charge</button>
+      </div>
+      <div id="supChargesList"></div>
+      <button type="button" class="sec" style="width:100%;margin-top:6px;min-height:36px;font-size:11.5px;" onclick="addSupCharge()">+ Add another supplementary charge</button>
+      <div class="sub mt">Calculated based on party adults and children, displayed under transfers and added directly to the total package.</div>
+    </div>
+
+    <div class="card">
       <details class="sp">
-        <summary>
-          <span>Meal Supplements (USD / pax / night)</span>
-          <span style="font-size:10px;color:var(--mute);">Tap to view</span>
-        </summary>
+        <summary>Meal supplements (USD / person / night)</summary>
         <div class="g mt">
-          <div><label for="hba">Half board adult</label><input type="number" inputmode="decimal" id="hba"></div>
-          <div><label for="hbc">Half board child</label><input type="number" inputmode="decimal" id="hbc"></div>
-          <div><label for="fba">Full board adult</label><input type="number" inputmode="decimal" id="fba"></div>
-          <div><label for="fbc">Full board child</label><input type="number" inputmode="decimal" id="fbc"></div>
+          <div><label>Half board adult</label><input type="number" inputmode="decimal" id="hba"></div>
+          <div><label>Half board child</label><input type="number" inputmode="decimal" id="hbc"></div>
+          <div><label>Full board adult</label><input type="number" inputmode="decimal" id="fba"></div>
+          <div><label>Full board child</label><input type="number" inputmode="decimal" id="fbc"></div>
         </div>
-        <div class="sub mt">Infants (0–2 years) are free of charge.</div>
+        <div class="sub mt">Infants are free of charge.</div>
       </details>
     </div>
   </section>
 
-  <!-- STEP 3: EXECUTIVE OVERVIEW -->
+  <!-- STEP 3: OVERVIEW -->
   <section class="pn" id="p3">
     <div class="overview-hero">
       <div class="ov-row">
-        <span class="ov-label">Stay Dates</span>
-        <span class="ov-val" id="ovDates">—</span>
+        <span class="ov-label">Stay Period</span>
+        <span class="ov-val" id="ovDates">Dec 1, 2026 – Dec 2, 2026</span>
       </div>
       <div class="ov-row">
-        <span class="ov-label">Duration</span>
-        <span class="ov-val" id="ovNights">—</span>
+        <span class="ov-label">Length of Stay</span>
+        <span class="ov-val" id="ovNights">1 Night</span>
       </div>
       <div class="ov-row">
-        <span class="ov-label">Total Guests</span>
-        <span class="ov-val" id="ovGuests">—</span>
+        <span class="ov-label">Guest Count</span>
+        <span class="ov-val" id="ovGuests">2 Guests</span>
       </div>
       <div class="ov-row">
-        <span class="ov-label">Proposal Type</span>
-        <span class="ov-val" id="ovType">Standard Reservation</span>
+        <span class="ov-label">Booking Mode</span>
+        <span class="ov-val" id="ovType">Standard Booking</span>
       </div>
-    </div>
-
-    <!-- Active Discounts Section in Overview -->
-    <div class="ov-disc-card" id="ovDiscCard" style="display:none;">
-      <h3>Applied Discounts &amp; Savings</h3>
-      <div id="ovDiscItems"></div>
     </div>
 
     <div class="card">
-      <h3>Room &amp; Meal Summary</h3>
+      <h3>Room Allocation &amp; Rates</h3>
       <div id="ovRoomsList"></div>
     </div>
 
+    <!-- Overview Applied Discounts Card -->
+    <div class="ov-disc-card" id="ovDiscCard" style="display:none;">
+      <h3>Applied Discounts &amp; Concessions</h3>
+      <div id="ovDiscItems"></div>
+    </div>
+
+    <!-- Overview Inclusions Card -->
     <div class="card" id="ovInclCard" style="display:none;">
-      <h3>Special Inclusions</h3>
+      <h3>Included Benefits</h3>
       <div id="ovInclList" style="font-size:11.5px;color:var(--text);line-height:1.6;"></div>
     </div>
 
@@ -1199,6 +1207,7 @@ details.sp > summary::-webkit-details-marker {
         <span class="ov-label">Total Transfer Cost</span>
         <span class="ov-val" id="ovTransTotal" style="color:var(--pri);">$0.00</span>
       </div>
+      <div id="ovExtraSupContainer" style="display:none;border-top:1px dashed var(--line);margin-top:6px;padding-top:6px;"></div>
     </div>
 
     <div class="card">
@@ -1227,6 +1236,10 @@ details.sp > summary::-webkit-details-marker {
         <span class="ov-label">Transfers</span>
         <span class="ov-val" id="ovTransfersFin">$0.00</span>
       </div>
+      <div class="ov-row" id="ovExtraSupFinRow" style="display:none;">
+        <span class="ov-label" id="ovExtraSupFinLabel">Supplementary Charges</span>
+        <span class="ov-val" id="ovExtraSupFinVal">$0.00</span>
+      </div>
       <div class="ov-row" id="ovDiscRow" style="display:none;color:var(--ok);">
         <span class="ov-label" style="color:var(--ok);font-weight:700;">Total Discounts Saved</span>
         <span class="ov-val" id="ovDiscounts" style="font-weight:800;color:var(--ok);">−$0.00</span>
@@ -1238,37 +1251,31 @@ details.sp > summary::-webkit-details-marker {
     </div>
   </section>
 
-  <!-- STEP 4: MESSAGE GENERATOR -->
+  <!-- STEP 4: MESSAGE -->
   <section class="pn" id="p4">
     <div class="card">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
         <h3 style="margin:0;">Reservation Message</h3>
-        <button type="button" class="sec" style="min-height:34px;padding:5px 12px;font-size:11.5px;display:flex;align-items:center;gap:5px;" onclick="shareMsg()" aria-label="Share Message">
-          <svg style="width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;" viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+        <button type="button" class="sec" onclick="shareMsg()" style="min-height:30px;padding:4px 10px;font-size:11px;display:flex;align-items:center;gap:4px;">
+          <svg style="width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2;" viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
           Share
         </button>
       </div>
-      <textarea id="out" spellcheck="false"></textarea>
+      <textarea id="out" readonly></textarea>
     </div>
 
     <div class="card">
       <details class="sp">
-        <summary>
-          <span>Optional Links in Message</span>
-          <span style="font-size:10px;color:var(--mute);">Tap to view</span>
-        </summary>
+        <summary>Optional Web &amp; Gallery Links</summary>
         <div class="mt">
-          <label for="lk1">Room Gallery URL</label>
-          <input id="lk1" placeholder="e.g. https://stonehotels.mv/gallery">
+          <label for="lk1">Room Gallery Link</label>
+          <input id="lk1" placeholder="https://...">
         </div>
         <div class="mt">
-          <label for="lk2">Website URL</label>
-          <input id="lk2" placeholder="e.g. https://stonehotels.mv">
+          <label for="lk2">Stone Hotels Website</label>
+          <input id="lk2" placeholder="https://...">
         </div>
       </details>
-      <div style="text-align:center;margin-top:14px">
-        <button type="button" class="sec" style="font-size:11px;min-height:36px;" onclick="reset()">Reset all to defaults</button>
-      </div>
     </div>
   </section>
 </main>
@@ -1336,12 +1343,22 @@ const D = {
   opt: false,
   adn: 'Special Discount Applied',
   tdn: '',
+  supAdRate: '',
+  supChRate: '',
+  supNote: '',
   incl: '',
   lk1: '',
   lk2: '',
   rates: { 'Grand Seaview': 210 },
   rooms: [room('Grand Seaview', 210)]
 };
+
+const newSup = (ad = '', ch = '', note = '') => ({ ad, ch, note });
+
+// Backward compatibility helper for S.supCharges
+if (!Array.isArray(D.supCharges)) {
+  D.supCharges = [];
+}
 
 const KEY = 'stone_gen_v6_ios';
 const THEME_KEY = 'stone_gen_theme_mode';
@@ -1351,6 +1368,14 @@ try {
   S = Object.assign(clone(D), JSON.parse(localStorage.getItem(KEY) || '{}'));
 } catch (e) {
   S = clone(D);
+}
+
+// Migrate legacy single supplementary charge if present
+if (!Array.isArray(S.supCharges)) {
+  S.supCharges = [];
+  if (S.supAdRate || S.supChRate || S.supNote) {
+    S.supCharges.push(newSup(S.supAdRate || '', S.supChRate || '', S.supNote || ''));
+  }
 }
 
 const $ = id => document.getElementById(id);
@@ -1509,6 +1534,13 @@ function segs(r, N) {
   return [{ n: N, rate: r.rate }];
 }
 
+const getExtraSupTotal = (ad, ch) => {
+  if (!Array.isArray(S.supCharges)) return 0;
+  return S.supCharges.reduce((sum, item) => {
+    return sum + (ad * n(item.ad) + ch * n(item.ch));
+  }, 0);
+};
+
 function calc() {
   const N = nights(), opt = S.opt, G0 = S.rooms[0] || room();
   const daPct = getAccDiscPct(), daAmt = getAccDiscAmt();
@@ -1536,7 +1568,8 @@ function calc() {
       disc: sm(s => (s.rate - s.base) * s.n)
     };
     x.trans = S.tr ? trNet() * pax * q : 0;
-    x.pkg = x.sub + x.supT + x.tax + x.green + x.trans;
+    x.extraSup = getExtraSupTotal(ad, ch) * q;
+    x.pkg = x.sub + x.supT + x.tax + x.green + x.trans + x.extraSup;
     return x;
   });
 
@@ -1547,18 +1580,41 @@ function calc() {
     green: a.green + x.green,
     pax: a.pax + x.pax * x.q,
     ad: a.ad + x.ad * x.q,
+    ch: (a.ch || 0) + x.ch * x.q,
     trans: a.trans + x.trans,
     disc: a.disc + x.disc
-  }), { sub: 0, sup: 0, tax: 0, green: 0, pax: 0, ad: 0, trans: 0, disc: 0 });
+  }), { sub: 0, sup: 0, tax: 0, green: 0, pax: 0, ad: 0, ch: 0, trans: 0, disc: 0 });
 
+  t.extraSup = getExtraSupTotal(t.ad, t.ch);
   t.acc = t.sub + t.sup + t.tax + t.green;
-  t.total = t.acc + t.trans;
+  t.total = t.acc + t.trans + t.extraSup;
   t.tdisc = (S.tr && !isOwnTr()) ? (n(S.trr) - trNet()) * t.pax : 0;
   return { N, k, t };
 }
 
 const links = () => (S.lk1 || S.lk2 ? `Room photos & details:${S.lk1 ? '\n' + S.lk1 : ''}${S.lk2 ? '\n' + S.lk2 : ''}\n\n` : '');
 const plans = k => [...new Set(k.map(x => MPN[x.mp]))].join(' / ');
+
+const getExtraSupBlock = (ad, ch) => {
+  if (!Array.isArray(S.supCharges) || !S.supCharges.length) return '';
+  const validCharges = S.supCharges.filter(c => (ad * n(c.ad) + ch * n(c.ch)) > 0);
+  if (!validCharges.length) return '';
+
+  let blocks = validCharges.map((c, idx) => {
+    const adRate = n(c.ad);
+    const chRate = n(c.ch);
+    const itemTotal = ad * adRate + ch * chRate;
+    const note = c.note && c.note.trim() ? ` (${c.note.trim()})` : '';
+
+    let lines = [];
+    if (adRate > 0) lines.push(`• Adult rate: USD ${f(adRate)} per adult x ${ad} = USD ${f(ad * adRate)}`);
+    if (chRate > 0 && ch > 0) lines.push(`• Child rate: USD ${f(chRate)} per child x ${ch} = USD ${f(ch * chRate)}`);
+    lines.push(`• Total: USD ${f(itemTotal)}`);
+    return `Supplementary Charge ${validCharges.length > 1 ? '#' + (idx + 1) : ''}${note}\n` + lines.join('\n');
+  });
+
+  return blocks.join('\n\n') + `\n\n`;
+};
 
 const getInclusionsBlock = () => {
   if (!S.incl || !S.incl.trim()) return '';
@@ -1586,7 +1642,7 @@ function build() {
   return S.opt ? buildOpt(c) : buildStd(c);
 }
 
-function buildOpt({ N, k }) {
+function buildOpt({ N, k, t }) {
   if (!k.length) return 'Add a room option to generate the message.';
   const g = k[0], occ = [`${g.ad} Adult${g.ad !== 1 ? 's' : ''}`];
   if (g.ch) occ.push(`${g.ch} Child${g.ch > 1 ? 'ren' : ''}`);
@@ -1615,9 +1671,15 @@ function buildOpt({ N, k }) {
     m += `${S.tr.replace('Speed Boat', 'Speedboat')} Transfers\n• ${S.gt ? 'Tourist rate' : 'Rate'}: USD ${f(trNet() / 2)} per person, per way\n• Round-trip transfer for ${who}: USD ${f(g.trans)}${S.tdn ? ` (${S.tdn})` : ''}\n\n`;
   }
 
+  m += getExtraSupBlock(g.ad * g.q, g.ch * g.q);
+
   const p = ['Accommodation', 'All Taxes'];
   if (S.gt) p.push('Green Tax');
   if (S.tr && !isOwnTr()) p.push('Round-Trip Transfers');
+  if (t.extraSup > 0) {
+    const validNotes = (S.supCharges || []).map(c => (c.note || '').trim()).filter(Boolean);
+    p.push(validNotes.length ? validNotes.join(' & ') : 'Supplementary Charges');
+  }
   
   m += `Total Package Cost (Including ${p.length > 1 ? p.slice(0, -1).join(', ') + ' & ' + p[p.length - 1] : p[0]})\n`;
   k.forEach((x, i) => {
@@ -1657,12 +1719,32 @@ function buildStd({ N, k, t }) {
   m += `Total cost on Accommodation: USD ${f(t.acc)} on ${plans(k)}, including ${S.gt ? 'TGST, Service Charges & Green Tax' : 'TGST & Service Charges'} for ${t.ad} adult${t.ad !== 1 ? 's' : ''} For ${N} Night${N !== 1 ? 's' : ''}.\n\n`;
 
   if (isOwnTr()) {
-    m += `Transfers: Round-trip transfer arranged by guests on their own.\n\nTotal for ${N} Night${N !== 1 ? 's' : ''}: USD ${f(t.total)} (Includes accommodation on ${plans(k)})\n\n`;
+    m += `Transfers: Round-trip transfer arranged by guests on their own.\n\n`;
   } else if (S.tr) {
-    m += `${S.tr} Transfer USD ${f(trNet())} per person (Roundtrip — Airport ⇄ Hotel) x ${t.pax} pax = USD ${f(t.trans)}${S.tdn ? ` (${S.tdn})` : ''}\n\nTotal Package for ${N} Night${N !== 1 ? 's' : ''}: USD ${f(t.total)} (Includes accommodation on ${plans(k)} for ${N} night${N !== 1 ? 's' : ''} and roundtrip transfer for ${t.pax} pax)\n\n`;
-  } else {
-    m += `Total for ${N} Night${N !== 1 ? 's' : ''}: USD ${f(t.total)} (Includes accommodation on ${plans(k)})\n\n`;
+    m += `${S.tr} Transfer USD ${f(trNet())} per person (Roundtrip — Airport ⇄ Hotel) x ${t.pax} pax = USD ${f(t.trans)}${S.tdn ? ` (${S.tdn})` : ''}\n\n`;
   }
+
+  const extraSupAmt = t.extraSup;
+  if (extraSupAmt > 0 && Array.isArray(S.supCharges)) {
+    const validCharges = S.supCharges.filter(c => (t.ad * n(c.ad) + t.ch * n(c.ch)) > 0);
+    validCharges.forEach((c, idx) => {
+      const sDesc = c.note && c.note.trim() ? ` (${c.note.trim()})` : '';
+      let supParts = [];
+      if (n(c.ad) > 0) supParts.push(`USD ${f(n(c.ad))} x ${t.ad} adult${t.ad !== 1 ? 's' : ''}`);
+      if (n(c.ch) > 0 && t.ch > 0) supParts.push(`USD ${f(n(c.ch))} x ${t.ch} child${t.ch > 1 ? 'ren' : ''}`);
+      const itemTot = t.ad * n(c.ad) + t.ch * n(c.ch);
+      m += `Supplementary Charges${validCharges.length > 1 ? ' #' + (idx + 1) : ''}${sDesc}: USD ${f(itemTot)}${supParts.length ? ' (' + supParts.join(' + ') + ')' : ''}\n\n`;
+    });
+  }
+
+  const incParts = [`accommodation on ${plans(k)} for ${N} night${N !== 1 ? 's' : ''}`];
+  if (S.tr && !isOwnTr()) incParts.push(`roundtrip transfer for ${t.pax} pax`);
+  if (extraSupAmt > 0) {
+    const validNotes = (S.supCharges || []).map(c => (c.note || '').trim()).filter(Boolean);
+    incParts.push(validNotes.length ? validNotes.join(' & ') : 'supplementary charges');
+  }
+
+  m += `Total Package for ${N} Night${N !== 1 ? 's' : ''}: USD ${f(t.total)} (Includes ${incParts.join(', ')})\n\n`;
 
   m += getInclusionsBlock();
 
@@ -1777,6 +1859,60 @@ function delRoom(i) {
   refresh();
 }
 
+function addSupCharge() {
+  haptic();
+  if (!Array.isArray(S.supCharges)) S.supCharges = [];
+  S.supCharges.push(newSup('', '', ''));
+  renderSupCharges();
+  refresh();
+}
+
+function delSupCharge(i) {
+  haptic();
+  S.supCharges.splice(i, 1);
+  renderSupCharges();
+  refresh();
+}
+
+function setSupVal(i, field, val) {
+  if (S.supCharges[i]) {
+    S.supCharges[i][field] = val;
+    refresh();
+  }
+}
+
+function renderSupCharges() {
+  const container = $('supChargesList');
+  if (!container) return;
+  if (!Array.isArray(S.supCharges) || !S.supCharges.length) {
+    container.innerHTML = `<div style="text-align:center;padding:10px;font-size:11px;color:var(--mute);border:1px dashed var(--line);border-radius:10px;background:var(--soft);">No supplementary charges added.</div>`;
+    return;
+  }
+
+  container.innerHTML = S.supCharges.map((sc, i) => `
+    <div style="background:var(--soft);border:1px solid var(--line);border-radius:10px;padding:9px 10px;margin-bottom:8px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+        <b style="font-size:11px;color:var(--pri);">Charge #${i + 1}</b>
+        <button type="button" onclick="delSupCharge(${i})" style="border:none;background:transparent;color:#d9534f;font-size:11px;padding:0;min-height:auto;cursor:pointer;">Remove</button>
+      </div>
+      <div class="g">
+        <div>
+          <label>Adult Rate (USD, Net)</label>
+          <input type="number" inputmode="decimal" placeholder="e.g. 50" value="${sc.ad || ''}" oninput="setSupVal(${i},'ad',this.value)">
+        </div>
+        <div>
+          <label>Child Rate (USD, Net)</label>
+          <input type="number" inputmode="decimal" placeholder="e.g. 25" value="${sc.ch || ''}" oninput="setSupVal(${i},'ch',this.value)">
+        </div>
+      </div>
+      <div class="mt">
+        <label>Charge Description / Note</label>
+        <input placeholder="e.g. Christmas Eve Gala Dinner" value="${sc.note || ''}" oninput="setSupVal(${i},'note',this.value)">
+      </div>
+    </div>
+  `).join('');
+}
+
 function setDiscType(prefix, type) {
   haptic();
   S[prefix + 'CustomType'] = type;
@@ -1844,6 +1980,35 @@ function updateOverview() {
   $('ovTransType').textContent = S.tr || 'None requested';
   $('ovTransRate').textContent = isOwnTr() ? 'Arranged by guest' : (S.tr ? `$${f(trNet())} / pax` : '—');
   $('ovTransTotal').textContent = (S.tr && !isOwnTr()) ? `$${f(t.trans)}` : '$0.00';
+
+  const supAmtNum = t.extraSup;
+  const supContainer = $('ovExtraSupContainer');
+  if (supAmtNum > 0 && Array.isArray(S.supCharges) && S.supCharges.length) {
+    const validSup = S.supCharges.filter(c => (t.ad * n(c.ad) + t.ch * n(c.ch)) > 0);
+    if (supContainer) {
+      supContainer.style.display = 'block';
+      supContainer.innerHTML = validSup.map((sc, idx) => {
+        const itemTot = t.ad * n(sc.ad) + t.ch * n(sc.ch);
+        const label = sc.note && sc.note.trim() ? sc.note.trim() : `Supplementary Charge #${idx + 1}`;
+        return `
+          <div class="ov-row" style="padding:4px 0;">
+            <span class="ov-label">${label}</span>
+            <span class="ov-val" style="color:var(--pri);font-weight:700;">$${f(itemTot)}</span>
+          </div>
+        `;
+      }).join('');
+    }
+
+    $('ovExtraSupFinRow').style.display = 'flex';
+    $('ovExtraSupFinLabel').textContent = `Supplementary Charges (${validSup.length})`;
+    $('ovExtraSupFinVal').textContent = `$${f(supAmtNum)}`;
+  } else {
+    if (supContainer) {
+      supContainer.style.display = 'none';
+      supContainer.innerHTML = '';
+    }
+    $('ovExtraSupFinRow').style.display = 'none';
+  }
 
   const inclLines = (S.incl || '').split('\n').map(l => l.trim()).filter(Boolean);
   if (inclLines.length > 0) {
@@ -1936,11 +2101,16 @@ function refresh() {
     }
   });
 
-  $('chip').textContent = `${N}n · ${t.pax}pax`;
-  $('nn').textContent = N + (N === 1 ? ' night' : ' nights');
-  $('addb').textContent = S.opt ? '+ Add another room option' : '+ Add another room';
-  $('bdg').textContent = k.length;
-  $('out').value = build();
+  const chip = $('chip');
+  if (chip) chip.textContent = `${N}n · ${t.pax}pax`;
+  const nn = $('nn');
+  if (nn) nn.textContent = N + (N === 1 ? ' night' : ' nights');
+  const addb = $('addb');
+  if (addb) addb.textContent = S.opt ? '+ Add another room option' : '+ Add another room';
+  const bdg = $('bdg');
+  if (bdg) bdg.textContent = k.length;
+  const out = $('out');
+  if (out) out.value = build();
 
   if (currentStep === 3) updateOverview();
   save();
@@ -2045,6 +2215,7 @@ function init() {
     };
   });
 
+  renderSupCharges();
   updateDiscTypeUI('da');
   updateDiscTypeUI('dt');
 
