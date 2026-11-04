@@ -4,8 +4,8 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#526F90">
-  <title>Stone Hotels – Reservation Message Generator</title>
-  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <title>Stone Hotels Dhiffushi – Reservation Message Generator</title>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     :root {
       box-sizing: border-box;
@@ -60,6 +60,7 @@
       justify-content: space-between;
       padding: 8px 12px;
       gap: 8px;
+      flex-wrap: nowrap;
     }
     .brand-titles { flex: 1; min-width: 0; }
     .brand-title {
@@ -69,6 +70,9 @@
       color: var(--acc);
       letter-spacing: -0.01em;
       line-height: 1.2;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
     .brand-sub {
       display: block;
@@ -81,6 +85,7 @@
       display: flex;
       align-items: center;
       gap: 6px;
+      flex-shrink: 0;
     }
     .reset-btn, .theme-btn {
       width: 32px;
@@ -94,6 +99,7 @@
       cursor: pointer;
       padding: 0;
       min-height: 32px;
+      flex-shrink: 0;
     }
     .reset-btn svg, .theme-btn svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 2; }
     .chip {
@@ -104,6 +110,9 @@
       border-radius: 99px;
       padding: 5px 9px;
       white-space: nowrap;
+      max-width: 140px;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
     .nav-tabs {
       display: flex;
@@ -112,6 +121,7 @@
       -webkit-overflow-scrolling: touch;
       border-top: 1px solid var(--line);
       background: var(--card);
+      position: relative;
     }
     .nav-tabs::-webkit-scrollbar { display: none; }
     .nav-tabs button {
@@ -149,18 +159,20 @@
     .nav-tabs svg { width: 17px; height: 17px; stroke: currentColor; fill: none; stroke-width: 1.9; }
     .bdg {
       position: absolute;
-      top: 4px;
-      right: calc(50% - 16px);
+      top: 5px;
+      right: 12px;
       background: var(--cop);
       color: #2b2118;
       border-radius: 99px;
-      font-size: 8px;
-      min-width: 14px;
-      height: 14px;
+      font-size: 8.5px;
+      min-width: 15px;
+      height: 15px;
       display: grid;
       place-items: center;
       padding: 0 3px;
       font-weight: 700;
+      line-height: 1;
+      pointer-events: none;
     }
     .step-bar {
       display: flex;
@@ -206,21 +218,31 @@
     }
     input, select, textarea {
       width: 100%;
+      max-width: 100%;
       font-family: inherit;
-      font-size: 16px;
-      padding: 9px 10px;
+      font-size: 14px;
+      padding: 8px 9px;
       border: 1px solid var(--line);
       border-radius: 8px;
       background: var(--inp);
       color: var(--text);
       min-height: 42px;
+      min-width: 0;
+      -webkit-appearance: none;
+    }
+    input[type="date"] {
+      font-size: 13px;
+      padding: 6px 8px;
+      min-width: 0;
+      width: 100%;
     }
     select { font-size: 13px; }
     input:focus, select:focus, textarea:focus {
       outline: 2px solid var(--acc);
       outline-offset: -1px;
     }
-    .g { display: grid; gap: 8px; grid-template-columns: 1fr 1fr; }
+    .g { display: grid; gap: 8px; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+    .g > div { min-width: 0; }
     .mt { margin-top: 8px; }
     button {
       font: 600 12px Manrope, sans-serif;
@@ -254,19 +276,39 @@
     .stp b { flex: 1; text-align: center; font-size: 14px; font-weight: 600; }
     .ck {
       display: flex;
-      gap: 10px;
-      align-items: flex-start;
-      padding: 10px;
+      gap: 12px;
+      align-items: center;
+      padding: 11px 12px;
       border: 1px solid var(--line);
       border-radius: 10px;
       margin-top: 8px;
-      font-size: 12px;
-      font-weight: 500;
+      font-size: 12.5px;
+      font-weight: 600;
       color: var(--text);
       cursor: pointer;
+      user-select: none;
+      -webkit-user-select: none;
+      background: var(--card);
+      transition: background 0.15s ease, border-color 0.15s ease;
     }
-    .ck input { width: 18px; height: 18px; min-height: 0; flex: none; margin-top: 1px; accent-color: var(--pri); }
-    .ck small { display: block; color: var(--mute); font-size: 10px; margin-top: 2px; }
+    .ck:active { background: var(--soft); }
+    .ck input[type="checkbox"] {
+      -webkit-appearance: checkbox !important;
+      -moz-appearance: checkbox !important;
+      appearance: checkbox !important;
+      width: 19px !important;
+      height: 19px !important;
+      min-height: 19px !important;
+      max-width: 19px !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      border: none !important;
+      flex: none !important;
+      accent-color: var(--pri);
+      cursor: pointer;
+    }
+    .ck div { flex: 1; min-width: 0; }
+    .ck small { display: block; color: var(--mute); font-size: 10px; font-weight: 400; margin-top: 2px; line-height: 1.3; }
     .chips { display: flex; gap: 6px; flex-wrap: wrap; }
     .chips button { border-radius: 99px; padding: 6px 11px; min-height: 32px; font-size: 11px; }
     .chips button.on { background: var(--pri); color: var(--pri-t); border-color: var(--pri); }
@@ -325,6 +367,24 @@
     .overview-row:last-child { border-bottom: none; }
     .overview-row span { color: var(--mute); }
     .overview-row b { color: var(--text); text-align: right; }
+    .strikethrough-tag {
+      font-size: 11px;
+      text-decoration: line-through;
+      color: #e04f4f !important;
+      margin-right: 5px;
+      font-weight: 600;
+    }
+    .disc-pill {
+      display: inline-block;
+      font-size: 9.5px;
+      font-weight: 700;
+      color: var(--pri);
+      background: var(--soft);
+      border: 1px solid var(--line);
+      border-radius: 99px;
+      padding: 1px 6px;
+      margin-left: 4px;
+    }
     .total-card {
       background: var(--pri);
       color: var(--pri-t);
@@ -347,7 +407,12 @@
       align-items: baseline;
       justify-content: space-between;
     }
-    .total-card .og { font-size: 12px; text-decoration: line-through; opacity: 0.8; }
+    .total-card .og {
+      font-size: 13px;
+      text-decoration: line-through;
+      color: #ff9b9b !important;
+      font-weight: 600;
+    }
     #out {
       width: 100%;
       height: calc(100dvh - 290px);
@@ -389,6 +454,159 @@
     .bottom-dock svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 2.2; }
     details.sp > summary { cursor: pointer; font-size: 11.5px; font-weight: 600; color: var(--acc); list-style: none; }
     details.sp > summary::-webkit-details-marker { display: none; }
+
+    /* Collapsible card styling for Offers & Inclusions */
+    details.sp-card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      margin-bottom: 10px;
+      overflow: hidden;
+      transition: border-color 0.15s ease;
+    }
+    details.sp-card > summary {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 14px;
+      cursor: pointer;
+      list-style: none;
+      font: 700 11px Manrope, sans-serif;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      color: var(--text);
+      user-select: none;
+      -webkit-user-select: none;
+      gap: 8px;
+    }
+    details.sp-card > summary::-webkit-details-marker { display: none; }
+    details.sp-card > summary .card-title-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex: 1;
+      min-width: 0;
+    }
+    details.sp-card > summary .card-badge {
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--acc);
+      background: var(--soft);
+      padding: 2px 7px;
+      border-radius: 99px;
+      text-transform: none;
+      letter-spacing: 0;
+    }
+    details.sp-card > summary::after {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-right: 2px solid var(--mute);
+      border-bottom: 2px solid var(--mute);
+      transform: rotate(45deg);
+      transition: transform 0.2s ease;
+      margin-bottom: 2px;
+      flex-shrink: 0;
+    }
+    details.sp-card[open] > summary::after {
+      transform: rotate(-135deg);
+      margin-bottom: -2px;
+    }
+    details.sp-card .sp-card-body {
+      padding: 0 14px 14px;
+      border-top: 1px dashed var(--line);
+      padding-top: 10px;
+    }
+
+    /* In-App PDF Preview Modal */
+    .pdf-modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 33, 0.72);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      z-index: 100;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 12px;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
+    .pdf-modal-backdrop.open {
+      display: flex;
+      opacity: 1;
+    }
+    .pdf-modal-panel {
+      background: #ffffff;
+      width: 100%;
+      max-width: 760px;
+      max-height: 92dvh;
+      border-radius: 14px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.35);
+      animation: modalSlide 0.22s ease-out;
+    }
+    @keyframes modalSlide {
+      from { transform: translateY(12px) scale(0.98); opacity: 0; }
+      to { transform: none; opacity: 1; }
+    }
+    .pdf-modal-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 14px;
+      background: #27313d;
+      color: #ffffff;
+      flex-shrink: 0;
+    }
+    .pdf-modal-bar h4 {
+      margin: 0;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+    }
+    .pdf-modal-actions {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .pdf-btn {
+      padding: 5px 11px;
+      font-size: 11px;
+      border-radius: 6px;
+      min-height: 30px;
+      border: 1px solid rgba(255,255,255,0.2);
+      background: rgba(255,255,255,0.12);
+      color: #fff;
+    }
+    .pdf-btn.pri {
+      background: var(--cop);
+      color: #2b2118;
+      border-color: var(--cop);
+      font-weight: 700;
+    }
+    .pdf-modal-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px;
+      background: #f4f5f7;
+      display: flex;
+      justify-content: center;
+    }
+    .pdf-page-sheet {
+      background: #ffffff;
+      width: 100%;
+      max-width: 680px;
+      padding: 24px 20px;
+      box-shadow: 0 3px 14px rgba(0,0,0,0.08);
+      border-radius: 8px;
+      box-sizing: border-box;
+      font-family: Manrope, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      color: #27313d;
+    }
   </style>
 </head>
 <body>
@@ -397,7 +615,7 @@
   <header class="app-header">
     <div class="brand-bar">
       <div class="brand-titles">
-        <h1 class="brand-title">Stone Hotels</h1>
+        <h1 class="brand-title">Stone Hotels Dhiffushi</h1>
         <span class="brand-sub">Reservation Generator</span>
       </div>
       <div class="brand-meta">
@@ -455,6 +673,30 @@
   <main>
     <!-- STEP 0: STAY -->
     <section class="pn on" id="p0">
+      <!-- Guest / Company Details (Optional) - Placed at the Start -->
+      <div class="card">
+        <details class="sp" id="guestDetailsCard" open>
+          <summary style="display:flex;justify-content:space-between;align-items:center;">
+            <span>Guest / Company Details (Optional)</span>
+            <span id="guestBadge" style="font-size:9.5px;color:var(--mute);font-weight:400;">Not set</span>
+          </summary>
+          <div class="mt">
+            <label>Guest Name or Company Name</label>
+            <input id="guestName" placeholder="e.g. Ms Krystsina / Travel Co.">
+          </div>
+          <div class="g mt">
+            <div>
+              <label>Phone / WhatsApp</label>
+              <input id="guestPhone" placeholder="+960 777-1234">
+            </div>
+            <div>
+              <label>Email Address</label>
+              <input id="guestEmail" type="email" placeholder="guest@example.com">
+            </div>
+          </div>
+        </details>
+      </div>
+
       <div class="card">
         <h3>Dates</h3>
         <div class="g">
@@ -500,13 +742,26 @@
 
       <div class="card">
         <h3>Options</h3>
-        <label class="ck" style="margin-top:0;">
+        <label class="ck" style="margin-top:0;" for="gt">
           <input type="checkbox" id="gt">
-          <span>Include Green Tax<small>Untick for locals and expats (not charged)</small></span>
+          <div>
+            <span>Include Green Tax</span>
+            <small>Untick for locals and expats (not charged)</small>
+          </div>
         </label>
-        <label class="ck">
+        <label class="ck" for="opt">
           <input type="checkbox" id="opt">
-          <span>Offer multiple room options<small>Compare room types for the same guests and dates in one message</small></span>
+          <div>
+            <span>Offer multiple room options</span>
+            <small>Compare room types for the same guests and dates in one message</small>
+          </div>
+        </label>
+        <label class="ck" for="isAgent">
+          <input type="checkbox" id="isAgent">
+          <div>
+            <span>Agent Draft format</span>
+            <small>Formats the message specifically for travel agent partners with itemized charges</small>
+          </div>
         </label>
       </div>
     </section>
@@ -519,79 +774,126 @@
 
     <!-- STEP 2: OFFERS & INCLUSIONS -->
     <section class="pn" id="p2">
-      <div class="card">
-        <h3>Accommodation Discount</h3>
-        <div class="chips" id="dpA"></div>
-        <div class="mt">
-          <label>Custom Accommodation Discount</label>
-          <div style="display:flex;gap:6px;">
-            <select id="daCustomType" style="flex:0.45;min-height:42px;">
-              <option value="pct">% Off</option>
-              <option value="amt">$ USD Off</option>
-            </select>
-            <input type="number" inputmode="decimal" id="daCustomVal" placeholder="e.g. 15" style="flex:1;">
+      <!-- Quick Expand / Collapse all toggles -->
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;padding:0 2px;">
+        <span class="sub" style="font-weight:600;text-transform:uppercase;letter-spacing:0.04em;">Offer Sections</span>
+        <div style="display:flex;gap:6px;">
+          <button type="button" style="padding:3px 8px;min-height:24px;font-size:10px;background:var(--soft);" onclick="toggleAllOffers(true)">Expand All</button>
+          <button type="button" style="padding:3px 8px;min-height:24px;font-size:10px;background:var(--soft);" onclick="toggleAllOffers(false)">Collapse All</button>
+        </div>
+      </div>
+
+      <!-- Accommodation Discount -->
+      <details class="sp-card" id="cardAccDisc" open>
+        <summary>
+          <div class="card-title-wrap">
+            <span>Accommodation Discount</span>
+            <span class="card-badge" id="badgeAccDisc">None</span>
+          </div>
+        </summary>
+        <div class="sp-card-body">
+          <div class="chips" id="dpA"></div>
+          <div class="mt">
+            <label>Custom Accommodation Discount</label>
+            <div style="display:flex;gap:6px;">
+              <select id="daCustomType" style="flex:0.45;min-height:42px;">
+                <option value="pct">% Off</option>
+                <option value="amt">$ USD Off</option>
+              </select>
+              <input type="number" inputmode="decimal" id="daCustomVal" placeholder="e.g. 15" style="flex:1;">
+            </div>
+          </div>
+          <div class="mt">
+            <label>Rate Note (Shown on Room Line)</label>
+            <input id="adn" placeholder="e.g. Special Discount Applied">
           </div>
         </div>
-        <div class="mt">
-          <label>Rate Note (Shown on Room Line)</label>
-          <input id="adn" placeholder="e.g. Special Discount Applied">
-        </div>
-      </div>
+      </details>
 
-      <div class="card">
-        <h3>Transfer Discount</h3>
-        <div class="chips" id="dpT"></div>
-        <div class="mt">
-          <label>Custom Transfer Discount</label>
-          <div style="display:flex;gap:6px;">
-            <select id="dtCustomType" style="flex:0.45;min-height:42px;">
-              <option value="pct">% Off</option>
-              <option value="amt">$ USD Off</option>
-            </select>
-            <input type="number" inputmode="decimal" id="dtCustomVal" placeholder="e.g. 10" style="flex:1;">
+      <!-- Transfer Discount -->
+      <details class="sp-card" id="cardTrDisc">
+        <summary>
+          <div class="card-title-wrap">
+            <span>Transfer Discount</span>
+            <span class="card-badge" id="badgeTrDisc">None</span>
+          </div>
+        </summary>
+        <div class="sp-card-body">
+          <div class="chips" id="dpT"></div>
+          <div class="mt">
+            <label>Custom Transfer Discount</label>
+            <div style="display:flex;gap:6px;">
+              <select id="dtCustomType" style="flex:0.45;min-height:42px;">
+                <option value="pct">% Off</option>
+                <option value="amt">$ USD Off</option>
+              </select>
+              <input type="number" inputmode="decimal" id="dtCustomVal" placeholder="e.g. 10" style="flex:1;">
+            </div>
+          </div>
+          <div class="mt">
+            <label>Transfer Note (Shown on Transfer Line)</label>
+            <input id="tdn" placeholder="e.g. Complimentary Transfer Included">
           </div>
         </div>
-        <div class="mt">
-          <label>Transfer Note (Shown on Transfer Line)</label>
-          <input id="tdn" placeholder="e.g. Complimentary Transfer Included">
-        </div>
-      </div>
+      </details>
 
-      <div class="card">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
-          <h3 style="margin:0;">Supplementary Charges (Optional)</h3>
-          <button type="button" style="padding:4px 8px;min-height:26px;font-size:10px;" onclick="addSupCharge()">+ Add Charge</button>
+      <!-- Supplementary Charges -->
+      <details class="sp-card" id="cardSupCharges">
+        <summary>
+          <div class="card-title-wrap">
+            <span>Supplementary Charges</span>
+            <span class="card-badge" id="badgeSupCharges">None</span>
+          </div>
+        </summary>
+        <div class="sp-card-body">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+            <div class="sub" style="margin:0;">Add charges (e.g. Gala Dinners, Excursions):</div>
+            <button type="button" style="padding:4px 8px;min-height:26px;font-size:10px;" onclick="addSupCharge()">+ Add Charge</button>
+          </div>
+          <div id="supChargesList"></div>
         </div>
-        <div class="sub" style="margin-bottom:8px;">Add net charges (e.g. Gala Dinners, Excursions). Adults and children calculate automatically:</div>
-        <div id="supChargesList"></div>
-      </div>
+      </details>
 
-      <div class="card">
-        <h3>Package Inclusions (Optional)</h3>
-        <div class="sub" style="margin-bottom:6px;">Tap quick presets or enter custom bullet items:</div>
-        <div class="chips" style="margin-bottom:8px;">
-          <button type="button" onclick="addInclusion('10% off on F&amp;B services except Picanha Steakhouse')">10% F&amp;B</button>
-          <button type="button" onclick="addInclusion('10% off on Mahi Mahi Dive, Watersports and Excursions')">10% Dive &amp; Excursions</button>
-          <button type="button" onclick="addInclusion('10% off on Aavi Spa')">10% Aavi Spa</button>
-          <button type="button" onclick="addInclusion('FOC transfer on White Pearl (standard charges applicable for transfers arranged on third-party service providers)')">FOC White Pearl</button>
-          <button type="button" onclick="addInclusion('Complimentary meal plan upgrade')">Meal Upgrade</button>
-          <button type="button" onclick="addInclusion('Free room upgrade on arrival subject to availability')">Free Room Upgrade</button>
+      <!-- Package Inclusions -->
+      <details class="sp-card" id="cardInclusions">
+        <summary>
+          <div class="card-title-wrap">
+            <span>Package Inclusions</span>
+            <span class="card-badge" id="badgeInclusions">None</span>
+          </div>
+        </summary>
+        <div class="sp-card-body">
+          <div class="sub" style="margin-bottom:6px;">Tap quick presets or enter custom bullet items:</div>
+          <div class="chips" style="margin-bottom:8px;">
+            <button type="button" onclick="addInclusion('10% off on F&amp;B services except Picanha Steakhouse')">10% F&amp;B</button>
+            <button type="button" onclick="addInclusion('10% off on Mahi Mahi Dive, Watersports and Excursions')">10% Dive &amp; Excursions</button>
+            <button type="button" onclick="addInclusion('10% off on Aavi Spa')">10% Aavi Spa</button>
+            <button type="button" onclick="addInclusion('FOC transfer on White Pearl (standard charges applicable for transfers arranged on third-party service providers)')">FOC White Pearl</button>
+            <button type="button" onclick="addInclusion('Complimentary meal plan upgrade')">Meal Upgrade</button>
+            <button type="button" onclick="addInclusion('Free room upgrade on arrival subject to availability')">Free Room Upgrade</button>
+          </div>
+          <textarea id="incl" placeholder="Enter line-by-line inclusions..." style="min-height:90px;font-size:12px;"></textarea>
         </div>
-        <textarea id="incl" placeholder="Enter line-by-line inclusions..." style="min-height:90px;font-size:12px;"></textarea>
-      </div>
+      </details>
 
-      <div class="card">
-        <details class="sp">
-          <summary>Meal Supplements (USD / Person / Night)</summary>
-          <div class="g mt">
+      <!-- Meal Supplements -->
+      <details class="sp-card" id="cardMealSupplements">
+        <summary>
+          <div class="card-title-wrap">
+            <span>Meal Supplements</span>
+            <span class="card-badge">HB &amp; FB Rates</span>
+          </div>
+        </summary>
+        <div class="sp-card-body">
+          <div class="g">
             <div><label>Half Board Adult</label><input type="number" inputmode="decimal" id="hba"></div>
             <div><label>Half Board Child</label><input type="number" inputmode="decimal" id="hbc"></div>
             <div><label>Full Board Adult</label><input type="number" inputmode="decimal" id="fba"></div>
             <div><label>Full Board Child</label><input type="number" inputmode="decimal" id="fbc"></div>
           </div>
-          <div class="sub mt">Infants are complimentary.</div>
-        </details>
-      </div>
+          <div class="sub mt">Per person / night. Infants are complimentary.</div>
+        </div>
+      </details>
     </section>
 
     <!-- STEP 3: OVERVIEW -->
@@ -602,10 +904,21 @@
     <!-- STEP 4: MESSAGE -->
     <section class="pn" id="p4">
       <div class="card" style="margin-bottom:8px;">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
-          <h3 style="margin:0;">Reservation Message</h3>
-          <button type="button" class="pri" style="padding:4px 10px;min-height:28px;font-size:11px;" onclick="shareMsg()">Share / Copy</button>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;gap:8px;">
+          <div style="display:flex;align-items:center;gap:6px;">
+            <h3 style="margin:0;">Reservation Message</h3>
+            <span id="msgModeTag" style="font-size:9.5px;padding:2px 7px;border-radius:99px;background:var(--soft);color:var(--acc);font-weight:700;">Standard</span>
+          </div>
+          <div style="display:flex;gap:5px;">
+            <button type="button" class="pri" style="padding:4px 10px;min-height:28px;font-size:11px;" onclick="shareMsg()">Share / Copy</button>
+          </div>
         </div>
+
+        <div style="display:flex;gap:6px;margin-bottom:8px;">
+          <button type="button" id="btnFmtStd" style="flex:1;min-height:30px;font-size:11px;padding:4px 6px;" onclick="setDraftMode('std')">Direct Guest</button>
+          <button type="button" id="btnFmtAgent" style="flex:1;min-height:30px;font-size:11px;padding:4px 6px;" onclick="setDraftMode('agent')">Agent Draft</button>
+        </div>
+
         <textarea id="out" readonly></textarea>
       </div>
 
@@ -638,11 +951,34 @@
     </section>
   </main>
 
+  <!-- In-App PDF / Invoice Preview Modal Sheet -->
+  <div class="pdf-modal-backdrop" id="pdfModal">
+    <div class="pdf-modal-panel">
+      <div class="pdf-modal-bar">
+        <h4>PDF Quote Draft Preview</h4>
+        <div class="pdf-modal-actions">
+          <button type="button" class="pdf-btn pri" onclick="triggerActualPrint()">Print / PDF</button>
+          <button type="button" class="pdf-btn" onclick="openPdfNewTab()">Open Full View</button>
+          <button type="button" class="pdf-btn" onclick="closePdfPreview()">✕</button>
+        </div>
+      </div>
+      <div class="pdf-modal-body">
+        <div class="pdf-page-sheet" id="pdfSheetContainer">
+          <!-- Rendered live from current booking state -->
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Pinned Ergonomic Bottom Navigation Dock -->
   <footer class="bottom-dock">
     <button type="button" class="back-btn" id="dockBackBtn" onclick="stepNav(-1)">
       <svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
       <span>Back</span>
+    </button>
+    <button type="button" class="mid-action-btn" id="dockMidBtn" style="display:none;background:var(--soft);color:var(--text);border-color:var(--line);flex:0.85;" onclick="openPdfPreviewModal()">
+      <svg viewBox="0 0 24 24"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+      <span>PDF / Print</span>
     </button>
     <button type="button" class="next-btn" id="dockNextBtn" onclick="stepNav(1)">
       <span>Next: Rooms</span>
@@ -763,6 +1099,9 @@ const newSup = (ad = '', ch = '', note = '') => ({ ad, ch, note });
 const D = {
   ci: '2026-12-01',
   co: '2026-12-02',
+  guestName: '',
+  guestPhone: '',
+  guestEmail: '',
   mp: 'BB',
   tr: 'Shared Speed Boat',
   trr: 90,
@@ -772,6 +1111,7 @@ const D = {
   fbc: 20,
   gt: true,
   opt: false,
+  isAgent: false,
   da: 0,
   dt: 0,
   daCustomType: 'pct',
@@ -863,16 +1203,13 @@ function showToast(msg) {
 function addD(s, k) { const d = new Date(s + 'T00:00'); d.setDate(d.getDate() + k); return d; }
 const dm = d => d.getDate() + ' ' + d.toLocaleString('en-US', { month: 'short' });
 
-// Formats the night range as inclusive stay nights: e.g. 18 Dec – 19 Dec & 20 Dec – 22 Dec
 const rng = (o, l) => {
   if (l <= 1) {
     return dm(addD(S.ci, o));
   }
-  // Displays the stay from the starting night through to the last night of that period
   return dm(addD(S.ci, o)) + ' – ' + dm(addD(S.ci, o + l - 1));
 };
 
-// Automatic seasonal rate & split resolver based on check-in and check-out dates
 function getRateForCategoryInSeason(seasonObj, category) {
   if (!seasonObj || !seasonObj.rooms) return 0;
   const found = seasonObj.rooms.find(rm => rm.cat === category);
@@ -891,7 +1228,6 @@ function autoAssignRatesFromDates() {
   const N = nights();
   if (N <= 0) return;
 
-  // Evaluate the season for each night stayed (from night 0 up to night N-1)
   const nightDates = [];
   for (let i = 0; i < N; i++) {
     nightDates.push(iso(addD(S.ci, i)));
@@ -901,22 +1237,18 @@ function autoAssignRatesFromDates() {
   let s2 = null;
   let splitDate = '';
 
-  // Look for the first night that transitions into a different season
   for (let i = 1; i < nightDates.length; i++) {
     const sCur = findSeasonForDate(nightDates[i], seasons);
     if (sCur && (!s1 || sCur.season !== s1.season)) {
       s2 = sCur;
-      // The split strictly begins on the official start date of the new season (or the next day after season 1 ends)
       splitDate = sCur.start || (s1 ? iso(addD(s1.end, 1)) : nightDates[i]);
       break;
     }
   }
 
-  // Update rooms automatically
   let changed = false;
   S.rooms.forEach(r => {
     if (s2 && splitDate) {
-      // Automatic 2-season split
       const r1 = s1 ? getRateForCategoryInSeason(s1, r.cat) : (r.rate || S.rates[r.cat] || 0);
       const r2 = getRateForCategoryInSeason(s2, r.cat);
       if (r1 && r2) {
@@ -928,7 +1260,6 @@ function autoAssignRatesFromDates() {
         changed = true;
       }
     } else if (s1) {
-      // Single season stay
       const r1 = getRateForCategoryInSeason(s1, r.cat);
       if (r1) {
         r.split = false;
@@ -973,7 +1304,6 @@ function segs(r, N) {
     if (isNaN(a) || a <= 0) {
       a = Math.ceil(N / 2);
     }
-    // Ensure season 1 has at least 1 night and season 2 has at least 1 night
     a = Math.min(N - 1, Math.max(1, a));
     return [{ n: a, rate: r.rate }, { n: N - a, rate: r.rate2 }];
   }
@@ -1052,7 +1382,72 @@ function calc() {
 
 function build() {
   const c = calc();
+  if (S.isAgent) return buildAgent(c);
   return S.opt ? buildOpt(c) : buildStd(c);
+}
+
+function buildAgent({ N, k, t }) {
+  if (!k.length) return 'Add a room to generate the message.';
+  const dStr = dates();
+  let m = `Please find the full details of the offer below on ${dStr}:\n\n`;
+
+  k.forEach(x => {
+    const occ = `${x.ad} adult${x.ad !== 1 ? 's' : ''}${x.ch ? ` and ${x.ch} child${x.ch > 1 ? 'ren' : ''}` : ''}`;
+    const qtyStr = x.q > 1 ? ` x ${x.q} rooms` : '';
+    const extraParts = [];
+    if (x.ebRate > 0) extraParts.push(`Extra Adult: USD ${f(x.ebRate)}`);
+    if (x.ecRate > 0) extraParts.push(`Extra Child: USD ${f(x.ecRate)}`);
+    const extraText = extraParts.length ? ` [${extraParts.join(', ')}]` : '';
+    const noteText = S.adn ? ` (${S.adn})` : '';
+
+    if (x.sg.length === 1) {
+      m += `Room type: ${x.r.cat}${qtyStr} (${occ})${extraText} / Rate: USD ${f(x.sg[0].nightly + x.gt)} per night${x.q > 1 ? ' per room' : ''}${noteText}\n`;
+    } else {
+      let off = 0;
+      x.sg.forEach(s => {
+        m += `Room type: ${x.r.cat}${qtyStr} (${rng(off, s.n)}, ${s.n} night${s.n > 1 ? 's' : ''}) (${occ})${extraText} / Rate: USD ${f(s.nightly + x.gt)} per night${x.q > 1 ? ' per room' : ''}${noteText}\n`;
+        off += s.n;
+      });
+    }
+
+    const planName = MPN[x.mp];
+    const taxNote = S.gt ? `+ TGST, Service Charges & Green Tax` : `+ TGST & Service Charges`;
+    const roomCountNote = x.q > 1 ? ` (${x.q} rooms)` : '';
+    m += `Total accommodation for ${N} night${N !== 1 ? 's' : ''}${roomCountNote}: USD ${f(x.roomTot + (x.gt * N * x.q))} on ${planName} ${taxNote}\n\n`;
+  });
+
+  const validSup = (S.supCharges || []).filter(sc => n(sc.ad) > 0 || n(sc.ch) > 0);
+  const hasTrans = S.tr && S.tr !== 'Own Transfer (Arranged by guest)' && t.trans > 0;
+
+  if (hasTrans || validSup.length) {
+    m += `Additional Charges:\n`;
+    if (hasTrans) {
+      const perPerson = f(trNet());
+      m += `${S.tr} ($${perPerson} per person roundtrip) x ${t.pax} pax = USD ${f(t.trans)}${S.tdn ? ` (${S.tdn})` : ''}\n`;
+    }
+    if (validSup.length) {
+      validSup.forEach(sc => {
+        const itemTot = (n(sc.ad) * t.ad) + (n(sc.ch) * (t.pax - t.ad));
+        m += `${sc.note || 'Supplementary Charge'}: USD ${f(itemTot)}\n`;
+      });
+    }
+    m += `\n`;
+  }
+
+  const plans = [...new Set(k.map(x => MPN[x.mp]))].join(' / ');
+  const incParts = [`accommodation for ${N} nights for ${t.pax} pax on ${plans}`, 'TGST', 'Service charge'];
+  if (S.gt) incParts.push('Green Tax');
+  if (hasTrans) incParts.push('roundtrip transfer');
+  if (validSup.length) incParts.push('supplementary charges');
+
+  m += `Total Package for ${N} Night${N !== 1 ? 's' : ''}: USD ${f(t.total)} (Includes ${incParts.join(', ')})\n`;
+
+  if (S.incl && S.incl.trim()) {
+    m += `\nPackage Inclusions:\n` + S.incl.split('\n').filter(l => l.trim()).map(l => `• ${l.replace(/^[-•*]\s*/, '')}`).join('\n') + `\n`;
+  }
+
+  const links = S.lk1 || S.lk2 ? `\nRoom photos & details:${S.lk1 ? '\n' + S.lk1 : ''}${S.lk2 ? '\n' + S.lk2 : ''}\n` : '';
+  return m + links;
 }
 
 function buildOpt({ N, k }) {
@@ -1085,7 +1480,7 @@ function buildOpt({ N, k }) {
   if (S.tr === 'Own Transfer (Arranged by guest)') {
     m += `Transfers\n• Round-trip transfer arranged by guests on their own.\n\n`;
   } else if (S.tr) {
-    m += `${S.tr.replace('Speed Boat', 'Speedboat')} Transfers\n• ${S.gt ? 'Tourist rate' : 'Rate'}: USD ${f(trNet() / 2)} per person, per way\n• Round-trip transfer for ${who}: USD ${f(g.trans)}${S.tdn ? ` (${S.tdn})` : ''}\n\n`;
+    m += `${S.tr.replace('Speed Boat', 'Speedboat')} Transfers\n• Rate: USD ${f(trNet() / 2)} per person, per way\n• Round-trip transfer for ${who}: USD ${f(g.trans)}${S.tdn ? ` (${S.tdn})` : ''}\n\n`;
   }
 
   // Supplementary charges block
@@ -1188,9 +1583,26 @@ function renderOverview() {
   const { N, k, t } = calc();
   const opt = S.opt;
 
+  // Calculate undiscounted original accommodation total for comparison
+  const origAcc = t.acc + t.disc;
+  const origTrans = (S.tr && S.tr !== 'Own Transfer (Arranged by guest)') ? n(S.trr) * t.pax : 0;
+  const hasRoomDisc = t.disc > 0;
+  const hasTransDisc = t.tdisc > 0;
+
   ovContent.innerHTML = `
     <div class="card">
-      <h3>Stay Overview</h3>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+        <h3 style="margin:0;">Stay Overview</h3>
+        <button type="button" style="padding:4px 9px;min-height:26px;font-size:10.5px;background:var(--soft);color:var(--acc);font-weight:700;border-color:var(--line);" onclick="openPdfPreviewModal()">
+          📄 Preview Invoice / PDF
+        </button>
+      </div>
+      ${S.guestName || S.guestPhone || S.guestEmail ? `
+        <div class="overview-row">
+          <span>Guest / Company</span>
+          <b>${S.guestName || '—'}${S.guestPhone ? ` · ${S.guestPhone}` : ''}${S.guestEmail ? ` · ${S.guestEmail}` : ''}</b>
+        </div>
+      ` : ''}
       <div class="overview-row"><span>Period</span><b>${datesAlt()}</b></div>
       <div class="overview-row"><span>Duration</span><b>${N} night${N !== 1 ? 's' : ''}</b></div>
       <div class="overview-row"><span>Guests</span><b>${t.ad} Adult${t.ad !== 1 ? 's' : ''}${t.pax > t.ad ? `, ${t.pax - t.ad} Children` : ''}</b></div>
@@ -1198,40 +1610,138 @@ function renderOverview() {
     </div>
 
     <div class="card">
-      <h3>Accommodation</h3>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+        <h3 style="margin:0;">Accommodation</h3>
+        ${hasRoomDisc && S.adn ? `<span class="disc-pill">${S.adn}</span>` : ''}
+      </div>
+
       ${k.map((x, i) => {
         const extraTags = [];
         if (x.ebRate > 0) extraTags.push(`Extra Adult: +$${f(x.ebRate)}`);
         if (x.ecRate > 0) extraTags.push(`Extra Child: +$${f(x.ecRate)}`);
+        
+        // Compute undiscounted original nightly & room totals for this item
+        const origNightly = (x.sg[0].grossAccommodation + x.sup) * 1.10 * 1.17;
+        const origRoomTot = x.roomTot + x.disc;
+        const itemHasDisc = x.disc > 0;
+
         return `
-        <div style="padding:6px 0;border-bottom:1px dashed var(--line);">
-          <div style="display:flex;justify-content:space-between;font-weight:600;font-size:12px;">
+        <div style="padding:7px 0;border-bottom:1px dashed var(--line);">
+          <div style="display:flex;justify-content:space-between;align-items:center;font-weight:600;font-size:12px;">
             <span>${opt ? `Option ${i + 1}: ` : `${i + 1}. `}${x.r.cat}</span>
-            <span>$${f(x.roomTot)}</span>
+            <div>
+              ${itemHasDisc ? `<span class="strikethrough-tag">$${f(origRoomTot)}</span>` : ''}
+              <span style="color:var(--text);font-weight:700;">$${f(x.roomTot)}</span>
+            </div>
           </div>
-          <div style="font-size:10px;color:var(--mute);margin-top:2px;">
-            ${MPN[x.mp]} · ${x.q} room${x.q > 1 ? 's' : ''} · $${f(x.nightly)} / night
-            ${extraTags.length ? ` · (${extraTags.join(', ')})` : ''}
+          <div style="font-size:10px;color:var(--mute);margin-top:3px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:4px;">
+            <div>
+              ${MPN[x.mp]} · ${x.q} room${x.q > 1 ? 's' : ''} · 
+              ${itemHasDisc ? `<span class="strikethrough-tag" style="margin-right:3px;">$${f(origNightly)}</span>` : ''}
+              <b style="color:var(--acc);">$${f(x.nightly)}</b> / night
+              ${extraTags.length ? ` · (${extraTags.join(', ')})` : ''}
+            </div>
+            ${itemHasDisc && S.adn ? `<span style="font-size:9.5px;color:var(--acc);font-style:italic;">${S.adn}</span>` : ''}
           </div>
         </div>
       `;}).join('')}
-      <div class="overview-row" style="margin-top:4px;"><span>Taxes (10% SC & 17% TGST)</span><b>$${f(t.tax)}</b></div>
+
+      ${t.sup > 0 ? `
+        <div class="overview-row" style="font-size:11px;color:var(--mute);">
+          <span>Meal Supplement (${MPN[S.mp] || S.mp})</span>
+          <b>+$${f(t.sup)}</b>
+        </div>
+      ` : ''}
+
+      <div class="overview-row" style="margin-top:6px;"><span>Taxes (10% SC & 17% TGST)</span><b>$${f(t.tax)}</b></div>
       ${S.gt ? `<div class="overview-row"><span>Green Tax ($6/pax/nt)</span><b>$${f(t.green)}</b></div>` : ''}
-      <div class="overview-row"><span>Accommodation Total</span><b>$${f(t.acc)}</b></div>
+      
+      <div class="overview-row" style="font-size:12.5px;padding-top:8px;">
+        <span>Accommodation Total</span>
+        <div>
+          ${hasRoomDisc ? `<span class="strikethrough-tag">$${f(origAcc)}</span>` : ''}
+          <b style="font-size:13px;color:var(--text);">$${f(t.acc)}</b>
+        </div>
+      </div>
+      ${hasRoomDisc ? `
+        <div style="display:flex;justify-content:space-between;font-size:10.5px;color:var(--ok);margin-top:3px;font-weight:600;">
+          <span>Accommodation Savings (${S.adn || 'Special Offer'})</span>
+          <span>-$${f(t.disc)}</span>
+        </div>
+      ` : ''}
     </div>
 
     <div class="card">
-      <h3>Transfer Charges</h3>
-      <div class="overview-row"><span>Service</span><b>${S.tr || 'None'}</b></div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+        <h3 style="margin:0;">Transfer &amp; Supplements</h3>
+        ${hasTransDisc && S.tdn ? `<span class="disc-pill">${S.tdn}</span>` : ''}
+      </div>
+
+      <div class="overview-row"><span>Transfer</span><b>${S.tr || 'None'}</b></div>
       ${S.tr && S.tr !== 'Own Transfer (Arranged by guest)' ? `
-        <div class="overview-row"><span>Rate</span><b>$${f(trNet())} / pax</b></div>
-        <div class="overview-row"><span>Transfer Total</span><b>$${f(t.trans)}</b></div>
+        <div class="overview-row">
+          <span>Transfer Rate</span>
+          <div>
+            ${hasTransDisc ? `<span class="strikethrough-tag">$${f(S.trr)}</span>` : ''}
+            <b>$${f(trNet())} / pax</b>
+          </div>
+        </div>
+        <div class="overview-row">
+          <span>Transfer Total (${t.pax} pax)</span>
+          <div>
+            ${hasTransDisc ? `<span class="strikethrough-tag">$${f(origTrans)}</span>` : ''}
+            <b>$${f(t.trans)}</b>
+          </div>
+        </div>
+        ${hasTransDisc ? `
+          <div style="display:flex;justify-content:space-between;font-size:10.5px;color:var(--ok);margin-top:2px;font-weight:600;">
+            <span>Transfer Savings (${S.tdn || 'Discounted'})</span>
+            <span>-$${f(t.tdisc)}</span>
+          </div>
+        ` : ''}
       ` : ''}
-      ${(S.supCharges || []).filter(sc => n(sc.ad) > 0 || n(sc.ch) > 0).map(sc => {
-        const itemTot = (n(sc.ad) * t.ad) + (n(sc.ch) * (t.pax - t.ad));
-        return `<div class="overview-row"><span>${sc.note || 'Supplement'}</span><b>$${f(itemTot)}</b></div>`;
-      }).join('')}
+
+      ${(S.supCharges || []).filter(sc => n(sc.ad) > 0 || n(sc.ch) > 0).length ? `
+        <div style="margin-top:8px;padding-top:6px;border-top:1px dashed var(--line);">
+          <div style="font-size:10px;font-weight:700;color:var(--mute);text-transform:uppercase;letter-spacing:0.04em;margin-bottom:4px;">Additional Supplements</div>
+          ${(S.supCharges || []).filter(sc => n(sc.ad) > 0 || n(sc.ch) > 0).map(sc => {
+            const itemTot = (n(sc.ad) * t.ad) + (n(sc.ch) * (t.pax - t.ad));
+            const subtext = [
+              n(sc.ad) > 0 ? `${t.ad} ad @ $${f(sc.ad)}` : '',
+              (n(sc.ch) > 0 && (t.pax - t.ad) > 0) ? `${t.pax - t.ad} ch @ $${f(sc.ch)}` : ''
+            ].filter(Boolean).join(' · ');
+            return `
+              <div class="overview-row" style="font-size:11.5px;padding:3px 0;">
+                <div>
+                  <span>${sc.note || 'Supplement'}</span>
+                  ${subtext ? `<small style="display:block;font-size:9.5px;color:var(--mute);">${subtext}</small>` : ''}
+                </div>
+                <b>$${f(itemTot)}</b>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      ` : ''}
     </div>
+
+    ${S.incl && S.incl.trim() ? `
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+          <h3 style="margin:0;">Package Inclusions</h3>
+          <span style="font-size:9.5px;font-weight:700;color:var(--acc);background:var(--soft);padding:2px 7px;border-radius:99px;">
+            ${S.incl.split('\n').filter(l => l.trim()).length} Items
+          </span>
+        </div>
+        <div style="font-size:11.5px;line-height:1.55;color:var(--text);">
+          ${S.incl.split('\n').filter(l => l.trim()).map(line => `
+            <div style="display:flex;align-items:flex-start;gap:6px;padding:3px 0;">
+              <span style="color:var(--cop);font-weight:700;line-height:1.2;">•</span>
+              <span style="flex:1;">${line.replace(/^[-•*]\s*/, '')}</span>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    ` : ''}
 
     <div class="total-card">
       <small>Total Final Package</small>
@@ -1239,7 +1749,12 @@ function renderOverview() {
         <span>$${f(t.total)}</span>
         ${t.disc > 0 || t.tdisc > 0 ? `<span class="og">$${f(t.total + t.disc + t.tdisc)}</span>` : ''}
       </div>
-      ${t.disc > 0 || t.tdisc > 0 ? `<div style="font-size:11px;margin-top:4px;opacity:0.9;">Total Savings: -$${f(t.disc + t.tdisc)}</div>` : ''}
+      ${t.disc > 0 || t.tdisc > 0 ? `
+        <div style="font-size:11px;margin-top:4px;opacity:0.95;display:flex;justify-content:space-between;align-items:center;">
+          <span>Total Savings Applied</span>
+          <b>-$${f(t.disc + t.tdisc)}</b>
+        </div>
+      ` : ''}
     </div>
   `;
 }
@@ -1261,6 +1776,9 @@ function recordSummaryLog() {
     timeStr,
     ci: S.ci,
     co: S.co,
+    guestName: S.guestName || '',
+    guestPhone: S.guestPhone || '',
+    guestEmail: S.guestEmail || '',
     nights: N,
     pax: t.pax,
     roomsDesc: roomSummary,
@@ -1271,6 +1789,9 @@ function recordSummaryLog() {
     savedState: {
       ci: S.ci,
       co: S.co,
+      guestName: S.guestName || '',
+      guestPhone: S.guestPhone || '',
+      guestEmail: S.guestEmail || '',
       mp: S.mp,
       tr: S.tr,
       trr: S.trr,
@@ -1280,6 +1801,7 @@ function recordSummaryLog() {
       fbc: S.fbc,
       gt: S.gt,
       opt: S.opt,
+      isAgent: S.isAgent,
       da: S.da,
       dt: S.dt,
       daCustomType: S.daCustomType,
@@ -1296,14 +1818,13 @@ function recordSummaryLog() {
     }
   };
 
-  // Avoid duplicate log if identical to top item in last 10 seconds
   const last = S.historyLog[0];
   if (last && last.ci === snapshot.ci && last.co === snapshot.co && last.total === snapshot.total && (Date.now() - last.id < 12000)) {
     return;
   }
 
   S.historyLog.unshift(snapshot);
-  if (S.historyLog.length > 30) S.historyLog.pop(); // Keep last 30 logs
+  if (S.historyLog.length > 30) S.historyLog.pop();
   save();
   updateLogBadge();
 }
@@ -1372,18 +1893,17 @@ function loadLogEntry(idx) {
   if (!entry || !entry.savedState) return;
 
   const st = clone(entry.savedState);
-  // Restore state into S while preserving tariffs and log history
   Object.keys(st).forEach(k => {
     S[k] = st[k];
   });
 
-  // Re-sync input fields
-  ['ci', 'co', 'tr', 'trr', 'hba', 'hbc', 'fba', 'fbc', 'adn', 'tdn', 'daCustomVal', 'dtCustomVal', 'incl', 'lk1', 'lk2'].forEach(id => {
+  ['ci', 'co', 'guestName', 'guestPhone', 'guestEmail', 'tr', 'trr', 'hba', 'hbc', 'fba', 'fbc', 'adn', 'tdn', 'daCustomVal', 'dtCustomVal', 'incl', 'lk1', 'lk2'].forEach(id => {
     if ($(id) && S[id] !== undefined) $(id).value = S[id];
   });
   if ($('mp')) $('mp').value = S.mp;
   if ($('gt')) $('gt').checked = S.gt;
   if ($('opt')) $('opt').checked = S.opt;
+  if ($('isAgent')) $('isAgent').checked = !!S.isAgent;
   if ($('daCustomType')) $('daCustomType').value = S.daCustomType || 'pct';
   if ($('dtCustomType')) $('dtCustomType').value = S.dtCustomType || 'pct';
 
@@ -1392,8 +1912,51 @@ function loadLogEntry(idx) {
   renderRooms();
   renderSupCharges();
   refresh();
-  go(1); // Jump straight to Room configuration for immediate editing
+  go(1);
   showToast('Booking proposal restored! ✓');
+}
+
+function toggleAllOffers(open) {
+  haptic();
+  document.querySelectorAll('#p2 details.sp-card').forEach(d => {
+    d.open = open;
+  });
+}
+
+function updateOfferBadges() {
+  const bAcc = $('badgeAccDisc');
+  if (bAcc) {
+    if (S.da > 0) {
+      bAcc.textContent = `${S.da}% off`;
+    } else if (n(S.daCustomVal) > 0) {
+      bAcc.textContent = S.daCustomType === 'pct' ? `${S.daCustomVal}% off` : `$${S.daCustomVal} off`;
+    } else {
+      bAcc.textContent = 'None';
+    }
+  }
+
+  const bTr = $('badgeTrDisc');
+  if (bTr) {
+    if (S.dt > 0) {
+      bTr.textContent = `${S.dt}% off`;
+    } else if (n(S.dtCustomVal) > 0) {
+      bTr.textContent = S.dtCustomType === 'pct' ? `${S.dtCustomVal}% off` : `$${S.dtCustomVal} off`;
+    } else {
+      bTr.textContent = 'None';
+    }
+  }
+
+  const bSup = $('badgeSupCharges');
+  if (bSup) {
+    const validCount = (S.supCharges || []).filter(sc => n(sc.ad) > 0 || n(sc.ch) > 0).length;
+    bSup.textContent = validCount > 0 ? `${validCount} active` : 'None';
+  }
+
+  const bInc = $('badgeInclusions');
+  if (bInc) {
+    const lines = (S.incl || '').split('\n').filter(l => l.trim()).length;
+    bInc.textContent = lines > 0 ? `${lines} item${lines > 1 ? 's' : ''}` : 'None';
+  }
 }
 
 function deleteLogEntry(idx) {
@@ -1423,6 +1986,35 @@ function refresh() {
   if ($('addb')) $('addb').textContent = S.opt ? '+ Add another room option' : '+ Add another room';
   if ($('out')) $('out').value = build();
 
+  const gBadge = $('guestBadge');
+  if (gBadge) {
+    if (S.guestName) {
+      gBadge.textContent = S.guestName;
+      gBadge.style.color = 'var(--acc)';
+      gBadge.style.fontWeight = '600';
+    } else {
+      gBadge.textContent = 'Not set';
+      gBadge.style.color = 'var(--mute)';
+      gBadge.style.fontWeight = '400';
+    }
+  }
+
+  const tag = $('msgModeTag');
+  if (tag) {
+    tag.textContent = S.isAgent ? 'Agent Draft' : (S.opt ? 'Room Comparison' : 'Standard');
+  }
+  const btnStd = $('btnFmtStd');
+  const btnAg = $('btnFmtAgent');
+  if (btnStd && btnAg) {
+    if (S.isAgent) {
+      btnAg.classList.add('pri');
+      btnStd.classList.remove('pri');
+    } else {
+      btnStd.classList.add('pri');
+      btnAg.classList.remove('pri');
+    }
+  }
+
   k.forEach((x, i) => {
     const rn = $('rn' + i), rt = $('rt' + i), rs = $('rs' + i);
     if (rn) rn.textContent = x.sg.length > 1 ? x.sg.map(s => '$' + f(s.nightly)).join(' / ') : '$' + f(x.nightly);
@@ -1430,7 +2022,15 @@ function refresh() {
     if (rs) rs.textContent = `${x.ad} adult${x.ad !== 1 ? 's' : ''}${x.ch ? ', ' + x.ch + ' child' + (x.ch > 1 ? 'ren' : '') : ''} · ${MPN[x.mp]}`;
   });
 
+  updateOfferBadges();
   save();
+}
+
+function setDraftMode(mode) {
+  haptic();
+  S.isAgent = (mode === 'agent');
+  if ($('isAgent')) $('isAgent').checked = S.isAgent;
+  refresh();
 }
 
 function renderRooms() {
@@ -1440,7 +2040,6 @@ function renderRooms() {
 
   container.innerHTML = S.rooms.map((r, i) => {
     const mp = r.mp || S.mp, sh = cp && i > 0;
-    // Strictly preserve r.sd if set, otherwise only calculate fallback if splitting
     const effectiveSd = r.sd ? r.sd : (r.split && N >= 2 ? iso(addD(S.ci, 1)) : '');
     return `
       <details class="room"${r.open ? ' open' : ''} ontoggle="S.rooms[${i}].open=this.open">
@@ -1551,7 +2150,6 @@ function st(i, k, d, min) {
 function setCat(i, v) {
   const r = S.rooms[i];
   r.cat = v;
-  // Automatically pull rate from current dates/seasons if available
   const seasons = S.seasonsTariff || DEFAULT_SEASONAL_SEASONS;
   const s1 = seasons.find(s => S.ci >= s.start && S.ci <= s.end);
   if (s1) {
@@ -1677,7 +2275,6 @@ function nt(d) {
   }
 
   const curN = nights();
-  // Ensure we move up or down, maintaining at least 1 night
   const targetN = Math.max(1, (curN <= 0 ? 1 : curN) + d);
   
   const ciDate = new Date(S.ci + 'T00:00');
@@ -1728,10 +2325,308 @@ function shareMsg() {
   haptic();
   const t = $('out') ? $('out').value : '';
   if (navigator.share) {
-    navigator.share({ title: 'Stone Hotels Reservation', text: t }).catch(() => {});
+    navigator.share({ title: 'Stone Hotels Dhiffushi Reservation', text: t }).catch(() => {});
   } else {
     copyMsg();
   }
+}
+
+// Generates the clean executive overview reservation proposal layout
+function generateFormalInvoiceBody() {
+  const { N, k, t } = calc();
+  const opt = S.opt;
+
+  const origAcc = t.acc + t.disc;
+  const origTrans = (S.tr && S.tr !== 'Own Transfer (Arranged by guest)') ? n(S.trr) * t.pax : 0;
+  const hasRoomDisc = t.disc > 0;
+  const hasTransDisc = t.tdisc > 0;
+
+  const validSup = (S.supCharges || []).filter(sc => n(sc.ad) > 0 || n(sc.ch) > 0);
+
+  return `
+    <div style="max-width:680px;margin:0 auto;font-family:Manrope,-apple-system,sans-serif;color:#27313d;line-height:1.45;">
+      <!-- Brand Header -->
+      <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:2px solid #526F90;padding-bottom:12px;margin-bottom:16px;">
+        <div>
+          <div style="font-size:22px;font-weight:800;color:#526F90;letter-spacing:-0.02em;">Stone Hotels Dhiffushi</div>
+          <div style="font-size:10px;text-transform:uppercase;letter-spacing:0.12em;color:#6b7785;margin-top:2px;">Dhiffushi 08030, Maldives · Official Reservation Offer</div>
+        </div>
+        <div style="text-align:right;">
+          <div style="font-size:11px;font-weight:700;color:#27313d;">${datesAlt()}</div>
+          <div style="font-size:10px;color:#6b7785;margin-top:2px;">${N} Night${N > 1 ? 's' : ''} · ${t.pax} Guest${t.pax > 1 ? 's' : ''}</div>
+        </div>
+      </div>
+
+      <!-- Stay Details Bar -->
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;background:#f4f6f9;padding:10px 12px;border-radius:8px;margin-bottom:14px;font-size:11px;">
+        <div><span style="color:#6b7785;font-size:9.5px;display:block;text-transform:uppercase;">Check-in</span><b>${dm(new Date(S.ci + 'T00:00'))}</b></div>
+        <div><span style="color:#6b7785;font-size:9.5px;display:block;text-transform:uppercase;">Check-out</span><b>${dm(new Date(S.co + 'T00:00'))}</b></div>
+        <div><span style="color:#6b7785;font-size:9.5px;display:block;text-transform:uppercase;">Meal Plan</span><b>${MPN[S.mp] || S.mp}</b></div>
+        <div><span style="color:#6b7785;font-size:9.5px;display:block;text-transform:uppercase;">Occupancy</span><b>${t.ad} Ad${t.pax > t.ad ? `, ${t.pax - t.ad} Ch` : ''}</b></div>
+      </div>
+
+      ${S.guestName || S.guestPhone || S.guestEmail ? `
+        <div style="display:flex;justify-content:space-between;align-items:center;background:#fff;border:1px solid #d9dee4;border-radius:8px;padding:8px 12px;margin-bottom:12px;font-size:11px;">
+          <div><span style="color:#6b7785;font-size:9.5px;text-transform:uppercase;display:block;">Guest / Client</span><b>${S.guestName || '—'}</b></div>
+          <div style="text-align:right;color:#6b7785;">${[S.guestPhone, S.guestEmail].filter(Boolean).join(' · ')}</div>
+        </div>
+      ` : ''}
+
+      <!-- Accommodation Breakdown -->
+      <div style="border:1px solid #d9dee4;border-radius:10px;padding:12px 14px;margin-bottom:12px;background:#fff;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;border-bottom:1px solid #eef2f7;padding-bottom:6px;">
+          <span style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:#6b7785;">Accommodation</span>
+          ${hasRoomDisc && S.adn ? `<span style="font-size:10px;font-weight:700;color:#526F90;background:#eef2f7;padding:2px 8px;border-radius:99px;">${S.adn}</span>` : ''}
+        </div>
+
+        ${k.map((x, i) => {
+          const extraTags = [];
+          if (x.ebRate > 0) extraTags.push(`Extra Adult: +$${f(x.ebRate)}`);
+          if (x.ecRate > 0) extraTags.push(`Extra Child: +$${f(x.ecRate)}`);
+          
+          const origNightly = (x.sg[0].grossAccommodation + x.sup) * 1.10 * 1.17;
+          const origRoomTot = x.roomTot + x.disc;
+          const itemHasDisc = x.disc > 0;
+
+          return `
+            <div style="padding:8px 0;border-bottom:1px dashed #eef2f7;">
+              <div style="display:flex;justify-content:space-between;align-items:center;font-size:12px;font-weight:700;">
+                <span>${opt ? `Option ${i + 1}: ` : `${i + 1}. `}${x.r.cat}</span>
+                <div>
+                  ${itemHasDisc ? `<span class="strikethrough-tag">$${f(origRoomTot)}</span>` : ''}
+                  <span style="color:#27313d;">$${f(x.roomTot)}</span>
+                </div>
+              </div>
+              <div style="font-size:10.5px;color:#6b7785;margin-top:3px;display:flex;justify-content:space-between;">
+                <span>
+                  ${MPN[x.mp]} · ${x.q} room${x.q > 1 ? 's' : ''} · 
+                  ${itemHasDisc ? `<span class="strikethrough-tag">$${f(origNightly)}</span>` : ''}
+                  <b style="color:#526F90;">$${f(x.nightly)}</b> / night
+                  ${extraTags.length ? ` · (${extraTags.join(', ')})` : ''}
+                </span>
+                ${itemHasDisc && S.adn ? `<span style="color:#526F90;font-style:italic;">${S.adn}</span>` : ''}
+              </div>
+            </div>
+          `;
+        }).join('')}
+
+        ${t.sup > 0 ? `
+          <div style="display:flex;justify-content:space-between;padding:6px 0;font-size:11px;color:#6b7785;">
+            <span>Meal Supplement (${MPN[S.mp] || S.mp})</span>
+            <b>+$${f(t.sup)}</b>
+          </div>
+        ` : ''}
+
+        <div style="display:flex;justify-content:space-between;padding:6px 0;font-size:11px;color:#6b7785;">
+          <span>Taxes (10% Service Charge & 17% TGST)</span>
+          <b>$${f(t.tax)}</b>
+        </div>
+        ${S.gt ? `
+          <div style="display:flex;justify-content:space-between;padding:6px 0;font-size:11px;color:#6b7785;">
+            <span>Green Tax ($6.00 / pax / night)</span>
+            <b>$${f(t.green)}</b>
+          </div>
+        ` : ''}
+
+        <div style="display:flex;justify-content:space-between;align-items:center;padding-top:8px;border-top:1px solid #eef2f7;font-size:12px;font-weight:700;">
+          <span>Accommodation Subtotal</span>
+          <div>
+            ${hasRoomDisc ? `<span class="strikethrough-tag">$${f(origAcc)}</span>` : ''}
+            <span style="color:#526F90;font-size:13px;">$${f(t.acc)}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Transfers & Supplementary Charges -->
+      <div style="border:1px solid #d9dee4;border-radius:10px;padding:12px 14px;margin-bottom:12px;background:#fff;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;border-bottom:1px solid #eef2f7;padding-bottom:6px;">
+          <span style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:#6b7785;">Transfer &amp; Supplements</span>
+          ${hasTransDisc && S.tdn ? `<span style="font-size:10px;font-weight:700;color:#526F90;background:#eef2f7;padding:2px 8px;border-radius:99px;">${S.tdn}</span>` : ''}
+        </div>
+
+        <div style="display:flex;justify-content:space-between;font-size:11px;padding:4px 0;">
+          <span style="color:#6b7785;">Transfer Type</span>
+          <b>${S.tr || 'None'}</b>
+        </div>
+
+        ${S.tr && S.tr !== 'Own Transfer (Arranged by guest)' ? `
+          <div style="display:flex;justify-content:space-between;font-size:11px;padding:4px 0;">
+            <span style="color:#6b7785;">Roundtrip Transfer (${t.pax} pax @ $${f(trNet())}/person)</span>
+            <div>
+              ${hasTransDisc ? `<span class="strikethrough-tag">$${f(origTrans)}</span>` : ''}
+              <b>$${f(t.trans)}</b>
+            </div>
+          </div>
+        ` : ''}
+
+        ${validSup.length ? `
+          <div style="margin-top:6px;padding-top:6px;border-top:1px dashed #eef2f7;">
+            ${validSup.map(sc => {
+              const itemTot = (n(sc.ad) * t.ad) + (n(sc.ch) * (t.pax - t.ad));
+              return `
+                <div style="display:flex;justify-content:space-between;font-size:11px;padding:3px 0;">
+                  <span style="color:#6b7785;">${sc.note || 'Supplement'}</span>
+                  <b>$${f(itemTot)}</b>
+                </div>
+              `;
+            }).join('')}
+          </div>
+        ` : ''}
+      </div>
+
+      <!-- Package Inclusions -->
+      ${S.incl && S.incl.trim() ? `
+        <div style="border:1px solid #d9dee4;border-radius:10px;padding:12px 14px;margin-bottom:12px;background:#fff;">
+          <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:#6b7785;margin-bottom:8px;border-bottom:1px solid #eef2f7;padding-bottom:6px;">
+            Package Inclusions
+          </div>
+          <div style="font-size:11px;line-height:1.6;">
+            ${S.incl.split('\n').filter(l => l.trim()).map(line => `
+              <div style="display:flex;align-items:flex-start;gap:6px;padding:2px 0;">
+                <span style="color:#D4A975;font-weight:700;">•</span>
+                <span>${line.replace(/^[-•*]\s*/, '')}</span>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      ` : ''}
+
+      <!-- Total Summary Card -->
+      <div style="background:#526F90;color:#ffffff;border-radius:10px;padding:14px;margin-top:12px;">
+        <div style="font-size:10px;text-transform:uppercase;letter-spacing:0.06em;opacity:0.85;">Total Package Cost</div>
+        <div style="font-size:24px;font-weight:800;display:flex;justify-content:space-between;align-items:baseline;margin-top:2px;">
+          <span>USD ${f(t.total)}</span>
+          ${t.disc > 0 || t.tdisc > 0 ? `<span class="og" style="font-size:14px;text-decoration:line-through;color:#ff9b9b;">USD ${f(t.total + t.disc + t.tdisc)}</span>` : ''}
+        </div>
+        ${t.disc > 0 || t.tdisc > 0 ? `
+          <div style="font-size:11px;margin-top:4px;opacity:0.95;display:flex;justify-content:space-between;">
+            <span>Total Promotional Savings</span>
+            <b>-USD ${f(t.disc + t.tdisc)}</b>
+          </div>
+        ` : ''}
+      </div>
+
+      <!-- Footer Info -->
+      <div style="margin-top:20px;font-size:10px;color:#8592a0;text-align:center;border-top:1px dashed #d9dee4;padding-top:10px;line-height:1.5;">
+        <b>Stone Hotels Dhiffushi</b> · Dhiffushi 08030, Maldives · Tel: 332 8888 · reservations@stonehotels.mv
+      </div>
+    </div>
+  `;
+}
+
+function openPdfPreviewModal() {
+  haptic();
+  const modal = $('pdfModal');
+  const sheet = $('pdfSheetContainer');
+  if (!modal || !sheet) return;
+
+  sheet.innerHTML = generateFormalInvoiceBody();
+  modal.classList.add('open');
+}
+
+function closePdfPreview() {
+  haptic();
+  const modal = $('pdfModal');
+  if (modal) modal.classList.remove('open');
+}
+
+function triggerActualPrint() {
+  haptic();
+  exportOverviewPdf();
+}
+
+function openPdfNewTab() {
+  haptic();
+  const printHtml = generateFormalInvoiceHtml();
+  try {
+    const printWin = window.open('', '_blank');
+    if (printWin) {
+      printWin.document.open();
+      printWin.document.write(printHtml);
+      printWin.document.close();
+    }
+  } catch (err) {}
+}
+
+function generateFormalInvoiceHtml() {
+  const bodyHtml = generateFormalInvoiceBody();
+  return `
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="utf-8">
+      <title>Stone Hotels Dhiffushi - Reservation Offer</title>
+      <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+      <style>
+        @page {
+          size: A4 portrait;
+          margin: 14mm 14mm 14mm 14mm;
+        }
+        body {
+          font-family: Manrope, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+          color: #27313d;
+          background: #ffffff;
+          margin: 0;
+          padding: 0;
+          font-size: 11.5px;
+          line-height: 1.45;
+          -webkit-print-color-adjust: exact;
+          print-color-adjust: exact;
+        }
+        .strikethrough-tag {
+          color: #e04f4f !important;
+          text-decoration: line-through;
+          margin-right: 4px;
+          font-weight: 600;
+        }
+      </style>
+    </head>
+    <body>
+      ${bodyHtml}
+      <script>
+        window.onload = function() {
+          setTimeout(function() {
+            window.print();
+          }, 250);
+        };
+      <\/script>
+    </body>
+    </html>
+  `;
+}
+
+function exportOverviewPdf() {
+  haptic();
+  const printHtml = generateFormalInvoiceHtml();
+
+  try {
+    const printWin = window.open('', '_blank');
+    if (printWin) {
+      printWin.document.open();
+      printWin.document.write(printHtml);
+      printWin.document.close();
+      return;
+    }
+  } catch (err) {
+    console.warn('Popup print blocked:', err);
+  }
+
+  let iframe = document.getElementById('printIframe');
+  if (!iframe) {
+    iframe = document.createElement('iframe');
+    iframe.id = 'printIframe';
+    iframe.style.position = 'fixed';
+    iframe.style.right = '0';
+    iframe.style.bottom = '0';
+    iframe.style.width = '0';
+    iframe.style.height = '0';
+    iframe.style.border = '0';
+    document.body.appendChild(iframe);
+  }
+  const doc = iframe.contentWindow.document;
+  doc.open();
+  doc.write(printHtml);
+  doc.close();
 }
 
 function wa() {
@@ -1796,7 +2691,6 @@ function parseCSVLine(text) {
 }
 
 function parseDateFromSeasonString(str) {
-  // Looks for dates like "1 Nov 2026 - 19 Dec 2026" or "20 Dec 2026 - 10 Jan 2027"
   const m = str.match(/(\d{1,2}\s+[A-Za-z]{3}\s+\d{4})\s*[-–]\s*(\d{1,2}\s+[A-Za-z]{3}\s+\d{4})/);
   if (m) {
     const d1 = new Date(m[1]), d2 = new Date(m[2]);
@@ -1820,7 +2714,6 @@ function parseGoogleSheetCSV(csvText) {
     const row = lines[i];
     const cell0 = (row[0] || '').trim();
 
-    // Check for Season header: e.g. "1 Nov 2026 - 19 Dec 2026 | Winter 2026- Low"
     if (cell0.includes('|') || /\b(Winter|Summer|Spring|Autumn|Peak|High|Low)\b/i.test(cell0)) {
       const parts = cell0.split('|').map(s => s.trim());
       const datesObj = parseDateFromSeasonString(parts[0]) || parseDateFromSeasonString(cell0);
@@ -1837,9 +2730,7 @@ function parseGoogleSheetCSV(csvText) {
       continue;
     }
 
-    // Match room rows
     if (currentSeason && TYPES.includes(cell0)) {
-      // Row format: Category | No. of Rooms | Earlier Rate | Base Rate | Base Diff | OTA | Direct | Agent | Agent S.Offer | Affiliate
       currentSeason.rooms.push({
         cat: cell0,
         qty: n(row[1]) || 1,
@@ -1993,7 +2884,6 @@ function go(i) {
   const prevStep = curStep;
   curStep = Math.max(0, Math.min(STEPS.length - 1, i));
 
-  // If navigating from Overview (step 3) to Message (step 4), record snapshot log
   if (prevStep === 3 && curStep === 4) {
     recordSummaryLog();
   }
@@ -2011,18 +2901,20 @@ function go(i) {
   const backBtn = $('dockBackBtn');
   if (backBtn) backBtn.disabled = curStep === 0;
 
+  const midBtn = $('dockMidBtn');
+  if (midBtn) {
+    midBtn.style.display = curStep === 3 ? 'flex' : 'none';
+  }
+
   const nextBtn = $('dockNextBtn');
   if (nextBtn) {
     if (curStep === 4) {
-      // Step 4 is the Message screen
       nextBtn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z"/></svg>Send via WhatsApp';
       nextBtn.onclick = wa;
     } else if (curStep === 5) {
-      // In Log tab: return to Room editing
       nextBtn.innerHTML = 'Return to Booking <svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>';
       nextBtn.onclick = () => go(1);
     } else if (curStep === 6) {
-      // In Rates reference tab: quick button to return to booking
       nextBtn.innerHTML = 'Return to Booking <svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>';
       nextBtn.onclick = () => go(1);
     } else {
@@ -2037,31 +2929,26 @@ function go(i) {
 }
 
 function stepNav(dir) {
-  // If in reference/log tab and tapping Back, return to Room configuration
   if (curStep >= 5 && dir < 0) {
     go(1);
     return;
   }
-  // Standard 5-step flow (0 to 4)
   const nextTarget = Math.max(0, Math.min(4, curStep + dir));
   go(nextTarget);
 }
 
 function init() {
-  // Restore theme
   let savedTheme = 'light';
   try { savedTheme = localStorage.getItem('stone_theme') || 'light'; } catch (e) {}
   document.documentElement.setAttribute('data-theme', savedTheme);
   updateThemeIcon(savedTheme);
 
-  // Check-in and Check-out specific handlers to keep nights valid
   if ($('ci')) {
     $('ci').value = S.ci || '';
     $('ci').onchange = $('ci').oninput = () => {
       S.ci = $('ci').value;
       if (S.ci) {
         const curN = nights();
-        // If check-out is now before or same day as check-in, push check-out ahead
         if (curN < 1) {
           const nextDay = addD(S.ci, 1);
           S.co = iso(nextDay);
@@ -2091,8 +2978,7 @@ function init() {
     };
   }
 
-  // Other field bindings
-  ['tr', 'trr', 'hba', 'hbc', 'fba', 'fbc', 'adn', 'tdn', 'daCustomVal', 'dtCustomVal', 'incl', 'lk1', 'lk2'].forEach(id => {
+  ['guestName', 'guestPhone', 'guestEmail', 'tr', 'trr', 'hba', 'hbc', 'fba', 'fbc', 'adn', 'tdn', 'daCustomVal', 'dtCustomVal', 'incl', 'lk1', 'lk2'].forEach(id => {
     const el = $(id);
     if (!el) return;
     el.value = S[id] !== undefined ? S[id] : '';
@@ -2122,6 +3008,11 @@ function init() {
     $('opt').onchange = e => { S.opt = e.target.checked; renderRooms(); refresh(); };
   }
 
+  if ($('isAgent')) {
+    $('isAgent').checked = !!S.isAgent;
+    $('isAgent').onchange = e => { S.isAgent = e.target.checked; refresh(); };
+  }
+
   if ($('daCustomType')) {
     $('daCustomType').value = S.daCustomType || 'pct';
     $('daCustomType').onchange = e => { S.daCustomType = e.target.value; refresh(); };
@@ -2140,7 +3031,6 @@ function init() {
   updateLogBadge();
   refresh();
 
-  // Background sync from Google Sheet if online
   if (navigator.onLine) {
     syncGoogleSheet(false);
   }
