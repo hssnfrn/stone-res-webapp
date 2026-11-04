@@ -1,1302 +1,680 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="Stone Hotels">
-<meta name="format-detection" content="telephone=no, date=no, address=no, email=no">
-<meta name="theme-color" content="#526F90">
-<title>Stone Hotels – Reservation Message Generator</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<style>
-:root {
-  --tab: 46px;
-  --bg: #eceef1;
-  --card: #ffffff;
-  --card-elevated: #ffffff;
-  --text: #27313d;
-  --mute: #6b7785;
-  --line: #d9dee4;
-  --pri: #526F90;
-  --pri-t: #ffffff;
-  --pri-light: #eef3f8;
-  --acc: #526F90;
-  --cop: #D4A975;
-  --cop-soft: rgba(212, 169, 117, 0.16);
-  --ok: #4A804F;
-  --ok-soft: rgba(74, 128, 79, 0.12);
-  --soft: #f4f6f9;
-  --inp: #ffffff;
-  --logo: #526F90;
-  --sat: env(safe-area-inset-top, 0px);
-  --sab: env(safe-area-inset-bottom, 0px);
-}
-
-:root[data-theme="dark"] {
-  --bg: #141c25;
-  --card: #1c2734;
-  --card-elevated: #243242;
-  --text: #e9edf2;
-  --mute: #9db0c4;
-  --line: #2e3e50;
-  --pri: #526F90;
-  --pri-t: #ffffff;
-  --pri-light: #202d3c;
-  --acc: #9bb6d3;
-  --cop: #D4A975;
-  --cop-soft: rgba(212, 169, 117, 0.22);
-  --ok: #7fc085;
-  --ok-soft: rgba(127, 192, 133, 0.15);
-  --soft: #17212c;
-  --inp: #131b23;
-  --logo: #E7E7E7;
-}
-
-* {
-  box-sizing: border-box;
-  -webkit-tap-highlight-color: transparent;
-  -webkit-touch-callout: none;
-}
-
-html, body {
-  margin: 0;
-  padding: 0;
-  background: var(--bg);
-  color: var(--text);
-  font: 13px/1.4 'Manrope', -apple-system, system-ui, sans-serif;
-  min-height: 100dvh;
-  -webkit-font-smoothing: antialiased;
-}
-
-/* iOS Top Notch Safe Area Filler */
-body::before {
-  content: "";
-  position: fixed;
-  inset: 0 0 auto;
-  height: var(--sat);
-  background: var(--card);
-  z-index: 50;
-}
-
-/* Top Sticky Header with Integrated Logo & Tabs */
-.app-header {
-  position: sticky;
-  top: 0;
-  z-index: 40;
-  background: var(--card);
-  border-bottom: 1px solid var(--line);
-  padding-top: var(--sat);
-  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.04);
-}
-
-.brand-bar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 6px 12px;
-  gap: 8px;
-}
-
-.brand-left {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  min-width: 0;
-}
-
-.brand-title {
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-}
-
-.brand-title b {
-  font-size: 14.5px;
-  font-weight: 800;
-  letter-spacing: -0.01em;
-  color: var(--text);
-  line-height: 1.15;
-}
-
-.brand-title span {
-  font-size: 8.5px;
-  letter-spacing: 0.13em;
-  text-transform: uppercase;
-  color: var(--cop);
-  font-weight: 700;
-}
-
-.brand-meta {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-/* Reset Button - Top Header */
-.reset-btn {
-  background: var(--soft);
-  border: 1px solid var(--line);
-  color: var(--mute);
-  border-radius: 999px;
-  width: 32px;
-  height: 32px;
-  min-height: 32px;
-  padding: 0;
-  display: grid;
-  place-items: center;
-  cursor: pointer;
-  flex-shrink: 0;
-  transition: transform 0.15s ease, color 0.15s ease, background 0.15s ease;
-}
-
-.reset-btn:active {
-  transform: scale(0.92);
-  color: var(--text);
-}
-
-.reset-btn svg {
-  width: 15px;
-  height: 15px;
-  stroke: currentColor;
-  stroke-width: 2.1;
-  fill: none;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-
-/* Theme Toggle Button - Icon Only */
-.theme-toggle-btn {
-  background: var(--soft);
-  border: 1px solid var(--line);
-  color: var(--text);
-  border-radius: 999px;
-  width: 32px;
-  height: 32px;
-  min-height: 32px;
-  padding: 0;
-  display: grid;
-  place-items: center;
-  cursor: pointer;
-  flex-shrink: 0;
-  transition: transform 0.15s ease, background 0.15s ease;
-}
-
-.theme-toggle-btn:active {
-  transform: scale(0.92);
-}
-
-.theme-toggle-btn svg {
-  width: 16px;
-  height: 16px;
-  stroke: currentColor;
-  stroke-width: 2.1;
-  fill: none;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-
-.chip-status {
-  font-size: 10px;
-  font-weight: 700;
-  background: var(--soft);
-  color: var(--acc);
-  border: 1px solid var(--line);
-  border-radius: 999px;
-  padding: 3px 8px;
-  white-space: nowrap;
-}
-
-/* Top Navigation Tabs */
-.top-nav {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  background: var(--card);
-  border-top: 1px solid var(--line);
-  padding: 0 1px;
-}
-
-.top-tab {
-  background: transparent;
-  border: none;
-  border-radius: 0;
-  color: var(--mute);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 2px;
-  font-size: 9px;
-  font-weight: 700;
-  padding: 5px 0 5px;
-  cursor: pointer;
-  position: relative;
-  min-height: 40px;
-  transition: color 0.15s ease;
-}
-
-.top-tab svg {
-  width: 15px;
-  height: 15px;
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 2;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-
-.top-tab.on {
-  color: var(--pri);
-}
-
-.top-tab.on::after {
-  content: "";
-  position: absolute;
-  bottom: 0;
-  left: 20%;
-  right: 20%;
-  height: 2.5px;
-  border-radius: 2px 2px 0 0;
-  background: var(--cop);
-}
-
-.tab-badge {
-  position: absolute;
-  top: 2px;
-  margin-left: 14px;
-  background: var(--cop);
-  color: #2b2118;
-  border-radius: 99px;
-  font-size: 8px;
-  font-weight: 800;
-  min-width: 14px;
-  height: 14px;
-  display: grid;
-  place-items: center;
-  padding: 0 2px;
-}
-
-/* Main Content Area */
-main {
-  max-width: 600px;
-  margin: 0 auto;
-  padding: 8px 10px calc(72px + var(--sab));
-}
-
-.step-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 8px;
-  padding: 0 2px;
-}
-
-.step-indicator {
-  font-size: 10px;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--mute);
-}
-
-.step-dots {
-  display: flex;
-  gap: 3.5px;
-}
-
-.dot {
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  background: var(--line);
-  transition: all 0.2s ease;
-}
-
-.dot.active {
-  width: 14px;
-  border-radius: 99px;
-  background: var(--pri);
-}
-
-/* Panel transitions */
-.pn {
-  display: none;
-}
-
-.pn.on {
-  display: block;
-  animation: fadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(5px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-/* Cards */
-.card {
-  background: var(--card);
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  padding: 10px 11px;
-  margin-bottom: 8px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
-}
-
-.card > h3 {
-  margin: 0 0 8px;
-  font: 800 10px 'Manrope', sans-serif;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--mute);
-  display: flex;
-  align-items: center;
-  gap: 5px;
-}
-
-label {
-  display: block;
-  font-size: 10px;
-  font-weight: 700;
-  color: var(--mute);
-  margin: 0 0 3px;
-}
-
-input, select, textarea {
-  width: 100%;
-  font-family: inherit;
-  font-size: 16px;
-  padding: 8px 10px;
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  background: var(--inp);
-  color: var(--text);
-  min-width: 0;
-  min-height: 42px;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
-  user-select: text;
-}
-
-input[type="date"] {
-  -webkit-appearance: none;
-  appearance: none;
-}
-
-input:focus, select:focus, textarea:focus {
-  outline: none;
-  border-color: var(--pri);
-  box-shadow: 0 0 0 2.5px rgba(82, 111, 144, 0.15);
-}
-
-select {
-  font-size: 13px;
-  background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236b7785' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 10px center;
-  background-size: 12px;
-  padding-right: 32px;
-}
-
-.g {
-  display: grid;
-  gap: 8px;
-  grid-template-columns: 1fr 1fr;
-}
-
-.g > * {
-  min-width: 0;
-}
-
-.mt {
-  margin-top: 10px;
-}
-
-/* Stepper Controls */
-.stp {
-  display: flex;
-  align-items: center;
-  border: 1px solid var(--line);
-  border-radius: 9px;
-  background: var(--inp);
-  overflow: hidden;
-  min-height: 44px;
-}
-
-.stp button {
-  border: 0;
-  border-radius: 0;
-  font-size: 18px;
-  font-weight: 700;
-  width: 44px;
-  min-height: 44px;
-  background: transparent;
-  color: var(--pri);
-  cursor: pointer;
-  display: grid;
-  place-items: center;
-}
-
-.stp button:active {
-  background: var(--soft);
-}
-
-.stp b {
-  flex: 1;
-  text-align: center;
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--text);
-  user-select: none;
-}
-
-/* Checkbox Row */
-.ck {
-  display: flex;
-  gap: 10px;
-  align-items: flex-start;
-  padding: 10px 11px;
-  border: 1px solid var(--line);
-  border-radius: 11px;
-  margin-top: 8px;
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--text);
-  cursor: pointer;
-  background: var(--soft);
-}
-
-.ck input {
-  width: 18px;
-  height: 18px;
-  min-height: 0;
-  flex: none;
-  margin: 1px 0 0;
-  accent-color: var(--pri);
-}
-
-.ck small {
-  display: block;
-  color: var(--mute);
-  font-size: 10.5px;
-  margin-top: 2px;
-  font-weight: 500;
-  line-height: 1.3;
-}
-
-/* Chips */
-.chips {
-  display: flex;
-  gap: 6px;
-  flex-wrap: wrap;
-}
-
-.chips button {
-  font: 700 11px 'Manrope', sans-serif;
-  border: 1px solid var(--line);
-  background: var(--soft);
-  color: var(--text);
-  border-radius: 99px;
-  padding: 6px 12px;
-  min-height: 34px;
-  cursor: pointer;
-  transition: all 0.15s ease;
-}
-
-.chips button:active {
-  transform: scale(0.96);
-}
-
-.chips button.on {
-  background: var(--pri);
-  color: var(--pri-t);
-  border-color: var(--pri);
-  box-shadow: 0 2px 6px rgba(82, 111, 144, 0.22);
-}
-
-/* Room Items */
-.room {
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  margin-bottom: 9px;
-  background: var(--soft);
-  overflow: hidden;
-}
-
-.room > summary {
-  display: flex;
-  align-items: center;
-  padding: 11px 12px;
-  cursor: pointer;
-  list-style: none;
-  gap: 8px;
-}
-
-.room > summary::-webkit-details-marker {
-  display: none;
-}
-
-.room > summary div {
-  flex: 1;
-}
-
-.room > summary b {
-  display: block;
-  font-size: 13.5px;
-  font-weight: 700;
-}
-
-.room > summary small {
-  color: var(--mute);
-  font-size: 11px;
-}
-
-.room > summary::after {
-  content: "";
-  width: 7px;
-  height: 7px;
-  border-right: 2px solid var(--mute);
-  border-bottom: 2px solid var(--mute);
-  transform: rotate(45deg);
-  transition: transform 0.2s;
-  margin-bottom: 2px;
-}
-
-.room[open] > summary::after {
-  transform: rotate(-135deg);
-  margin-bottom: -2px;
-}
-
-.rb {
-  padding: 0 12px 12px;
-}
-
-.rs {
-  display: flex;
-  justify-content: space-between;
-  gap: 8px;
-  font-size: 11.5px;
-  color: var(--mute);
-  margin-top: 10px;
-  border-top: 1px dashed var(--line);
-  padding-top: 9px;
-}
-
-.rs b {
-  color: var(--pri);
-}
-
-.sub {
-  font-size: 10.5px;
-  color: var(--mute);
-}
-
-.ages {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 6px;
-  margin-top: 5px;
-}
-
-/* Pricing Tiles */
-.sum {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-}
-
-.tile {
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  padding: 10px 12px;
-  background: var(--card);
-}
-
-.tile small {
-  display: block;
-  color: var(--mute);
-  font-size: 9.5px;
-  font-weight: 700;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-}
-
-.tile b {
-  font: 800 16px 'Manrope', sans-serif;
-  display: block;
-  margin-top: 2px;
-  color: var(--text);
-}
-
-.tile.tot {
-  background: linear-gradient(135deg, var(--pri) 0%, #3a526d 100%);
-  color: var(--pri-t);
-  grid-column: 1 / -1;
-  border-color: var(--pri);
-}
-
-.tile.tot small {
-  color: inherit;
-  opacity: 0.85;
-}
-
-.tile.tot b {
-  font-size: 22px;
-  color: #ffffff;
-}
-
-.og {
-  display: block;
-  font-size: 10.5px;
-  text-decoration: line-through;
-  color: var(--mute);
-}
-
-.dd {
-  display: block;
-  font-size: 10px;
-  color: var(--ok);
-  font-weight: 700;
-}
-
-.tot .og, .tot .dd {
-  color: #FDE68A;
-  opacity: 0.95;
-}
-
-/* OVERVIEW SECTION STYLES */
-.overview-hero {
-  background: var(--soft);
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  padding: 12px;
-  margin-bottom: 10px;
-}
-
-.ov-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 6px 0;
-  border-bottom: 1px solid var(--line);
-  font-size: 11.5px;
-}
-
-.ov-row:last-child {
-  border-bottom: 0;
-  padding-bottom: 0;
-}
-
-.ov-row:first-child {
-  padding-top: 0;
-}
-
-.ov-label {
-  color: var(--mute);
-  font-weight: 600;
-}
-
-.ov-val {
-  font-weight: 700;
-  color: var(--text);
-  text-align: right;
-}
-
-.ov-room-item {
-  background: var(--card);
-  border: 1px solid var(--line);
-  border-radius: 10px;
-  padding: 8px 10px;
-  margin-top: 6px;
-}
-
-.ov-room-title {
-  display: flex;
-  justify-content: space-between;
-  font-weight: 700;
-  font-size: 12px;
-  color: var(--pri);
-}
-
-.ov-room-sub {
-  font-size: 10.5px;
-  color: var(--mute);
-  margin-top: 2px;
-}
-
-/* Overview Discount Card Styling */
-.ov-disc-card {
-  background: var(--ok-soft);
-  border: 1px solid var(--ok);
-  border-radius: 12px;
-  padding: 12px;
-  margin-bottom: 10px;
-}
-
-.ov-disc-card h3 {
-  margin: 0 0 8px;
-  font: 800 10.5px 'Manrope', sans-serif;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--ok);
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.ov-disc-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  padding: 5px 0;
-  border-bottom: 1px dashed rgba(74, 128, 79, 0.25);
-  font-size: 11.5px;
-}
-
-.ov-disc-item:last-child {
-  border-bottom: none;
-  padding-bottom: 0;
-}
-
-.ov-disc-title {
-  font-weight: 700;
-  color: var(--text);
-}
-
-.ov-disc-desc {
-  font-size: 10px;
-  color: var(--mute);
-  margin-top: 1px;
-}
-
-.ov-disc-val {
-  font-weight: 800;
-  color: var(--ok);
-  white-space: nowrap;
-  margin-left: 8px;
-}
-
-/* General Buttons */
-button {
-  font: 700 12px 'Manrope', sans-serif;
-  border: 1px solid var(--line);
-  background: var(--card);
-  color: var(--text);
-  border-radius: 10px;
-  padding: 9px 13px;
-  cursor: pointer;
-  min-height: 42px;
-  transition: transform 0.1s ease, background 0.15s ease;
-  user-select: none;
-}
-
-button:active {
-  transform: scale(0.97);
-}
-
-.pri {
-  background: var(--pri);
-  color: var(--pri-t);
-  border-color: var(--pri);
-}
-
-.sec {
-  background: var(--soft);
-  color: var(--text);
-  border-color: var(--line);
-}
-
-.cop-btn {
-  background: var(--cop);
-  color: #241a10;
-  border-color: var(--cop);
-}
-
-/* Textarea & Message */
-textarea {
-  width: 100%;
-  min-height: 360px;
-  font: 12px/1.5 'Manrope', system-ui, sans-serif;
-  padding: 12px;
-  border: 1px solid var(--line);
-  background: var(--inp);
-  color: var(--text);
-  border-radius: 10px;
-  resize: vertical;
-}
-
-/* Screen-fitted message container for mobile viewports */
-#p4 .card:first-child {
-  display: flex;
-  flex-direction: column;
-}
-
-#p4 #out {
-  min-height: calc(100dvh - 300px);
-  height: calc(100dvh - 300px);
-  max-height: 70dvh;
-  resize: none;
-  line-height: 1.5;
-  font-size: 11.5px;
-}
-
-/* FIXED BOTTOM BAR: STEP NAVIGATION (BACK / NEXT) */
-.bottom-dock {
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 45;
-  background: var(--card);
-  border-top: 1px solid var(--line);
-  padding: 8px 14px calc(8px + var(--sab));
-  box-shadow: 0 -3px 12px rgba(0, 0, 0, 0.04);
-}
-
-.bottom-dock-inner {
-  max-width: 600px;
-  margin: 0 auto;
-}
-
-.step-nav-bar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-}
-
-.step-nav-bar button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 5px;
-  min-height: 44px;
-  font-size: 13px;
-}
-
-.step-nav-bar .btn-back {
-  flex: 1;
-}
-
-.step-nav-bar .btn-next {
-  flex: 2;
-}
-
-.step-nav-bar button svg {
-  width: 15px;
-  height: 15px;
-  stroke: currentColor;
-  stroke-width: 2.2;
-  fill: none;
-}
-
-/* Toast Message */
-.toast {
-  position: fixed;
-  top: calc(var(--sat) + 54px);
-  left: 50%;
-  transform: translateX(-50%) translateY(-20px);
-  background: rgba(33, 46, 60, 0.96);
-  color: #ffffff;
-  padding: 7px 16px;
-  border-radius: 99px;
-  font-size: 11.5px;
-  font-weight: 700;
-  z-index: 100;
-  opacity: 0;
-  pointer-events: none;
-  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
-  box-shadow: 0 4px 14px rgba(0,0,0,0.18);
-  white-space: nowrap;
-}
-
-.toast.on {
-  opacity: 1;
-  transform: translateX(-50%) translateY(0);
-}
-
-details.sp > summary {
-  cursor: pointer;
-  font-size: 11.5px;
-  font-weight: 700;
-  color: var(--acc);
-  list-style: none;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-details.sp > summary::-webkit-details-marker {
-  display: none;
-}
-</style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#526F90">
+  <title>Stone Hotels – Reservation Message Generator</title>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      box-sizing: border-box;
+      --tab: 52px;
+      --bg: #eceef1;
+      --card: #ffffff;
+      --text: #27313d;
+      --mute: #6b7785;
+      --line: #d9dee4;
+      --pri: #526F90;
+      --pri-t: #ffffff;
+      --acc: #526F90;
+      --cop: #D4A975;
+      --ok: #4A804F;
+      --soft: #eef2f7;
+      --inp: #ffffff;
+    }
+    :root[data-theme="dark"] {
+      --bg: #18222d;
+      --card: #212e3c;
+      --text: #e9edf2;
+      --mute: #9db0c4;
+      --line: #33475c;
+      --pri: #526F90;
+      --pri-t: #ffffff;
+      --acc: #9bb6d3;
+      --cop: #D4A975;
+      --ok: #7fc085;
+      --soft: #1b2733;
+      --inp: #18222d;
+    }
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: var(--bg);
+      color: var(--text);
+      font: 13px/1.4 Manrope, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      min-height: 100dvh;
+    }
+    .app-header {
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      background: var(--card);
+      border-bottom: 1px solid var(--line);
+      padding-top: env(safe-area-inset-top, 0px);
+    }
+    .brand-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 12px;
+      gap: 8px;
+    }
+    .brand-titles { flex: 1; min-width: 0; }
+    .brand-title {
+      margin: 0;
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--acc);
+      letter-spacing: -0.01em;
+      line-height: 1.2;
+    }
+    .brand-sub {
+      display: block;
+      font-size: 9.5px;
+      color: var(--mute);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .brand-meta {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .reset-btn, .theme-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: 1px solid var(--line);
+      background: var(--soft);
+      color: var(--text);
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+      padding: 0;
+      min-height: 32px;
+    }
+    .reset-btn svg, .theme-btn svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 2; }
+    .chip {
+      font-size: 10.5px;
+      font-weight: 600;
+      background: var(--soft);
+      color: var(--acc);
+      border-radius: 99px;
+      padding: 5px 9px;
+      white-space: nowrap;
+    }
+    .nav-tabs {
+      display: flex;
+      overflow-x: auto;
+      scrollbar-width: none;
+      -webkit-overflow-scrolling: touch;
+      border-top: 1px solid var(--line);
+      background: var(--card);
+    }
+    .nav-tabs::-webkit-scrollbar { display: none; }
+    .nav-tabs button {
+      border: 0;
+      background: transparent;
+      color: var(--mute);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      font-size: 10px;
+      font-weight: 600;
+      padding: 8px 10px;
+      min-width: 58px;
+      flex: 1 0 auto;
+      min-height: 48px;
+      position: relative;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: color 0.15s ease;
+    }
+    .nav-tabs button.on { color: var(--acc); font-weight: 700; }
+    .nav-tabs button.on::after {
+      content: "";
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 26px;
+      height: 2.5px;
+      background: var(--cop);
+      border-radius: 2px 2px 0 0;
+    }
+    .nav-tabs svg { width: 17px; height: 17px; stroke: currentColor; fill: none; stroke-width: 1.9; }
+    .bdg {
+      position: absolute;
+      top: 4px;
+      right: calc(50% - 16px);
+      background: var(--cop);
+      color: #2b2118;
+      border-radius: 99px;
+      font-size: 8px;
+      min-width: 14px;
+      height: 14px;
+      display: grid;
+      place-items: center;
+      padding: 0 3px;
+      font-weight: 700;
+    }
+    .step-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 6px 12px;
+      background: var(--soft);
+      border-bottom: 1px solid var(--line);
+      font-size: 10.5px;
+      color: var(--mute);
+    }
+    .step-bar b { color: var(--text); }
+    main {
+      max-width: 620px;
+      margin: 0 auto;
+      padding: 10px 10px calc(var(--tab) + 40px + env(safe-area-inset-bottom, 0px));
+    }
+    .pn { display: none; }
+    .pn.on { display: block; animation: fi .18s ease; }
+    @keyframes fi { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 12px;
+      margin-bottom: 10px;
+    }
+    .card > h3 {
+      margin: 0 0 8px;
+      font: 700 10.5px Manrope, sans-serif;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--mute);
+    }
+    label {
+      display: block;
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--mute);
+      margin: 0 0 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    input, select, textarea {
+      width: 100%;
+      font-family: inherit;
+      font-size: 16px;
+      padding: 9px 10px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--inp);
+      color: var(--text);
+      min-height: 42px;
+    }
+    select { font-size: 13px; }
+    input:focus, select:focus, textarea:focus {
+      outline: 2px solid var(--acc);
+      outline-offset: -1px;
+    }
+    .g { display: grid; gap: 8px; grid-template-columns: 1fr 1fr; }
+    .mt { margin-top: 8px; }
+    button {
+      font: 600 12px Manrope, sans-serif;
+      border: 1px solid var(--line);
+      background: var(--card);
+      color: var(--text);
+      border-radius: 10px;
+      padding: 9px 12px;
+      cursor: pointer;
+      min-height: 40px;
+    }
+    button:active { transform: scale(0.98); }
+    .pri { background: var(--pri); color: var(--pri-t); border-color: var(--pri); }
+    .stp {
+      display: flex;
+      align-items: center;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--inp);
+      overflow: hidden;
+    }
+    .stp button {
+      border: 0;
+      border-radius: 0;
+      font-size: 18px;
+      padding: 0 14px;
+      min-height: 40px;
+      background: transparent;
+      color: var(--acc);
+    }
+    .stp b { flex: 1; text-align: center; font-size: 14px; font-weight: 600; }
+    .ck {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      padding: 10px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      margin-top: 8px;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text);
+      cursor: pointer;
+    }
+    .ck input { width: 18px; height: 18px; min-height: 0; flex: none; margin-top: 1px; accent-color: var(--pri); }
+    .ck small { display: block; color: var(--mute); font-size: 10px; margin-top: 2px; }
+    .chips { display: flex; gap: 6px; flex-wrap: wrap; }
+    .chips button { border-radius: 99px; padding: 6px 11px; min-height: 32px; font-size: 11px; }
+    .chips button.on { background: var(--pri); color: var(--pri-t); border-color: var(--pri); }
+    .room {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      margin-bottom: 8px;
+      background: var(--soft);
+      overflow: hidden;
+    }
+    .room > summary {
+      display: flex;
+      align-items: center;
+      padding: 11px 12px;
+      cursor: pointer;
+      list-style: none;
+      gap: 6px;
+    }
+    .room > summary::-webkit-details-marker { display: none; }
+    .room > summary div { flex: 1; min-width: 0; }
+    .room > summary b { display: block; font-size: 13.5px; font-weight: 700; }
+    .room > summary small { color: var(--mute); font-size: 11px; }
+    .room > summary::after {
+      content: "";
+      width: 7px;
+      height: 7px;
+      border-right: 2px solid var(--mute);
+      border-bottom: 2px solid var(--mute);
+      transform: rotate(45deg);
+      transition: .2s;
+      margin-bottom: 2px;
+    }
+    .room[open] > summary::after { transform: rotate(-135deg); margin-bottom: -2px; }
+    .rb { padding: 0 12px 12px; }
+    .rs {
+      display: flex;
+      justify-content: space-between;
+      gap: 6px;
+      font-size: 11px;
+      color: var(--mute);
+      margin-top: 8px;
+      border-top: 1px dashed var(--line);
+      padding-top: 8px;
+    }
+    .rs b { color: var(--text); }
+    .ages { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-top: 4px; }
+    .sub { font-size: 10px; color: var(--mute); line-height: 1.35; }
+    .overview-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 0;
+      border-bottom: 1px dashed var(--line);
+      font-size: 11.5px;
+    }
+    .overview-row:last-child { border-bottom: none; }
+    .overview-row span { color: var(--mute); }
+    .overview-row b { color: var(--text); text-align: right; }
+    .total-card {
+      background: var(--pri);
+      color: var(--pri-t);
+      border-radius: 12px;
+      padding: 12px;
+      margin-top: 10px;
+    }
+    .total-card small {
+      display: block;
+      text-transform: uppercase;
+      font-size: 9.5px;
+      letter-spacing: 0.05em;
+      opacity: 0.85;
+    }
+    .total-card .val {
+      font-size: 22px;
+      font-weight: 700;
+      margin-top: 2px;
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+    }
+    .total-card .og { font-size: 12px; text-decoration: line-through; opacity: 0.8; }
+    #out {
+      width: 100%;
+      height: calc(100dvh - 290px);
+      min-height: 240px;
+      font: 12.5px/1.45 Manrope, monospace;
+      padding: 10px;
+      border: 1px solid var(--line);
+      background: var(--inp);
+      color: var(--text);
+      border-radius: 10px;
+      resize: none;
+    }
+    .bottom-dock {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 35;
+      background: var(--card);
+      border-top: 1px solid var(--line);
+      padding: 7px 12px calc(7px + env(safe-area-inset-bottom, 0px));
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+    .bottom-dock button {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      font-size: 12.5px;
+      font-weight: 600;
+      min-height: 42px;
+    }
+    .back-btn { background: var(--soft); color: var(--text); border-color: var(--line); flex: 0.35 !important; }
+    .back-btn:disabled { opacity: 0.4; pointer-events: none; }
+    .next-btn { background: var(--pri); color: var(--pri-t); border-color: var(--pri); }
+    .bottom-dock svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 2.2; }
+    details.sp > summary { cursor: pointer; font-size: 11.5px; font-weight: 600; color: var(--acc); list-style: none; }
+    details.sp > summary::-webkit-details-marker { display: none; }
+  </style>
 </head>
 <body>
 
-<!-- Floating iOS Toast -->
-<div class="toast" id="toast">Message copied to clipboard</div>
-
-<!-- Sticky Header: Logo, Hotel Title & Top Tabs -->
-<header class="app-header">
-  <div class="brand-bar">
-    <div class="brand-left">
-      <div class="brand-title">
-        <b>Stone Hotels</b>
-        <span>Reservation Generator</span>
+  <!-- Sticky Top Header -->
+  <header class="app-header">
+    <div class="brand-bar">
+      <div class="brand-titles">
+        <h1 class="brand-title">Stone Hotels</h1>
+        <span class="brand-sub">Reservation Generator</span>
       </div>
-    </div>
-    <div class="brand-meta">
-      <button type="button" class="reset-btn" id="headerResetBtn" onclick="reset()" aria-label="Reset to default values" title="Reset to default">
-        <svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
-      </button>
-      <button type="button" class="theme-toggle-btn" id="themeBtn" onclick="toggleTheme()" aria-label="Toggle light or dark theme" title="Toggle theme">
-        <svg id="themeIconSun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
-        <svg id="themeIconMoon" style="display:none;" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
-      </button>
-      <span class="chip-status" id="chip"></span>
-    </div>
-  </div>
-
-  <!-- Step Tab Bar At Top -->
-  <nav class="top-nav" id="topNav">
-    <button class="top-tab on" onclick="go(0)" aria-label="Stay Details">
-      <svg viewBox="0 0 24 24"><path d="M4 7h16M7 3v4M17 3v4M5 5h14a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1z"/></svg>
-      Stay
-    </button>
-    <button class="top-tab" onclick="go(1)" aria-label="Room Configuration">
-      <svg viewBox="0 0 24 24"><path d="M3 19V7M3 15h18v4M21 15v-2a3 3 0 0 0-3-3h-7v5"/><circle cx="7" cy="11.5" r="1.6"/></svg>
-      Rooms<span class="tab-badge" id="bdg">1</span>
-    </button>
-    <button class="top-tab" onclick="go(2)" aria-label="Offers & Inclusions">
-      <svg viewBox="0 0 24 24"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-      Offers &amp; Inclusions
-    </button>
-    <button class="top-tab" onclick="go(3)" aria-label="Executive Overview">
-      <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
-      Overview
-    </button>
-    <button class="top-tab" onclick="go(4)" aria-label="Draft Message">
-      <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-      Message
-    </button>
-  </nav>
-</header>
-
-<main>
-  <!-- Step indicator breadcrumb -->
-  <div class="step-header">
-    <span class="step-indicator" id="stepIndicator">Step 1 of 5 · Stay</span>
-    <div class="step-dots" id="stepDots">
-      <span class="dot active"></span>
-      <span class="dot"></span>
-      <span class="dot"></span>
-      <span class="dot"></span>
-      <span class="dot"></span>
-    </div>
-  </div>
-
-  <!-- STEP 0: STAY -->
-  <section class="pn on" id="p0">
-    <div class="card">
-      <h3>Dates &amp; Duration</h3>
-      <div class="g">
-        <div>
-          <label for="ci">Check-in</label>
-          <input type="date" id="ci">
-        </div>
-        <div>
-          <label for="co">Check-out</label>
-          <input type="date" id="co">
-        </div>
-      </div>
-      <div class="mt">
-        <label>Nights of Stay</label>
-        <div class="stp">
-          <button type="button" onclick="nt(-1)" aria-label="Decrease nights">−</button>
-          <b id="nn">1 night</b>
-          <button type="button" onclick="nt(1)" aria-label="Increase nights">+</button>
-        </div>
-      </div>
-    </div>
-
-    <div class="card">
-      <h3>Meal &amp; Transfer</h3>
-      <div class="g">
-        <div>
-          <label for="mp">Default Meal Plan</label>
-          <select id="mp">
-            <option value="BB">Bed &amp; Breakfast</option>
-            <option value="HB">Half Board</option>
-            <option value="FB">Full Board</option>
-          </select>
-        </div>
-        <div>
-          <label for="tr">Transfer Method</label>
-          <select id="tr">
-            <option>Shared Speed Boat</option>
-            <option>Private Speed Boat</option>
-            <option>Own Transfer (Arranged by guest)</option>
-            <option value="">No transfer</option>
-          </select>
-        </div>
-      </div>
-      <div class="mt">
-        <label for="trr">Transfer Rate (USD / pax, Roundtrip)</label>
-        <input type="number" inputmode="decimal" id="trr" placeholder="90">
-      </div>
-    </div>
-
-    <div class="card">
-      <h3>Maldives Tax &amp; Comparison</h3>
-      <label class="ck" style="margin-top:0">
-        <input type="checkbox" id="gt">
-        <span>Include Green Tax ($6 / pax / night)
-          <small>Untick for Maldivian locals &amp; work permit holders (exempt)</small>
-        </span>
-      </label>
-      <label class="ck">
-        <input type="checkbox" id="opt">
-        <span>Offer Multiple Room Options
-          <small>Compare distinct room categories for the same party in one proposal</small>
-        </span>
-      </label>
-    </div>
-  </section>
-
-  <!-- STEP 1: ROOMS -->
-  <section class="pn" id="p1">
-    <div id="rooms"></div>
-    <button type="button" class="pri" id="addb" style="width:100%" onclick="addRoom()">+ Add another room</button>
-  </section>
-
-  <!-- STEP 2: OFFERS & INCLUSIONS -->
-  <section class="pn" id="p2">
-    <div class="card">
-      <h3>Accommodation Discount</h3>
-      <div class="chips" id="dpA"></div>
-      <div class="mt">
-        <label>Custom Discount Type &amp; Amount</label>
-        <div style="display:flex;gap:6px;align-items:center;">
-          <div class="stp" style="flex:0 0 110px;display:flex;border:1px solid var(--line);border-radius:9px;overflow:hidden;background:var(--inp);">
-            <button type="button" id="daTypePct" style="flex:1;border:0;border-radius:0;min-height:44px;font-size:12px;font-weight:700;padding:0;background:var(--pri);color:#fff;" onclick="setDiscType('da','pct')">% Off</button>
-            <button type="button" id="daTypeAmt" style="flex:1;border:0;border-radius:0;min-height:44px;font-size:12px;font-weight:700;padding:0;background:transparent;color:var(--text);" onclick="setDiscType('da','amt')">$ Off</button>
-          </div>
-          <input type="number" inputmode="decimal" id="daCustomVal" placeholder="e.g. 15" style="flex:1;">
-        </div>
-        <small id="daCustomHelp" style="display:block;color:var(--mute);font-size:10px;margin-top:4px;">Percentage discount applied on nightly room rates</small>
-      </div>
-      <div class="mt">
-        <label for="adn">Note Shown on Rate Line</label>
-        <input id="adn" placeholder="e.g. Special Discount Applied">
-      </div>
-    </div>
-
-    <div class="card">
-      <h3>Transfer Discount</h3>
-      <div class="chips" id="dpT"></div>
-      <div class="mt">
-        <label>Custom Discount Type &amp; Amount</label>
-        <div style="display:flex;gap:6px;align-items:center;">
-          <div class="stp" style="flex:0 0 110px;display:flex;border:1px solid var(--line);border-radius:9px;overflow:hidden;background:var(--inp);">
-            <button type="button" id="dtTypePct" style="flex:1;border:0;border-radius:0;min-height:44px;font-size:12px;font-weight:700;padding:0;background:var(--pri);color:#fff;" onclick="setDiscType('dt','pct')">% Off</button>
-            <button type="button" id="dtTypeAmt" style="flex:1;border:0;border-radius:0;min-height:44px;font-size:12px;font-weight:700;padding:0;background:transparent;color:var(--text);" onclick="setDiscType('dt','amt')">$ Off</button>
-          </div>
-          <input type="number" inputmode="decimal" id="dtCustomVal" placeholder="e.g. 10" style="flex:1;">
-        </div>
-        <small id="dtCustomHelp" style="display:block;color:var(--mute);font-size:10px;margin-top:4px;">Percentage discount applied on roundtrip transfer rate</small>
-      </div>
-      <div class="mt">
-        <label for="tdn">Note Shown on Transfer Line</label>
-        <input id="tdn" placeholder="e.g. Complimentary Transfer Included">
-      </div>
-      <div class="sub mt">Only the note text is visible in the client message. Actual percentages stay hidden.</div>
-    </div>
-
-    <div class="card">
-      <h3>Package Inclusions (Bullet Points)</h3>
-      <label for="incl">Enter extra inclusions (one per line, shown below package total)</label>
-      <textarea id="incl" style="min-height:90px;" placeholder="e.g.&#10;10% off on F&amp;B services (except Picanha Steakhouse)&#10;10% off on Mahi Mahi Dive, Watersports and Excursions&#10;10% off on Aavi Spa&#10;FOC transfer on White Pearl (standard charges applicable for transfers arranged on third-party service providers)&#10;Complimentary meal plan upgrade&#10;Free room upgrade on arrival subject to availability"></textarea>
-      <div class="mt">
-        <label>Quick presets (tap to toggle)</label>
-        <div class="chips" id="inclChips">
-          <button type="button" onclick="toggleIncl('10% off on F&B services (except Picanha Steakhouse)')">+ 10% F&amp;B</button>
-          <button type="button" onclick="toggleIncl('10% off on Mahi Mahi Dive, Watersports and Excursions')">+ 10% Dive &amp; Excursions</button>
-          <button type="button" onclick="toggleIncl('10% off on Aavi Spa')">+ 10% Spa</button>
-          <button type="button" onclick="toggleIncl('FOC transfer on White Pearl (standard charges applicable for transfers arranged on third-party service providers)')">+ FOC White Pearl Transfer</button>
-          <button type="button" onclick="toggleIncl('Complimentary meal plan upgrade')">+ Meal Plan Upgrade</button>
-          <button type="button" onclick="toggleIncl('Free room upgrade on arrival subject to availability')">+ Free Room Upgrade</button>
-        </div>
-      </div>
-    </div>
-
-    <div class="card">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
-        <h3 style="margin:0;">Supplementary Charges (Optional)</h3>
-        <button type="button" class="sec" onclick="addSupCharge()" style="min-height:30px;padding:4px 9px;font-size:11px;display:flex;align-items:center;gap:4px;">+ Add Charge</button>
-      </div>
-      <div id="supChargesList"></div>
-      <button type="button" class="sec" style="width:100%;margin-top:6px;min-height:36px;font-size:11.5px;" onclick="addSupCharge()">+ Add another supplementary charge</button>
-      <div class="sub mt">Calculated based on party adults and children, displayed under transfers and added directly to the total package.</div>
-    </div>
-
-    <div class="card">
-      <details class="sp">
-        <summary>Meal supplements (USD / person / night)</summary>
-        <div class="g mt">
-          <div><label>Half board adult</label><input type="number" inputmode="decimal" id="hba"></div>
-          <div><label>Half board child</label><input type="number" inputmode="decimal" id="hbc"></div>
-          <div><label>Full board adult</label><input type="number" inputmode="decimal" id="fba"></div>
-          <div><label>Full board child</label><input type="number" inputmode="decimal" id="fbc"></div>
-        </div>
-        <div class="sub mt">Infants are free of charge.</div>
-      </details>
-    </div>
-  </section>
-
-  <!-- STEP 3: OVERVIEW -->
-  <section class="pn" id="p3">
-    <div class="overview-hero">
-      <div class="ov-row">
-        <span class="ov-label">Stay Period</span>
-        <span class="ov-val" id="ovDates">Dec 1, 2026 – Dec 2, 2026</span>
-      </div>
-      <div class="ov-row">
-        <span class="ov-label">Length of Stay</span>
-        <span class="ov-val" id="ovNights">1 Night</span>
-      </div>
-      <div class="ov-row">
-        <span class="ov-label">Guest Count</span>
-        <span class="ov-val" id="ovGuests">2 Guests</span>
-      </div>
-      <div class="ov-row">
-        <span class="ov-label">Booking Mode</span>
-        <span class="ov-val" id="ovType">Standard Booking</span>
-      </div>
-    </div>
-
-    <div class="card">
-      <h3>Room Allocation &amp; Rates</h3>
-      <div id="ovRoomsList"></div>
-    </div>
-
-    <!-- Overview Applied Discounts Card -->
-    <div class="ov-disc-card" id="ovDiscCard" style="display:none;">
-      <h3>Applied Discounts &amp; Concessions</h3>
-      <div id="ovDiscItems"></div>
-    </div>
-
-    <!-- Overview Inclusions Card -->
-    <div class="card" id="ovInclCard" style="display:none;">
-      <h3>Included Benefits</h3>
-      <div id="ovInclList" style="font-size:11.5px;color:var(--text);line-height:1.6;"></div>
-    </div>
-
-    <div class="card">
-      <h3>Transfer Charges</h3>
-      <div class="ov-row">
-        <span class="ov-label">Transfer Type</span>
-        <span class="ov-val" id="ovTransType">Shared Speed Boat</span>
-      </div>
-      <div class="ov-row">
-        <span class="ov-label">Roundtrip Rate</span>
-        <span class="ov-val" id="ovTransRate">$0.00 / person</span>
-      </div>
-      <div class="ov-row">
-        <span class="ov-label">Total Transfer Cost</span>
-        <span class="ov-val" id="ovTransTotal" style="color:var(--pri);">$0.00</span>
-      </div>
-      <div id="ovExtraSupContainer" style="display:none;border-top:1px dashed var(--line);margin-top:6px;padding-top:6px;"></div>
-    </div>
-
-    <div class="card">
-      <h3>Financial Breakdown</h3>
-      <div class="ov-row" id="ovOrigRow" style="display:none;">
-        <span class="ov-label">Original Gross Total</span>
-        <span class="ov-val" id="ovGrossTotal" style="text-decoration:line-through;color:var(--mute);">$0.00</span>
-      </div>
-      <div class="ov-row">
-        <span class="ov-label">Accommodation Net</span>
-        <span class="ov-val" id="ovAccNet">$0.00</span>
-      </div>
-      <div class="ov-row">
-        <span class="ov-label">Meal Supplements</span>
-        <span class="ov-val" id="ovSupTotal">$0.00</span>
-      </div>
-      <div class="ov-row">
-        <span class="ov-label">10% SC &amp; 17% T-GST</span>
-        <span class="ov-val" id="ovTaxes">$0.00</span>
-      </div>
-      <div class="ov-row">
-        <span class="ov-label">Maldives Green Tax</span>
-        <span class="ov-val" id="ovGreenTax">$0.00</span>
-      </div>
-      <div class="ov-row">
-        <span class="ov-label">Transfers</span>
-        <span class="ov-val" id="ovTransfersFin">$0.00</span>
-      </div>
-      <div class="ov-row" id="ovExtraSupFinRow" style="display:none;">
-        <span class="ov-label" id="ovExtraSupFinLabel">Supplementary Charges</span>
-        <span class="ov-val" id="ovExtraSupFinVal">$0.00</span>
-      </div>
-      <div class="ov-row" id="ovDiscRow" style="display:none;color:var(--ok);">
-        <span class="ov-label" style="color:var(--ok);font-weight:700;">Total Discounts Saved</span>
-        <span class="ov-val" id="ovDiscounts" style="font-weight:800;color:var(--ok);">−$0.00</span>
-      </div>
-      <div class="ov-row" style="margin-top:6px;padding-top:8px;border-top:1px dashed var(--line);font-size:13.5px;">
-        <span class="ov-label" style="font-weight:800;color:var(--text);">Final Package Total</span>
-        <span class="ov-val" id="ovGrandTotal" style="font-size:16px;color:var(--pri);font-weight:800;">$0.00</span>
-      </div>
-    </div>
-  </section>
-
-  <!-- STEP 4: MESSAGE -->
-  <section class="pn" id="p4">
-    <div class="card">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
-        <h3 style="margin:0;">Reservation Message</h3>
-        <button type="button" class="sec" onclick="shareMsg()" style="min-height:30px;padding:4px 10px;font-size:11px;display:flex;align-items:center;gap:4px;">
-          <svg style="width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2;" viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
-          Share
+      <div class="brand-meta">
+        <span class="chip" id="chip">1 night · 2 guests</span>
+        <button type="button" class="reset-btn" onclick="reset()" title="Reset to Defaults" aria-label="Reset">
+          <svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+        </button>
+        <button type="button" class="theme-btn" onclick="toggleTheme()" title="Toggle Day / Night Mode" aria-label="Toggle Theme">
+          <svg id="themeIcon" viewBox="0 0 24 24"></svg>
         </button>
       </div>
-      <textarea id="out" readonly></textarea>
     </div>
 
-    <div class="card">
-      <details class="sp">
-        <summary>Optional Web &amp; Gallery Links</summary>
-        <div class="mt">
-          <label for="lk1">Room Gallery Link</label>
-          <input id="lk1" placeholder="https://...">
+    <!-- Navigation Tabs -->
+    <nav class="nav-tabs" id="navTabs">
+      <button type="button" class="on" onclick="go(0)">
+        <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        <span>Stay</span>
+      </button>
+      <button type="button" onclick="go(1)">
+        <svg viewBox="0 0 24 24"><path d="M3 7v13M21 7v13M3 15h18M6 11h12a2 2 0 0 1 2 2v2H4v-2a2 2 0 0 1 2-2z"/></svg>
+        <span>Rooms</span>
+        <span class="bdg" id="bdg">1</span>
+      </button>
+      <button type="button" onclick="go(2)">
+        <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        <span>Offers</span>
+      </button>
+      <button type="button" onclick="go(3)">
+        <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+        <span>Overview</span>
+      </button>
+      <button type="button" onclick="go(4)">
+        <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        <span>Message</span>
+      </button>
+      <button type="button" onclick="go(5)">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        <span>Log</span>
+        <span class="bdg" id="logBdg" style="display:none;">0</span>
+      </button>
+      <button type="button" onclick="go(6)">
+        <svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+        <span>Rates Ref</span>
+      </button>
+    </nav>
+
+    <!-- Sub Step Indicator -->
+    <div class="step-bar">
+      <span id="stepTitle">Stay &amp; Dates</span>
+      <b id="stepCount">Step 1 of 5</b>
+    </div>
+  </header>
+
+  <main>
+    <!-- STEP 0: STAY -->
+    <section class="pn on" id="p0">
+      <div class="card">
+        <h3>Dates</h3>
+        <div class="g">
+          <div><label>Check-in</label><input type="date" id="ci"></div>
+          <div><label>Check-out</label><input type="date" id="co"></div>
         </div>
         <div class="mt">
-          <label for="lk2">Stone Hotels Website</label>
-          <input id="lk2" placeholder="https://...">
+          <label>Nights</label>
+          <div class="stp">
+            <button type="button" onclick="nt(-1)">−</button>
+            <b id="nn">1 night</b>
+            <button type="button" onclick="nt(1)">+</button>
+          </div>
         </div>
-      </details>
-    </div>
-  </section>
-</main>
+      </div>
 
-<!-- BOTTOM PINNED DOCK -->
-<footer class="bottom-dock">
-  <div class="bottom-dock-inner">
-    <div class="step-nav-bar">
-      <button type="button" class="sec btn-back" id="btnPrev" onclick="stepNav(-1)">
-        <svg viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-        Back
-      </button>
-      <button type="button" class="pri btn-next" id="btnNext" onclick="stepNav(1)">
-        <span id="nextBtnText">Next: Rooms</span>
-        <svg viewBox="0 0 24 24" id="nextBtnIcon"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-      </button>
-    </div>
-  </div>
-</footer>
+      <div class="card">
+        <h3>Meal &amp; Transfer</h3>
+        <div class="g">
+          <div>
+            <label>Meal plan (Default)</label>
+            <select id="mp">
+              <option value="BB">Bed &amp; Breakfast</option>
+              <option value="HB">Half Board</option>
+              <option value="FB">Full Board</option>
+            </select>
+          </div>
+          <div>
+            <label>Transfer</label>
+            <select id="tr">
+              <option>Shared Speed Boat</option>
+              <option>Private Speed Boat</option>
+              <option>Own Transfer (Arranged by guest)</option>
+              <option value="">No transfer</option>
+            </select>
+          </div>
+        </div>
+        <div class="mt">
+          <label>Transfer rate (USD / person, roundtrip)</label>
+          <input type="number" inputmode="decimal" id="trr">
+        </div>
+      </div>
 
-<script>
+      <div class="card">
+        <h3>Options</h3>
+        <label class="ck" style="margin-top:0;">
+          <input type="checkbox" id="gt">
+          <span>Include Green Tax<small>Untick for locals and expats (not charged)</small></span>
+        </label>
+        <label class="ck">
+          <input type="checkbox" id="opt">
+          <span>Offer multiple room options<small>Compare room types for the same guests and dates in one message</small></span>
+        </label>
+      </div>
+    </section>
+
+    <!-- STEP 1: ROOMS -->
+    <section class="pn" id="p1">
+      <div id="rooms"></div>
+      <button type="button" class="pri" id="addb" style="width:100%;margin-top:6px;" onclick="addRoom()">+ Add another room</button>
+    </section>
+
+    <!-- STEP 2: OFFERS & INCLUSIONS -->
+    <section class="pn" id="p2">
+      <div class="card">
+        <h3>Accommodation Discount</h3>
+        <div class="chips" id="dpA"></div>
+        <div class="mt">
+          <label>Custom Accommodation Discount</label>
+          <div style="display:flex;gap:6px;">
+            <select id="daCustomType" style="flex:0.45;min-height:42px;">
+              <option value="pct">% Off</option>
+              <option value="amt">$ USD Off</option>
+            </select>
+            <input type="number" inputmode="decimal" id="daCustomVal" placeholder="e.g. 15" style="flex:1;">
+          </div>
+        </div>
+        <div class="mt">
+          <label>Rate Note (Shown on Room Line)</label>
+          <input id="adn" placeholder="e.g. Special Discount Applied">
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Transfer Discount</h3>
+        <div class="chips" id="dpT"></div>
+        <div class="mt">
+          <label>Custom Transfer Discount</label>
+          <div style="display:flex;gap:6px;">
+            <select id="dtCustomType" style="flex:0.45;min-height:42px;">
+              <option value="pct">% Off</option>
+              <option value="amt">$ USD Off</option>
+            </select>
+            <input type="number" inputmode="decimal" id="dtCustomVal" placeholder="e.g. 10" style="flex:1;">
+          </div>
+        </div>
+        <div class="mt">
+          <label>Transfer Note (Shown on Transfer Line)</label>
+          <input id="tdn" placeholder="e.g. Complimentary Transfer Included">
+        </div>
+      </div>
+
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+          <h3 style="margin:0;">Supplementary Charges (Optional)</h3>
+          <button type="button" style="padding:4px 8px;min-height:26px;font-size:10px;" onclick="addSupCharge()">+ Add Charge</button>
+        </div>
+        <div class="sub" style="margin-bottom:8px;">Add net charges (e.g. Gala Dinners, Excursions). Adults and children calculate automatically:</div>
+        <div id="supChargesList"></div>
+      </div>
+
+      <div class="card">
+        <h3>Package Inclusions (Optional)</h3>
+        <div class="sub" style="margin-bottom:6px;">Tap quick presets or enter custom bullet items:</div>
+        <div class="chips" style="margin-bottom:8px;">
+          <button type="button" onclick="addInclusion('10% off on F&amp;B services except Picanha Steakhouse')">10% F&amp;B</button>
+          <button type="button" onclick="addInclusion('10% off on Mahi Mahi Dive, Watersports and Excursions')">10% Dive &amp; Excursions</button>
+          <button type="button" onclick="addInclusion('10% off on Aavi Spa')">10% Aavi Spa</button>
+          <button type="button" onclick="addInclusion('FOC transfer on White Pearl (standard charges applicable for transfers arranged on third-party service providers)')">FOC White Pearl</button>
+          <button type="button" onclick="addInclusion('Complimentary meal plan upgrade')">Meal Upgrade</button>
+          <button type="button" onclick="addInclusion('Free room upgrade on arrival subject to availability')">Free Room Upgrade</button>
+        </div>
+        <textarea id="incl" placeholder="Enter line-by-line inclusions..." style="min-height:90px;font-size:12px;"></textarea>
+      </div>
+
+      <div class="card">
+        <details class="sp">
+          <summary>Meal Supplements (USD / Person / Night)</summary>
+          <div class="g mt">
+            <div><label>Half Board Adult</label><input type="number" inputmode="decimal" id="hba"></div>
+            <div><label>Half Board Child</label><input type="number" inputmode="decimal" id="hbc"></div>
+            <div><label>Full Board Adult</label><input type="number" inputmode="decimal" id="fba"></div>
+            <div><label>Full Board Child</label><input type="number" inputmode="decimal" id="fbc"></div>
+          </div>
+          <div class="sub mt">Infants are complimentary.</div>
+        </details>
+      </div>
+    </section>
+
+    <!-- STEP 3: OVERVIEW -->
+    <section class="pn" id="p3">
+      <div id="overviewContent"></div>
+    </section>
+
+    <!-- STEP 4: MESSAGE -->
+    <section class="pn" id="p4">
+      <div class="card" style="margin-bottom:8px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+          <h3 style="margin:0;">Reservation Message</h3>
+          <button type="button" class="pri" style="padding:4px 10px;min-height:28px;font-size:11px;" onclick="shareMsg()">Share / Copy</button>
+        </div>
+        <textarea id="out" readonly></textarea>
+      </div>
+
+      <div class="card">
+        <details class="sp">
+          <summary>Optional Web Links (Appended if filled)</summary>
+          <div class="mt"><label>Room Gallery</label><input id="lk1"></div>
+          <div class="mt"><label>Website</label><input id="lk2"></div>
+        </details>
+      </div>
+    </section>
+
+    <!-- STEP 5: ENTRY SUMMARY LOG -->
+    <section class="pn" id="p5">
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+          <h3 style="margin:0;">Proposals Log &amp; History</h3>
+          <button type="button" style="padding:4px 8px;min-height:24px;font-size:10px;color:#d9534f;border-color:rgba(217,83,79,0.3);background:transparent;" onclick="clearLogHistory()">Clear Log</button>
+        </div>
+        <div class="sub" style="margin-bottom:10px;">
+          Every proposal generated from Overview to Message is saved here. Tap <b>Edit</b> on any entry to reload the full booking state.
+        </div>
+        <div id="logListContainer"></div>
+      </div>
+    </section>
+
+    <!-- STEP 6: RATES REFERENCE (REFERENCE ONLY, OFF WIZARD FLOW) -->
+    <section class="pn" id="p6">
+      <div id="ratesTabContainer"></div>
+    </section>
+  </main>
+
+  <!-- Pinned Ergonomic Bottom Navigation Dock -->
+  <footer class="bottom-dock">
+    <button type="button" class="back-btn" id="dockBackBtn" onclick="stepNav(-1)">
+      <svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
+      <span>Back</span>
+    </button>
+    <button type="button" class="next-btn" id="dockNextBtn" onclick="stepNav(1)">
+      <span>Next: Rooms</span>
+      <svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
+    </button>
+  </footer>
+
+  <script>
+// Core helpers and navigation constants defined at top of script to avoid TDZ errors
+const $ = id => document.getElementById(id);
+const n = v => parseFloat(v) || 0;
+// Accounting format with thousands separators (e.g. 1,222.00)
+const f = v => {
+  const num = Math.round((parseFloat(v) || 0) * 100 + 1e-6) / 100;
+  return num.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+};
+const clone = o => JSON.parse(JSON.stringify(o));
+const MPN = { BB: 'Bed & Breakfast', HB: 'Half Board', FB: 'Full Board' };
+
+// Main linear wizard flow: 5 steps (Stay -> Rooms -> Offers -> Overview -> Message)
+// Log (index 5) and Rates Reference (index 6) are accessible anytime via the top tab bar.
+const STEPS = [
+  { name: 'Stay & Dates', next: 'Rooms' },
+  { name: 'Room Configuration', next: 'Offers' },
+  { name: 'Offers & Inclusions', next: 'Overview' },
+  { name: 'Executive Overview', next: 'Message' },
+  { name: 'Reservation Message', next: null },
+  { name: 'Entry Summary Log', next: 'Rooms' },
+  { name: 'Seasonal Rates Reference', next: 'Stay' }
+];
+let curStep = 0;
+
 const TYPES = [
   'Standard Ocean View',
   'Deluxe Ocean View',
@@ -1309,6 +687,61 @@ const TYPES = [
   'Grand Infinity Seaview'
 ];
 
+// Exact Seasonal Structure from Stone Hotels Pricing Sheet 2026/27
+const DEFAULT_SEASONAL_SEASONS = [
+  {
+    season: 'Winter 2026- Low',
+    period: '1 Nov 2026 - 19 Dec 2026',
+    start: '2026-11-01',
+    end: '2026-12-19',
+    rooms: [
+      { cat: 'Standard Ocean View', qty: 9, prev: 190, base: 210, ota: 150, direct: 120, agent: 105, agentOffer: 95, affiliate: 116 },
+      { cat: 'Deluxe Ocean View', qty: 3, prev: 210, base: 235, ota: 165, direct: 135, agent: 120, agentOffer: 110, affiliate: 132 },
+      { cat: 'Standard Deluxe', qty: 4, prev: 210, base: 235, ota: 165, direct: 135, agent: 120, agentOffer: 110, affiliate: 132 },
+      { cat: 'Deluxe Seaview', qty: 5, prev: 237, base: 265, ota: 185, direct: 155, agent: 135, agentOffer: 120, affiliate: 149 },
+      { cat: 'Deluxe Infinity Seaview', qty: 5, prev: 270, base: 290, ota: 205, direct: 165, agent: 145, agentOffer: 135, affiliate: 160 },
+      { cat: 'Deluxe Family Room', qty: 6, prev: 315, base: 297, ota: 210, direct: 170, agent: 150, agentOffer: 135, affiliate: 165 },
+      { cat: 'Premium Deluxe Seaview', qty: 4, prev: 342, base: 329, ota: 230, direct: 190, agent: 165, agentOffer: 150, affiliate: 182 },
+      { cat: 'Grand Seaview', qty: 4, prev: 370, base: 356, ota: 250, direct: 205, agent: 180, agentOffer: 160, affiliate: 198 },
+      { cat: 'Grand Infinity Seaview', qty: 4, prev: 415, base: 392, ota: 275, direct: 225, agent: 200, agentOffer: 180, affiliate: 220 }
+    ]
+  },
+  {
+    season: 'Winter 2026/27 - Peak',
+    period: '20 Dec 2026 - 10 Jan 2027',
+    start: '2026-12-20',
+    end: '2027-01-10',
+    rooms: [
+      { cat: 'Standard Ocean View', qty: 9, prev: 295, base: 357, ota: 250, direct: 205, agent: 180, agentOffer: 165, affiliate: 198 },
+      { cat: 'Deluxe Ocean View', qty: 3, prev: 310, base: 368, ota: 255, direct: 210, agent: 185, agentOffer: 170, affiliate: 204 },
+      { cat: 'Standard Deluxe', qty: 4, prev: 310, base: 336, ota: 235, direct: 195, agent: 170, agentOffer: 155, affiliate: 187 },
+      { cat: 'Deluxe Seaview', qty: 5, prev: 410, base: 462, ota: 320, direct: 265, agent: 235, agentOffer: 210, affiliate: 259 },
+      { cat: 'Deluxe Infinity Seaview', qty: 5, prev: 450, base: 465, ota: 325, direct: 265, agent: 235, agentOffer: 210, affiliate: 259 },
+      { cat: 'Deluxe Family Room', qty: 6, prev: 470, base: 509, ota: 355, direct: 290, agent: 255, agentOffer: 230, affiliate: 281 },
+      { cat: 'Premium Deluxe Seaview', qty: 4, prev: 510, base: 557, ota: 390, direct: 320, agent: 280, agentOffer: 255, affiliate: 308 },
+      { cat: 'Grand Seaview', qty: 4, prev: 570, base: 630, ota: 440, direct: 360, agent: 315, agentOffer: 285, affiliate: 347 },
+      { cat: 'Grand Infinity Seaview', qty: 4, prev: 680, base: 725, ota: 505, direct: 415, agent: 365, agentOffer: 330, affiliate: 402 }
+    ]
+  },
+  {
+    season: 'Winter 2027 - High',
+    period: '11 Jan 2027 - 28 Feb 2027',
+    start: '2027-01-11',
+    end: '2027-02-28',
+    rooms: [
+      { cat: 'Standard Ocean View', qty: 9, prev: 255, base: 290, ota: 205, direct: 165, agent: 145, agentOffer: 135, affiliate: 160 },
+      { cat: 'Deluxe Ocean View', qty: 3, prev: 280, base: 310, ota: 215, direct: 180, agent: 155, agentOffer: 140, affiliate: 171 },
+      { cat: 'Standard Deluxe', qty: 4, prev: 280, base: 310, ota: 215, direct: 180, agent: 155, agentOffer: 140, affiliate: 171 },
+      { cat: 'Deluxe Seaview', qty: 6, prev: 340, base: 370, ota: 260, direct: 210, agent: 185, agentOffer: 170, affiliate: 204 },
+      { cat: 'Deluxe Infinity Seaview', qty: 5, prev: 375, base: 395, ota: 275, direct: 275, agent: 200, agentOffer: 180, affiliate: 220 },
+      { cat: 'Deluxe Family Room', qty: 5, prev: 425, base: 435, ota: 305, direct: 250, agent: 220, agentOffer: 200, affiliate: 242 },
+      { cat: 'Premium Deluxe Seaview', qty: 4, prev: 450, base: 475, ota: 330, direct: 270, agent: 240, agentOffer: 215, affiliate: 264 },
+      { cat: 'Grand Seaview', qty: 4, prev: 490, base: 515, ota: 360, direct: 295, agent: 260, agentOffer: 235, affiliate: 286 },
+      { cat: 'Grand Infinity Seaview', qty: 4, prev: 600, base: 610, ota: 425, direct: 350, agent: 305, agentOffer: 275, affiliate: 336 }
+    ]
+  }
+];
+
 const room = (c, r) => ({
   cat: c || 'Grand Seaview',
   ad: 2,
@@ -1316,12 +749,16 @@ const room = (c, r) => ({
   inf: 0,
   ages: [],
   qty: 1,
-  rate: r !== undefined ? r : 210,
+  rate: r,
   open: true,
   split: false,
   rate2: '',
-  sd: ''
+  sd: '',
+  extraBedRate: '',
+  extraChildRate: ''
 });
+
+const newSup = (ad = '', ch = '', note = '') => ({ ad, ch, note });
 
 const D = {
   ci: '2026-12-01',
@@ -1333,175 +770,178 @@ const D = {
   hbc: 12.5,
   fba: 40,
   fbc: 20,
+  gt: true,
+  opt: false,
   da: 0,
   dt: 0,
   daCustomType: 'pct',
   daCustomVal: '',
   dtCustomType: 'pct',
   dtCustomVal: '',
-  gt: true,
-  opt: false,
-  adn: 'Special Discount Applied',
+  adn: '',
   tdn: '',
-  supAdRate: '',
-  supChRate: '',
-  supNote: '',
   incl: '',
   lk1: '',
   lk2: '',
-  rates: { 'Grand Seaview': 210 },
-  rooms: [room('Grand Seaview', 210)]
+  sheetUrl: 'https://docs.google.com/spreadsheets/d/1fpEvO1ZbWgJIdkZpFvcpWIXgi_DF20oihpzw2cWl9VA/edit?usp=sharing',
+  seasonsTariff: clone(DEFAULT_SEASONAL_SEASONS),
+  supCharges: [newSup('', '', '')],
+  rates: {
+    'Standard Ocean View': 120,
+    'Deluxe Ocean View': 135,
+    'Standard Deluxe': 135,
+    'Deluxe Seaview': 155,
+    'Deluxe Infinity Seaview': 165,
+    'Deluxe Family Room': 170,
+    'Premium Deluxe Seaview': 190,
+    'Grand Seaview': 205,
+    'Grand Infinity Seaview': 225
+  },
+  rooms: [room('Grand Seaview', 205)],
+  historyLog: []
 };
 
-const newSup = (ad = '', ch = '', note = '') => ({ ad, ch, note });
-
-// Backward compatibility helper for S.supCharges
-if (!Array.isArray(D.supCharges)) {
-  D.supCharges = [];
-}
-
-const KEY = 'stone_gen_v6_ios';
-const THEME_KEY = 'stone_gen_theme_mode';
-const clone = o => JSON.parse(JSON.stringify(o));
-let S;
+let S = clone(D);
 try {
-  S = Object.assign(clone(D), JSON.parse(localStorage.getItem(KEY) || '{}'));
+  const saved = localStorage.getItem('stone_data_v6');
+  if (saved) {
+    const parsed = JSON.parse(saved);
+    S = Object.assign(clone(D), parsed);
+    if (!S.rooms || !S.rooms.length) S.rooms = [room('Grand Seaview', 205)];
+    if (!Array.isArray(S.supCharges) || !S.supCharges.length) S.supCharges = [newSup('', '', '')];
+    if (!S.seasonsTariff || !S.seasonsTariff.length) S.seasonsTariff = clone(DEFAULT_SEASONAL_SEASONS);
+    if (!Array.isArray(S.historyLog)) S.historyLog = [];
+  }
 } catch (e) {
   S = clone(D);
 }
 
-// Migrate legacy single supplementary charge if present
-if (!Array.isArray(S.supCharges)) {
-  S.supCharges = [];
-  if (S.supAdRate || S.supChRate || S.supNote) {
-    S.supCharges.push(newSup(S.supAdRate || '', S.supChRate || '', S.supNote || ''));
-  }
+function save() {
+  try {
+    localStorage.setItem('stone_data_v6', JSON.stringify(S));
+  } catch (e) {}
 }
 
-const $ = id => document.getElementById(id);
-const n = v => parseFloat(v) || 0;
-const f = v => (Math.round((v || 0) * 100 + 1e-6) / 100).toFixed(2);
-const MPN = { BB: 'Bed & Breakfast', HB: 'Half Board', FB: 'Full Board' };
-const STEPS = ['Stay', 'Rooms', 'Offers & Inclusions', 'Overview', 'Message'];
-let currentStep = 0;
-
-let currentTheme = localStorage.getItem(THEME_KEY) || 'light';
-
-function applyTheme(theme) {
-  currentTheme = theme;
-  document.documentElement.setAttribute('data-theme', theme);
-  localStorage.setItem(THEME_KEY, theme);
-  const sun = $('themeIconSun');
-  const moon = $('themeIconMoon');
-  if (sun && moon) {
-    if (theme === 'dark') {
-      sun.style.display = 'none';
-      moon.style.display = 'block';
-    } else {
-      sun.style.display = 'block';
-      moon.style.display = 'none';
-    }
-  }
-}
-
-function toggleTheme() {
-  haptic();
-  const next = currentTheme === 'dark' ? 'light' : 'dark';
-  applyTheme(next);
-  showToast(next === 'dark' ? 'Night mode enabled 🌙' : 'Day mode enabled ☀️');
-}
-
-const save = () => {
-  try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {}
+// Format local date directly as YYYY-MM-DD to avoid UTC timezone shifts
+const iso = d => {
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
 };
 
 const nights = () => {
-  if (!S.ci || !S.co) return 0;
-  const d = (new Date(S.co + 'T00:00') - new Date(S.ci + 'T00:00')) / 864e5;
-  return d > 0 ? Math.round(d) : 0;
+  if (!S.ci || !S.co) return 1;
+  const t1 = new Date(S.ci + 'T00:00').getTime();
+  const t2 = new Date(S.co + 'T00:00').getTime();
+  if (isNaN(t1) || isNaN(t2)) return 1;
+  return Math.max(0, Math.round((t2 - t1) / 864e5));
 };
-
-const iso = d => d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
-const addD = (s, k) => {
-  const d = new Date(s + 'T00:00');
-  d.setDate(d.getDate() + k);
-  return d;
-};
-const dm = d => d.getDate() + ' ' + d.toLocaleString('en-US', { month: 'short' });
-const rng = (o, l) => dm(addD(S.ci, o)) + ' – ' + dm(addD(S.ci, o + l));
-
-const getAccDiscPct = () => {
-  if (S.daCustomVal !== '' && S.daCustomType === 'pct') return n(S.daCustomVal);
-  return S.da || 0;
-};
-const getAccDiscAmt = () => {
-  if (S.daCustomVal !== '' && S.daCustomType === 'amt') return n(S.daCustomVal);
-  return 0;
-};
-
-const getTrDiscPct = () => {
-  if (S.dtCustomVal !== '' && S.dtCustomType === 'pct') return n(S.dtCustomVal);
-  return S.dt || 0;
-};
-const getTrDiscAmt = () => {
-  if (S.dtCustomVal !== '' && S.dtCustomType === 'amt') return n(S.dtCustomVal);
-  return 0;
-};
-const isOwnTr = () => S.tr === 'Own Transfer (Arranged by guest)';
-const trNet = () => isOwnTr() ? 0 : Math.max(0, n(S.trr) * (1 - getTrDiscPct() / 100) - getTrDiscAmt());
-const hasD = () => getAccDiscPct() > 0 || getAccDiscAmt() > 0 || getTrDiscPct() > 0 || getTrDiscAmt() > 0;
 
 function haptic() {
-  if (navigator.vibrate) {
-    try { navigator.vibrate(10); } catch (e) {}
-  }
+  try {
+    if (navigator.vibrate) navigator.vibrate(8);
+  } catch (e) {}
 }
 
-function go(i) {
-  haptic();
-  currentStep = Math.max(0, Math.min(STEPS.length - 1, i));
-  
-  document.querySelectorAll('.pn').forEach((p, j) => p.classList.toggle('on', currentStep === j));
-  document.querySelectorAll('#topNav button').forEach((b, j) => b.classList.toggle('on', currentStep === j));
-  
-  $('stepIndicator').textContent = `Step ${currentStep + 1} of ${STEPS.length} · ${STEPS[currentStep]}`;
-  document.querySelectorAll('#stepDots .dot').forEach((d, j) => d.classList.toggle('active', currentStep === j));
-
-  $('btnPrev').style.visibility = currentStep === 0 ? 'hidden' : 'visible';
-  if (currentStep === STEPS.length - 1) {
-    $('nextBtnText').textContent = 'WhatsApp';
-    $('btnNext').style.background = '#25D366';
-    $('btnNext').style.borderColor = '#25D366';
-    $('btnNext').style.color = '#ffffff';
-  } else {
-    $('nextBtnText').textContent = 'Next: ' + STEPS[currentStep + 1];
-    $('btnNext').style.background = 'var(--pri)';
-    $('btnNext').style.borderColor = 'var(--pri)';
-    $('btnNext').style.color = 'var(--pri-t)';
+function showToast(msg) {
+  let toast = $('toast');
+  if (!toast) {
+    toast = document.createElement('div');
+    toast.id = 'toast';
+    toast.style.cssText = 'position:fixed;bottom:70px;left:50%;transform:translateX(-50%);background:rgba(39,49,61,0.92);color:#fff;padding:8px 16px;border-radius:20px;font-size:11.5px;font-weight:600;z-index:99;box-shadow:0 4px 12px rgba(0,0,0,0.18);pointer-events:none;transition:opacity 0.2s ease;opacity:0;';
+    document.body.appendChild(toast);
   }
-
-  if (currentStep === 3) {
-    updateOverview();
-  }
-
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+  toast.textContent = msg;
+  toast.style.opacity = '1';
+  clearTimeout(toast._tm);
+  toast._tm = setTimeout(() => {
+    toast.style.opacity = '0';
+  }, 2200);
 }
 
-function stepNav(dir) {
-  if (currentStep === STEPS.length - 1 && dir > 0) {
-    wa();
-    return;
+function addD(s, k) { const d = new Date(s + 'T00:00'); d.setDate(d.getDate() + k); return d; }
+const dm = d => d.getDate() + ' ' + d.toLocaleString('en-US', { month: 'short' });
+
+// Formats the night range as inclusive stay nights: e.g. 18 Dec – 19 Dec & 20 Dec – 22 Dec
+const rng = (o, l) => {
+  if (l <= 1) {
+    return dm(addD(S.ci, o));
   }
-  go(currentStep + dir);
+  // Displays the stay from the starting night through to the last night of that period
+  return dm(addD(S.ci, o)) + ' – ' + dm(addD(S.ci, o + l - 1));
+};
+
+// Automatic seasonal rate & split resolver based on check-in and check-out dates
+function getRateForCategoryInSeason(seasonObj, category) {
+  if (!seasonObj || !seasonObj.rooms) return 0;
+  const found = seasonObj.rooms.find(rm => rm.cat === category);
+  return found ? (found.direct || found.base || 0) : 0;
 }
 
-function nt(d) {
-  haptic();
-  const N = Math.max(1, nights() + d);
-  S.co = iso(addD(S.ci, N));
-  $('co').value = S.co;
-  renderRooms();
-  refresh();
+function findSeasonForDate(dStr, seasons) {
+  return seasons.find(s => dStr >= s.start && dStr <= s.end);
+}
+
+function autoAssignRatesFromDates() {
+  if (!S.ci || !S.co) return;
+  const seasons = S.seasonsTariff || DEFAULT_SEASONAL_SEASONS;
+  if (!seasons || !seasons.length) return;
+
+  const N = nights();
+  if (N <= 0) return;
+
+  // Evaluate the season for each night stayed (from night 0 up to night N-1)
+  const nightDates = [];
+  for (let i = 0; i < N; i++) {
+    nightDates.push(iso(addD(S.ci, i)));
+  }
+
+  const s1 = findSeasonForDate(nightDates[0], seasons);
+  let s2 = null;
+  let splitDate = '';
+
+  // Look for the first night that transitions into a different season
+  for (let i = 1; i < nightDates.length; i++) {
+    const sCur = findSeasonForDate(nightDates[i], seasons);
+    if (sCur && (!s1 || sCur.season !== s1.season)) {
+      s2 = sCur;
+      // The split strictly begins on the official start date of the new season (or the next day after season 1 ends)
+      splitDate = sCur.start || (s1 ? iso(addD(s1.end, 1)) : nightDates[i]);
+      break;
+    }
+  }
+
+  // Update rooms automatically
+  let changed = false;
+  S.rooms.forEach(r => {
+    if (s2 && splitDate) {
+      // Automatic 2-season split
+      const r1 = s1 ? getRateForCategoryInSeason(s1, r.cat) : (r.rate || S.rates[r.cat] || 0);
+      const r2 = getRateForCategoryInSeason(s2, r.cat);
+      if (r1 && r2) {
+        r.split = true;
+        r.rate = r1;
+        r.rate2 = r2;
+        r.sd = splitDate;
+        S.rates[r.cat] = r1;
+        changed = true;
+      }
+    } else if (s1) {
+      // Single season stay
+      const r1 = getRateForCategoryInSeason(s1, r.cat);
+      if (r1) {
+        r.split = false;
+        r.rate = r1;
+        r.rate2 = '';
+        r.sd = '';
+        S.rates[r.cat] = r1;
+        changed = true;
+      }
+    }
+  });
+
+  return changed;
 }
 
 function dates() {
@@ -1517,124 +957,97 @@ function datesAlt() {
   const a = new Date(S.ci + 'T00:00'), b = new Date(S.co + 'T00:00');
   if (isNaN(a) || isNaN(b)) return '';
   const M = d => d.toLocaleString('en-US', { month: 'long' });
-  if (a.getMonth() === b.getMonth() && a.getFullYear() === b.getFullYear())
+  if (a.getMonth() === b.getMonth() && a.getFullYear() === b.getFullYear()) {
     return `${a.getDate()}–${b.getDate()} ${M(b)} ${b.getFullYear()}`;
+  }
   return a.getFullYear() === b.getFullYear()
     ? `${a.getDate()} ${M(a)} – ${b.getDate()} ${M(b)} ${b.getFullYear()}`
     : `${a.getDate()} ${M(a)} ${a.getFullYear()} – ${b.getDate()} ${M(b)} ${b.getFullYear()}`;
 }
 
 function segs(r, N) {
-  if (r.split && N >= 2) {
-    let a = Math.round((new Date((r.sd || '') + 'T00:00') - new Date(S.ci + 'T00:00')) / 864e5);
-    if (isNaN(a)) a = Math.ceil(N / 2);
+  if (r.split && N >= 2 && r.sd) {
+    const ciDate = new Date(S.ci + 'T00:00');
+    const sdDate = new Date(r.sd + 'T00:00');
+    let a = Math.round((sdDate - ciDate) / 864e5);
+    if (isNaN(a) || a <= 0) {
+      a = Math.ceil(N / 2);
+    }
+    // Ensure season 1 has at least 1 night and season 2 has at least 1 night
     a = Math.min(N - 1, Math.max(1, a));
     return [{ n: a, rate: r.rate }, { n: N - a, rate: r.rate2 }];
   }
   return [{ n: N, rate: r.rate }];
 }
 
-const getExtraSupTotal = (ad, ch) => {
-  if (!Array.isArray(S.supCharges)) return 0;
-  return S.supCharges.reduce((sum, item) => {
-    return sum + (ad * n(item.ad) + ch * n(item.ch));
-  }, 0);
-};
+function trNet() {
+  if (S.tr === 'Own Transfer (Arranged by guest)') return 0;
+  const baseRate = n(S.trr);
+  let disc = 0;
+  if (S.dt) disc += baseRate * (S.dt / 100);
+  if (n(S.dtCustomVal)) {
+    disc += S.dtCustomType === 'pct' ? baseRate * (n(S.dtCustomVal) / 100) : n(S.dtCustomVal);
+  }
+  return Math.max(0, baseRate - disc);
+}
+
+function getRoomDiscount(combinedRate) {
+  let disc = 0;
+  if (S.da) disc += combinedRate * (S.da / 100);
+  if (n(S.daCustomVal)) {
+    disc += S.daCustomType === 'pct' ? combinedRate * (n(S.daCustomVal) / 100) : n(S.daCustomVal);
+  }
+  return disc;
+}
 
 function calc() {
   const N = nights(), opt = S.opt, G0 = S.rooms[0] || room();
-  const daPct = getAccDiscPct(), daAmt = getAccDiscAmt();
   const k = S.rooms.map(r => {
     const G = opt ? G0 : r, ad = n(G.ad), ch = n(G.ch), pax = ad + ch, q = n(G.qty) || 1, mp = r.mp || S.mp;
     const sup = mp === 'HB' ? ad * n(S.hba) + ch * n(S.hbc) : mp === 'FB' ? ad * n(S.fba) + ch * n(S.fbc) : 0;
     const gt = S.gt ? pax * 6 : 0;
+    const ebRate = n(r.extraBedRate);
+    const ecRate = n(r.extraChildRate);
+    const totalExtraBeds = ebRate + ecRate;
     const sg = segs(r, N).map(s => {
-      const rate = n(s.rate);
-      const base = Math.max(0, rate * (1 - daPct / 100) - daAmt);
-      const tx = base + sup;
-      const sc = tx * 0.1;
-      const tg = (tx + sc) * 0.17;
-      return { n: s.n, rate, base, nightly: tx + sc + tg, taxN: sc + tg };
+      const roomBase = n(s.rate);
+      const grossAccommodation = roomBase + totalExtraBeds;
+      const disc = getRoomDiscount(grossAccommodation);
+      const base = Math.max(0, grossAccommodation - disc);
+      const tx = base + sup, sc = tx * 0.1, tg = (tx + sc) * 0.17;
+      return { n: s.n, rate: roomBase, grossAccommodation, base, nightly: tx + sc + tg, taxN: sc + tg, discN: disc, ebRate, ecRate, totalExtraBeds };
     });
     const sm = fn => sg.reduce((a, s) => a + fn(s), 0) * q;
     const x = {
-      r, G, mp, sup, gt, q, pax, ad, ch, sg,
+      r, G, mp, sup, gt, q, pax, ad, ch, sg, ebRate, ecRate, totalExtraBeds,
       nightly: sg[0].nightly,
       roomTot: sm(s => s.nightly * s.n),
       sub: sm(s => s.base * s.n),
       supT: sup * N * q,
       tax: sm(s => s.taxN * s.n),
       green: gt * N * q,
-      disc: sm(s => (s.rate - s.base) * s.n)
+      disc: sm(s => s.discN * s.n)
     };
-    x.trans = S.tr ? trNet() * pax * q : 0;
-    x.extraSup = getExtraSupTotal(ad, ch) * q;
-    x.pkg = x.sub + x.supT + x.tax + x.green + x.trans + x.extraSup;
+    x.trans = (S.tr && S.tr !== 'Own Transfer (Arranged by guest)') ? trNet() * pax * q : 0;
+    x.pkg = x.sub + x.supT + x.tax + x.green + x.trans;
     return x;
   });
 
   const t = (opt ? k.slice(0, 1) : k).reduce((a, x) => ({
-    sub: a.sub + x.sub,
-    sup: a.sup + x.supT,
-    tax: a.tax + x.tax,
-    green: a.green + x.green,
-    pax: a.pax + x.pax * x.q,
-    ad: a.ad + x.ad * x.q,
-    ch: (a.ch || 0) + x.ch * x.q,
-    trans: a.trans + x.trans,
-    disc: a.disc + x.disc
-  }), { sub: 0, sup: 0, tax: 0, green: 0, pax: 0, ad: 0, ch: 0, trans: 0, disc: 0 });
+    sub: a.sub + x.sub, sup: a.sup + x.supT, tax: a.tax + x.tax, green: a.green + x.green,
+    pax: a.pax + x.pax * x.q, ad: a.ad + x.ad * x.q, trans: a.trans + x.trans, disc: a.disc + x.disc
+  }), { sub: 0, sup: 0, tax: 0, green: 0, pax: 0, ad: 0, trans: 0, disc: 0 });
 
-  t.extraSup = getExtraSupTotal(t.ad, t.ch);
   t.acc = t.sub + t.sup + t.tax + t.green;
-  t.total = t.acc + t.trans + t.extraSup;
-  t.tdisc = (S.tr && !isOwnTr()) ? (n(S.trr) - trNet()) * t.pax : 0;
+  
+  // Supplementary charges calculation
+  t.supChargesTotal = (S.supCharges || []).reduce((sum, sc) => {
+    return sum + (n(sc.ad) * t.ad) + (n(sc.ch) * (t.pax - t.ad));
+  }, 0);
+
+  t.total = t.acc + t.trans + t.supChargesTotal;
+  t.tdisc = (S.tr && S.tr !== 'Own Transfer (Arranged by guest)') ? (n(S.trr) - trNet()) * t.pax : 0;
   return { N, k, t };
-}
-
-const links = () => (S.lk1 || S.lk2 ? `Room photos & details:${S.lk1 ? '\n' + S.lk1 : ''}${S.lk2 ? '\n' + S.lk2 : ''}\n\n` : '');
-const plans = k => [...new Set(k.map(x => MPN[x.mp]))].join(' / ');
-
-const getExtraSupBlock = (ad, ch) => {
-  if (!Array.isArray(S.supCharges) || !S.supCharges.length) return '';
-  const validCharges = S.supCharges.filter(c => (ad * n(c.ad) + ch * n(c.ch)) > 0);
-  if (!validCharges.length) return '';
-
-  let blocks = validCharges.map((c, idx) => {
-    const adRate = n(c.ad);
-    const chRate = n(c.ch);
-    const itemTotal = ad * adRate + ch * chRate;
-    const note = c.note && c.note.trim() ? ` (${c.note.trim()})` : '';
-
-    let lines = [];
-    if (adRate > 0) lines.push(`• Adult rate: USD ${f(adRate)} per adult x ${ad} = USD ${f(ad * adRate)}`);
-    if (chRate > 0 && ch > 0) lines.push(`• Child rate: USD ${f(chRate)} per child x ${ch} = USD ${f(ch * chRate)}`);
-    lines.push(`• Total: USD ${f(itemTotal)}`);
-    return `Supplementary Charge ${validCharges.length > 1 ? '#' + (idx + 1) : ''}${note}\n` + lines.join('\n');
-  });
-
-  return blocks.join('\n\n') + `\n\n`;
-};
-
-const getInclusionsBlock = () => {
-  if (!S.incl || !S.incl.trim()) return '';
-  const lines = S.incl.split('\n').map(l => l.trim()).filter(Boolean);
-  if (!lines.length) return '';
-  return `Inclusions\n` + lines.map(l => (l.startsWith('•') || l.startsWith('-') ? l : `• ${l}`)).join('\n') + `\n\n`;
-};
-
-function toggleIncl(text) {
-  haptic();
-  let current = ($('incl').value || '').split('\n').map(l => l.trim()).filter(Boolean);
-  const idx = current.indexOf(text);
-  if (idx >= 0) {
-    current.splice(idx, 1);
-  } else {
-    current.push(text);
-  }
-  S.incl = current.join('\n');
-  $('incl').value = S.incl;
-  refresh();
 }
 
 function build() {
@@ -1642,7 +1055,7 @@ function build() {
   return S.opt ? buildOpt(c) : buildStd(c);
 }
 
-function buildOpt({ N, k, t }) {
+function buildOpt({ N, k }) {
   if (!k.length) return 'Add a room option to generate the message.';
   const g = k[0], occ = [`${g.ad} Adult${g.ad !== 1 ? 's' : ''}`];
   if (g.ch) occ.push(`${g.ch} Child${g.ch > 1 ? 'ren' : ''}`);
@@ -1652,9 +1065,13 @@ function buildOpt({ N, k, t }) {
   const showMp = new Set(k.map(x => x.mp)).size > 1 || k.some(x => x.mp !== 'BB');
   
   let m = `Greetings from Stone Hotels!\n\nPlease find below our accommodation offer for ${datesAlt()} (${N} Night${N !== 1 ? 's' : ''} | ${occ.join(', ')} | ${g.q} Room${g.q > 1 ? 's' : ''}).\n\nAccommodation Options\n`;
-  
   k.forEach((x, i) => {
     let off = 0;
+    const extraLines = [];
+    if (x.ebRate > 0) extraLines.push(`• Extra Adult Bed: USD ${f(x.ebRate)} / night`);
+    if (x.ecRate > 0) extraLines.push(`• Extra Child Bed: USD ${f(x.ecRate)} / night`);
+    const extraBlock = extraLines.length ? extraLines.join('\n') + '\n' : '';
+
     const rl = x.sg.length === 1
       ? `• Room Rate: USD ${f(x.sg[0].nightly + x.gt)} per night${nt_}\n`
       : x.sg.map(s => {
@@ -1662,48 +1079,65 @@ function buildOpt({ N, k, t }) {
           off += s.n;
           return l;
         }).join('');
-    m += `Option ${i + 1}: ${x.r.cat}\n${showMp ? `• Meal Plan: ${MPN[x.mp]}\n` : ''}${rl}• ${inc}\n\n`;
+    m += `Option ${i + 1}: ${x.r.cat}\n${showMp ? `• Meal Plan: ${MPN[x.mp]}\n` : ''}${extraBlock}${rl}• ${inc}\n\n`;
   });
 
-  if (isOwnTr()) {
+  if (S.tr === 'Own Transfer (Arranged by guest)') {
     m += `Transfers\n• Round-trip transfer arranged by guests on their own.\n\n`;
   } else if (S.tr) {
     m += `${S.tr.replace('Speed Boat', 'Speedboat')} Transfers\n• ${S.gt ? 'Tourist rate' : 'Rate'}: USD ${f(trNet() / 2)} per person, per way\n• Round-trip transfer for ${who}: USD ${f(g.trans)}${S.tdn ? ` (${S.tdn})` : ''}\n\n`;
   }
 
-  m += getExtraSupBlock(g.ad * g.q, g.ch * g.q);
+  // Supplementary charges block
+  const validSup = (S.supCharges || []).filter(sc => n(sc.ad) > 0 || n(sc.ch) > 0);
+  if (validSup.length) {
+    m += `Supplementary Charges\n`;
+    validSup.forEach(sc => {
+      const adPart = n(sc.ad) > 0 ? `${g.ad} adult${g.ad !== 1 ? 's' : ''} @ USD ${f(sc.ad)}` : '';
+      const chPart = (n(sc.ch) > 0 && g.ch > 0) ? `${g.ch} child${g.ch > 1 ? 'ren' : ''} @ USD ${f(sc.ch)}` : '';
+      const parts = [adPart, chPart].filter(Boolean).join(' + ');
+      const itemTot = (n(sc.ad) * g.ad) + (n(sc.ch) * g.ch);
+      m += `• ${sc.note || 'Supplement'}: USD ${f(itemTot)}${parts ? ` (${parts})` : ''}\n`;
+    });
+    m += '\n';
+  }
 
   const p = ['Accommodation', 'All Taxes'];
   if (S.gt) p.push('Green Tax');
-  if (S.tr && !isOwnTr()) p.push('Round-Trip Transfers');
-  if (t.extraSup > 0) {
-    const validNotes = (S.supCharges || []).map(c => (c.note || '').trim()).filter(Boolean);
-    p.push(validNotes.length ? validNotes.join(' & ') : 'Supplementary Charges');
-  }
-  
+  if (S.tr && S.tr !== 'Own Transfer (Arranged by guest)') p.push('Round-Trip Transfers');
+  if (validSup.length) p.push('Supplementary Charges');
+
   m += `Total Package Cost (Including ${p.length > 1 ? p.slice(0, -1).join(', ') + ' & ' + p[p.length - 1] : p[0]})\n`;
   k.forEach((x, i) => {
-    m += `• Option ${i + 1} – ${x.r.cat}: USD ${f(x.pkg)}\n`;
+    const pkgWithSup = x.pkg + (calc().t.supChargesTotal || 0);
+    m += `• Option ${i + 1} – ${x.r.cat}: USD ${f(pkgWithSup)}\n`;
   });
 
-  m += `\n${getInclusionsBlock()}`;
+  if (S.incl && S.incl.trim()) {
+    m += `\nPackage Inclusions:\n` + S.incl.split('\n').filter(l => l.trim()).map(l => `• ${l.replace(/^[-•*]\s*/, '')}`).join('\n') + `\n`;
+  }
 
-  return m + `${links()}Room availability is limited and may change without prior notice. Kindly let us know your preferred room category if you wish to proceed with the booking.\n\nWe look forward to welcoming you to Stone Hotels!`;
+  const links = S.lk1 || S.lk2 ? `Room photos & details:${S.lk1 ? '\n' + S.lk1 : ''}${S.lk2 ? '\n' + S.lk2 : ''}\n\n` : '';
+  return m + `\n${links}Room availability is limited and may change without prior notice. Kindly let us know your preferred room category if you wish to proceed with the booking.\n\nWe look forward to welcoming you to Stone Hotels!`;
 }
 
 function buildStd({ N, k, t }) {
   if (!k.length) return 'Add a room to generate the message.';
-  const units = k.reduce((a, x) => a + x.qty, 0);
+  const units = k.reduce((a, x) => a + x.q, 0);
   const names = [...new Set(k.map(x => x.r.cat))].join(' / ');
   const nt_ = S.adn ? ` (${S.adn})` : '';
 
   let m = `Greetings from Stone Hotels!\n\nWe are delighted to inform you that we currently have ${units} unit${units > 1 ? 's' : ''} of our ${names} room${units > 1 ? 's are' : ' is'} available — a perfect option for a serene and unforgettable getaway on ${dates()}\n\n`;
-
   k.forEach((x, i) => {
     const o = [`${x.ad} Adult${x.ad !== 1 ? 's' : ''}`];
     const ag = x.r.ages.filter(a => a !== '').join(', ');
     if (x.ch) o.push(`${x.ch} Child${x.ch > 1 ? 'ren' : ''}${ag ? ' aged ' + ag : ''}`);
     if (n(x.r.inf)) o.push(`${n(x.r.inf)} Infant${n(x.r.inf) > 1 ? 's' : ''}`);
+
+    const extraLines = [];
+    if (x.ebRate > 0) extraLines.push(`Extra Adult Bed: USD ${f(x.ebRate)} / night included`);
+    if (x.ecRate > 0) extraLines.push(`Extra Child Bed: USD ${f(x.ecRate)} / night included`);
+    const extraBlock = extraLines.length ? extraLines.join('\n') + '\n' : '';
 
     let off = 0;
     const rl = x.sg.length === 1
@@ -1713,109 +1147,394 @@ function buildStd({ N, k, t }) {
           off += s.n;
           return l;
         }).join('');
-    m += `${i + 1}. Room Category: ${x.r.cat} (${o.join(', ')})\n${rl}Quantity: ${x.q} room${x.q > 1 ? 's' : ''}\nTotal: USD ${f(x.roomTot)}\n\n`;
+    m += `${i + 1}. Room Category: ${x.r.cat} (${o.join(', ')})\n${extraBlock}${rl}Quantity: ${x.q} room${x.q > 1 ? 's' : ''}\nTotal: USD ${f(x.roomTot)}\n\n`;
   });
 
-  m += `Total cost on Accommodation: USD ${f(t.acc)} on ${plans(k)}, including ${S.gt ? 'TGST, Service Charges & Green Tax' : 'TGST & Service Charges'} for ${t.ad} adult${t.ad !== 1 ? 's' : ''} For ${N} Night${N !== 1 ? 's' : ''}.\n\n`;
+  const plans = [...new Set(k.map(x => MPN[x.mp]))].join(' / ');
+  m += `Total cost on Accommodation: USD ${f(t.acc)} on ${plans}, including ${S.gt ? 'TGST, Service Charges & Green Tax' : 'TGST & Service Charges'} for ${t.ad} adult${t.ad !== 1 ? 's' : ''} for ${N} Night${N !== 1 ? 's' : ''}.\n\n`;
 
-  if (isOwnTr()) {
+  if (S.tr === 'Own Transfer (Arranged by guest)') {
     m += `Transfers: Round-trip transfer arranged by guests on their own.\n\n`;
   } else if (S.tr) {
     m += `${S.tr} Transfer USD ${f(trNet())} per person (Roundtrip — Airport ⇄ Hotel) x ${t.pax} pax = USD ${f(t.trans)}${S.tdn ? ` (${S.tdn})` : ''}\n\n`;
   }
 
-  const extraSupAmt = t.extraSup;
-  if (extraSupAmt > 0 && Array.isArray(S.supCharges)) {
-    const validCharges = S.supCharges.filter(c => (t.ad * n(c.ad) + t.ch * n(c.ch)) > 0);
-    validCharges.forEach((c, idx) => {
-      const sDesc = c.note && c.note.trim() ? ` (${c.note.trim()})` : '';
-      let supParts = [];
-      if (n(c.ad) > 0) supParts.push(`USD ${f(n(c.ad))} x ${t.ad} adult${t.ad !== 1 ? 's' : ''}`);
-      if (n(c.ch) > 0 && t.ch > 0) supParts.push(`USD ${f(n(c.ch))} x ${t.ch} child${t.ch > 1 ? 'ren' : ''}`);
-      const itemTot = t.ad * n(c.ad) + t.ch * n(c.ch);
-      m += `Supplementary Charges${validCharges.length > 1 ? ' #' + (idx + 1) : ''}${sDesc}: USD ${f(itemTot)}${supParts.length ? ' (' + supParts.join(' + ') + ')' : ''}\n\n`;
+  // Supplementary charges block
+  const validSup = (S.supCharges || []).filter(sc => n(sc.ad) > 0 || n(sc.ch) > 0);
+  if (validSup.length) {
+    validSup.forEach(sc => {
+      const adPart = n(sc.ad) > 0 ? `${t.ad} adult${t.ad !== 1 ? 's' : ''} @ USD ${f(sc.ad)}` : '';
+      const chPart = (n(sc.ch) > 0 && (t.pax - t.ad) > 0) ? `${t.pax - t.ad} child${(t.pax - t.ad) > 1 ? 'ren' : ''} @ USD ${f(sc.ch)}` : '';
+      const parts = [adPart, chPart].filter(Boolean).join(' + ');
+      const itemTot = (n(sc.ad) * t.ad) + (n(sc.ch) * (t.pax - t.ad));
+      m += `Supplementary Charge: USD ${f(itemTot)} (${sc.note || 'Supplement'}${parts ? ` - ${parts}` : ''})\n`;
     });
+    m += '\n';
   }
 
-  const incParts = [`accommodation on ${plans(k)} for ${N} night${N !== 1 ? 's' : ''}`];
-  if (S.tr && !isOwnTr()) incParts.push(`roundtrip transfer for ${t.pax} pax`);
-  if (extraSupAmt > 0) {
-    const validNotes = (S.supCharges || []).map(c => (c.note || '').trim()).filter(Boolean);
-    incParts.push(validNotes.length ? validNotes.join(' & ') : 'supplementary charges');
+  m += `Total Package for ${N} Night${N !== 1 ? 's' : ''}: USD ${f(t.total)} (Includes accommodation on ${plans} for ${N} night${N !== 1 ? 's' : ''}${S.tr && S.tr !== 'Own Transfer (Arranged by guest)' ? ` and roundtrip transfer for ${t.pax} pax` : ''})\n\n`;
+
+  if (S.incl && S.incl.trim()) {
+    m += `Package Inclusions:\n` + S.incl.split('\n').filter(l => l.trim()).map(l => `• ${l.replace(/^[-•*]\s*/, '')}`).join('\n') + `\n\n`;
   }
 
-  m += `Total Package for ${N} Night${N !== 1 ? 's' : ''}: USD ${f(t.total)} (Includes ${incParts.join(', ')})\n\n`;
-
-  m += getInclusionsBlock();
-
-  return m + links() + `Kindly note: This availability is limited and may change without prior notice. If you wish to proceed with the booking, please let us know as soon as possible so we can secure the ${units > 1 ? 'rooms' : 'room'} for you.`;
+  const links = S.lk1 || S.lk2 ? `Room photos & details:${S.lk1 ? '\n' + S.lk1 : ''}${S.lk2 ? '\n' + S.lk2 : ''}\n\n` : '';
+  return m + links + `Kindly note: This availability is limited and may change without prior notice. If you wish to proceed with the booking, please let us know as soon as possible so we can secure the ${units > 1 ? 'rooms' : 'room'} for you.`;
 }
 
-const stp = (i, k, min) => `<div class="stp"><button type="button" onclick="st(${i},'${k}',-1,${min})">−</button><b>${S.rooms[i][k]}</b><button type="button" onclick="st(${i},'${k}',1,${min})">+</button></div>`;
+function renderOverview() {
+  const ovContent = $('overviewContent');
+  if (!ovContent) return;
+  const { N, k, t } = calc();
+  const opt = S.opt;
+
+  ovContent.innerHTML = `
+    <div class="card">
+      <h3>Stay Overview</h3>
+      <div class="overview-row"><span>Period</span><b>${datesAlt()}</b></div>
+      <div class="overview-row"><span>Duration</span><b>${N} night${N !== 1 ? 's' : ''}</b></div>
+      <div class="overview-row"><span>Guests</span><b>${t.ad} Adult${t.ad !== 1 ? 's' : ''}${t.pax > t.ad ? `, ${t.pax - t.ad} Children` : ''}</b></div>
+      <div class="overview-row"><span>Mode</span><b>${opt ? 'Room Comparison' : 'Standard Booking'}</b></div>
+    </div>
+
+    <div class="card">
+      <h3>Accommodation</h3>
+      ${k.map((x, i) => {
+        const extraTags = [];
+        if (x.ebRate > 0) extraTags.push(`Extra Adult: +$${f(x.ebRate)}`);
+        if (x.ecRate > 0) extraTags.push(`Extra Child: +$${f(x.ecRate)}`);
+        return `
+        <div style="padding:6px 0;border-bottom:1px dashed var(--line);">
+          <div style="display:flex;justify-content:space-between;font-weight:600;font-size:12px;">
+            <span>${opt ? `Option ${i + 1}: ` : `${i + 1}. `}${x.r.cat}</span>
+            <span>$${f(x.roomTot)}</span>
+          </div>
+          <div style="font-size:10px;color:var(--mute);margin-top:2px;">
+            ${MPN[x.mp]} · ${x.q} room${x.q > 1 ? 's' : ''} · $${f(x.nightly)} / night
+            ${extraTags.length ? ` · (${extraTags.join(', ')})` : ''}
+          </div>
+        </div>
+      `;}).join('')}
+      <div class="overview-row" style="margin-top:4px;"><span>Taxes (10% SC & 17% TGST)</span><b>$${f(t.tax)}</b></div>
+      ${S.gt ? `<div class="overview-row"><span>Green Tax ($6/pax/nt)</span><b>$${f(t.green)}</b></div>` : ''}
+      <div class="overview-row"><span>Accommodation Total</span><b>$${f(t.acc)}</b></div>
+    </div>
+
+    <div class="card">
+      <h3>Transfer Charges</h3>
+      <div class="overview-row"><span>Service</span><b>${S.tr || 'None'}</b></div>
+      ${S.tr && S.tr !== 'Own Transfer (Arranged by guest)' ? `
+        <div class="overview-row"><span>Rate</span><b>$${f(trNet())} / pax</b></div>
+        <div class="overview-row"><span>Transfer Total</span><b>$${f(t.trans)}</b></div>
+      ` : ''}
+      ${(S.supCharges || []).filter(sc => n(sc.ad) > 0 || n(sc.ch) > 0).map(sc => {
+        const itemTot = (n(sc.ad) * t.ad) + (n(sc.ch) * (t.pax - t.ad));
+        return `<div class="overview-row"><span>${sc.note || 'Supplement'}</span><b>$${f(itemTot)}</b></div>`;
+      }).join('')}
+    </div>
+
+    <div class="total-card">
+      <small>Total Final Package</small>
+      <div class="val">
+        <span>$${f(t.total)}</span>
+        ${t.disc > 0 || t.tdisc > 0 ? `<span class="og">$${f(t.total + t.disc + t.tdisc)}</span>` : ''}
+      </div>
+      ${t.disc > 0 || t.tdisc > 0 ? `<div style="font-size:11px;margin-top:4px;opacity:0.9;">Total Savings: -$${f(t.disc + t.tdisc)}</div>` : ''}
+    </div>
+  `;
+}
+
+// Summary Log: Records snapshot of booking when proceeding from Overview to Message
+function recordSummaryLog() {
+  if (!Array.isArray(S.historyLog)) S.historyLog = [];
+  const { N, k, t } = calc();
+  if (N <= 0 || !k.length) return;
+
+  const roomSummary = k.map(x => `${x.q > 1 ? x.q + 'x ' : ''}${x.r.cat}`).join(', ');
+  const timestamp = new Date();
+  const timeStr = timestamp.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + ' ' +
+                  timestamp.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+
+  const snapshot = {
+    id: Date.now(),
+    dateStr: datesAlt(),
+    timeStr,
+    ci: S.ci,
+    co: S.co,
+    nights: N,
+    pax: t.pax,
+    roomsDesc: roomSummary,
+    mealPlan: MPN[S.mp] || S.mp,
+    total: t.total,
+    mode: S.opt ? 'Comparison' : 'Standard',
+    // Clone current full state so it can be restored completely
+    savedState: {
+      ci: S.ci,
+      co: S.co,
+      mp: S.mp,
+      tr: S.tr,
+      trr: S.trr,
+      hba: S.hba,
+      hbc: S.hbc,
+      fba: S.fba,
+      fbc: S.fbc,
+      gt: S.gt,
+      opt: S.opt,
+      da: S.da,
+      dt: S.dt,
+      daCustomType: S.daCustomType,
+      daCustomVal: S.daCustomVal,
+      dtCustomType: S.dtCustomType,
+      dtCustomVal: S.dtCustomVal,
+      adn: S.adn,
+      tdn: S.tdn,
+      incl: S.incl,
+      lk1: S.lk1,
+      lk2: S.lk2,
+      supCharges: clone(S.supCharges),
+      rooms: clone(S.rooms)
+    }
+  };
+
+  // Avoid duplicate log if identical to top item in last 10 seconds
+  const last = S.historyLog[0];
+  if (last && last.ci === snapshot.ci && last.co === snapshot.co && last.total === snapshot.total && (Date.now() - last.id < 12000)) {
+    return;
+  }
+
+  S.historyLog.unshift(snapshot);
+  if (S.historyLog.length > 30) S.historyLog.pop(); // Keep last 30 logs
+  save();
+  updateLogBadge();
+}
+
+function updateLogBadge() {
+  const b = $('logBdg');
+  if (!b) return;
+  const count = (S.historyLog || []).length;
+  if (count > 0) {
+    b.textContent = count;
+    b.style.display = 'grid';
+  } else {
+    b.style.display = 'none';
+  }
+}
+
+function renderLogList() {
+  const c = $('logListContainer');
+  if (!c) return;
+
+  const logs = S.historyLog || [];
+  if (!logs.length) {
+    c.innerHTML = `
+      <div style="text-align:center;padding:24px 12px;color:var(--mute);font-size:12px;">
+        No proposals logged yet.<br>Move from <b>Overview → Message</b> to automatically log an entry.
+      </div>
+    `;
+    return;
+  }
+
+  c.innerHTML = logs.map((item, idx) => `
+    <div style="background:var(--soft);border:1px solid var(--line);border-radius:10px;padding:10px;margin-bottom:8px;">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;">
+        <div>
+          <b style="font-size:13px;color:var(--text);">${item.dateStr}</b>
+          <div style="font-size:10px;color:var(--mute);margin-top:1px;">
+            ${item.nights} nt${item.nights > 1 ? 's' : ''} · ${item.pax} pax · ${item.mealPlan} · <span style="font-weight:600;color:var(--acc);">${item.mode}</span>
+          </div>
+        </div>
+        <div style="text-align:right;">
+          <div style="font-size:14px;font-weight:700;color:var(--acc);">USD ${f(item.total)}</div>
+          <small style="font-size:9px;color:var(--mute);">${item.timeStr}</small>
+        </div>
+      </div>
+      
+      <div style="font-size:11px;color:var(--text);margin:6px 0;background:var(--card);padding:5px 8px;border-radius:6px;border:1px solid var(--line);">
+        ${item.roomsDesc}
+      </div>
+
+      <div style="display:flex;justify-content:flex-end;gap:6px;margin-top:6px;">
+        <button type="button" style="padding:4px 9px;min-height:26px;font-size:10px;color:#d9534f;border:0;background:transparent;" onclick="deleteLogEntry(${idx})">
+          Delete
+        </button>
+        <button type="button" class="pri" style="padding:4px 12px;min-height:28px;font-size:11px;" onclick="loadLogEntry(${idx})">
+          ✎ Edit Booking
+        </button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function loadLogEntry(idx) {
+  haptic();
+  const logs = S.historyLog || [];
+  const entry = logs[idx];
+  if (!entry || !entry.savedState) return;
+
+  const st = clone(entry.savedState);
+  // Restore state into S while preserving tariffs and log history
+  Object.keys(st).forEach(k => {
+    S[k] = st[k];
+  });
+
+  // Re-sync input fields
+  ['ci', 'co', 'tr', 'trr', 'hba', 'hbc', 'fba', 'fbc', 'adn', 'tdn', 'daCustomVal', 'dtCustomVal', 'incl', 'lk1', 'lk2'].forEach(id => {
+    if ($(id) && S[id] !== undefined) $(id).value = S[id];
+  });
+  if ($('mp')) $('mp').value = S.mp;
+  if ($('gt')) $('gt').checked = S.gt;
+  if ($('opt')) $('opt').checked = S.opt;
+  if ($('daCustomType')) $('daCustomType').value = S.daCustomType || 'pct';
+  if ($('dtCustomType')) $('dtCustomType').value = S.dtCustomType || 'pct';
+
+  chips('dpA', [0, 5, 10, 15, 20], 'da');
+  chips('dpT', [0, 10, 25, 50, 100], 'dt');
+  renderRooms();
+  renderSupCharges();
+  refresh();
+  go(1); // Jump straight to Room configuration for immediate editing
+  showToast('Booking proposal restored! ✓');
+}
+
+function deleteLogEntry(idx) {
+  haptic();
+  if (!Array.isArray(S.historyLog)) return;
+  S.historyLog.splice(idx, 1);
+  save();
+  updateLogBadge();
+  renderLogList();
+  showToast('Log entry removed');
+}
+
+function clearLogHistory() {
+  haptic();
+  S.historyLog = [];
+  save();
+  updateLogBadge();
+  renderLogList();
+  showToast('Log history cleared');
+}
+
+function refresh() {
+  const { N, k, t } = calc();
+  if ($('chip')) $('chip').textContent = `${N} night${N !== 1 ? 's' : ''} · ${t.pax} guest${t.pax !== 1 ? 's' : ''}`;
+  if ($('nn')) $('nn').textContent = `${N} night${N !== 1 ? 's' : ''}`;
+  if ($('bdg')) $('bdg').textContent = S.rooms.length;
+  if ($('addb')) $('addb').textContent = S.opt ? '+ Add another room option' : '+ Add another room';
+  if ($('out')) $('out').value = build();
+
+  k.forEach((x, i) => {
+    const rn = $('rn' + i), rt = $('rt' + i), rs = $('rs' + i);
+    if (rn) rn.textContent = x.sg.length > 1 ? x.sg.map(s => '$' + f(s.nightly)).join(' / ') : '$' + f(x.nightly);
+    if (rt) rt.textContent = '$' + f(x.roomTot);
+    if (rs) rs.textContent = `${x.ad} adult${x.ad !== 1 ? 's' : ''}${x.ch ? ', ' + x.ch + ' child' + (x.ch > 1 ? 'ren' : '') : ''} · ${MPN[x.mp]}`;
+  });
+
+  save();
+}
 
 function renderRooms() {
   const N = nights(), cp = S.opt;
-  $('rooms').innerHTML = S.rooms.map((r, i) => {
-    const mp = r.mp || S.mp, sh = cp && i > 0, sd = r.sd || iso(addD(S.ci, Math.ceil(N / 2)));
-    return `<details class="room"${r.open ? ' open' : ''} ontoggle="S.rooms[${i}].open=this.open">
-      <summary>
-        <div>
-          <b>${cp ? 'Option' : 'Room'} ${i + 1} · ${r.cat}</b>
-          <small id="rs${i}"></small>
-        </div>
-      </summary>
-      <div class="rb">
-        <label>Room Category</label>
-        <select onchange="setCat(${i},this.value)">${TYPES.map(t => `<option${t === r.cat ? ' selected' : ''}>${t}</option>`).join('')}</select>
-        <div class="mt">
-          <label>Meal Plan</label>
-          <select onchange="S.rooms[${i}].mp=this.value;renderRooms();refresh()">${Object.keys(MPN).map(k => `<option value="${k}"${mp === k ? ' selected' : ''}>${MPN[k]}</option>`).join('')}</select>
-        </div>
-        ${sh ? `<div class="sub mt">Guests and room count are taken from Option 1.</div>` : `
-          <div class="g mt">
-            <div><label>Adults</label>${stp(i, 'ad', 1)}</div>
-            <div><label>Children</label>${stp(i, 'ch', 0)}</div>
-            <div><label>Infants (Free)</label>${stp(i, 'inf', 0)}</div>
-            <div><label>Rooms (Qty)</label>${stp(i, 'qty', 1)}</div>
+  const container = $('rooms');
+  if (!container) return;
+
+  container.innerHTML = S.rooms.map((r, i) => {
+    const mp = r.mp || S.mp, sh = cp && i > 0;
+    // Strictly preserve r.sd if set, otherwise only calculate fallback if splitting
+    const effectiveSd = r.sd ? r.sd : (r.split && N >= 2 ? iso(addD(S.ci, 1)) : '');
+    return `
+      <details class="room"${r.open ? ' open' : ''} ontoggle="S.rooms[${i}].open=this.open">
+        <summary>
+          <div>
+            <b>${cp ? 'Option' : 'Room'} ${i + 1} · ${r.cat}</b>
+            <small id="rs${i}"></small>
           </div>
-          ${r.ch > 0 ? `<label class="mt">Child Ages</label><div class="ages">${r.ages.map((a, j) => `<input type="number" inputmode="numeric" placeholder="Age" value="${a}" oninput="S.rooms[${i}].ages[${j}]=this.value;refresh()">`).join('')}</div>` : ''}
-        `}
-        <div class="mt">
-          <label>${r.split && N >= 2 ? 'Season 1 Net Rate' : 'Direct Net Rate'} (USD / room / night)</label>
-          <input type="number" inputmode="decimal" placeholder="Enter rate" value="${r.rate}" oninput="setRate(${i},this.value)">
-        </div>
-        <label class="ck">
-          <input type="checkbox"${r.split && N >= 2 ? ' checked' : ''}${N < 2 ? ' disabled' : ''} onchange="tg(${i},this.checked)">
-          <span>Split Rate Across 2 Seasons<small>${N < 2 ? 'Needs a stay of 2+ nights' : 'For stays that cross a seasonal rate change'}</small></span>
-        </label>
-        ${r.split && N >= 2 ? `
-          <div class="g mt">
-            <div><label>Season 2 Rate (USD)</label><input type="number" inputmode="decimal" placeholder="Rate" value="${r.rate2}" oninput="S.rooms[${i}].rate2=this.value;refresh()"></div>
-            <div><label>Season 2 Starts</label><input type="date" value="${sd}" min="${iso(addD(S.ci, 1))}" max="${iso(addD(S.ci, N - 1))}" onchange="S.rooms[${i}].sd=this.value;refresh()"></div>
+        </summary>
+        <div class="rb">
+          <label>Room Category</label>
+          <select onchange="setCat(${i}, this.value)">
+            ${TYPES.map(t => `<option${t === r.cat ? ' selected' : ''}>${t}</option>`).join('')}
+          </select>
+
+          <div class="mt">
+            <label>Meal Plan</label>
+            <select onchange="S.rooms[${i}].mp=this.value;renderRooms();refresh();">
+              ${Object.keys(MPN).map(k => `<option value="${k}"${mp === k ? ' selected' : ''}>${MPN[k]}</option>`).join('')}
+            </select>
           </div>
-          <div class="sub mt" id="sp${i}"></div>
-        ` : ''}
-        <div class="rs">
-          <span>Nightly incl. Tax &amp; SC <b id="rn${i}"></b></span>
-          <span>Room Total <b id="rt${i}"></b></span>
+
+          ${sh ? `<div class="sub mt">Guests and room count are synced from Option 1.</div>` : `
+            <div class="g mt">
+              <div><label>Adults</label>${stp(i, 'ad', 1)}</div>
+              <div><label>Children</label>${stp(i, 'ch', 0)}</div>
+              <div><label>Infants (Free)</label>${stp(i, 'inf', 0)}</div>
+              <div><label>Room Qty</label>${stp(i, 'qty', 1)}</div>
+            </div>
+            ${r.ch > 0 ? `
+              <label class="mt">Child Ages</label>
+              <div class="ages">
+                ${r.ages.map((a, j) => `<input type="number" inputmode="numeric" placeholder="Age" value="${a}" oninput="S.rooms[${i}].ages[${j}]=this.value;refresh();">`).join('')}
+              </div>
+            ` : ''}
+          `}
+
+          <div class="g mt">
+            <div>
+              <label>${r.split && N >= 2 ? 'Season 1 Rate' : 'Direct Rate'}</label>
+              <input type="number" inputmode="decimal" placeholder="Rate" value="${r.rate}" oninput="setRate(${i}, this.value)">
+            </div>
+            <div>
+              <label>Extra Adult</label>
+              <input type="number" inputmode="decimal" placeholder="0.00" value="${r.extraBedRate || ''}" oninput="S.rooms[${i}].extraBedRate=this.value;refresh();">
+            </div>
+          </div>
+
+          <div class="mt">
+            <label>Extra Child</label>
+            <input type="number" inputmode="decimal" placeholder="0.00" value="${r.extraChildRate || ''}" oninput="S.rooms[${i}].extraChildRate=this.value;refresh();">
+          </div>
+
+          <label class="ck">
+            <input type="checkbox"${r.split && N >= 2 ? ' checked' : ''}${N < 2 ? ' disabled' : ''} onchange="tg(${i}, this.checked)">
+            <span>Split rate across 2 seasons<small>${N < 2 ? 'Requires a stay of 2+ nights' : 'For stays crossing seasonal rate changes'}</small></span>
+          </label>
+
+          ${r.split && N >= 2 ? `
+            <div class="g mt">
+              <div>
+                <label>Season 2 Rate</label>
+                <input type="number" inputmode="decimal" placeholder="Rate" value="${r.rate2}" oninput="S.rooms[${i}].rate2=this.value;refresh();">
+              </div>
+              <div>
+                <label>Season 2 Starts</label>
+                <input type="date" value="${effectiveSd}" min="${iso(addD(S.ci, 1))}" max="${S.co}" onchange="S.rooms[${i}].sd=this.value;refresh();">
+              </div>
+            </div>
+          ` : ''}
+
+          <div class="rs">
+            <span>Nightly incl. Tax &amp; SC: <b id="rn${i}"></b></span>
+            <span>Room Total: <b id="rt${i}"></b></span>
+          </div>
+
+          ${S.rooms.length > 1 ? `
+            <button type="button" class="mt" style="width:100%;color:#d9534f;border-color:rgba(217,83,79,0.3);" onclick="delRoom(${i})">
+              ${cp ? 'Remove Option' : 'Remove Room'}
+            </button>
+          ` : ''}
         </div>
-        ${S.rooms.length > 1 ? `<button type="button" class="mt" style="width:100%" onclick="delRoom(${i})">${cp ? 'Remove Option' : 'Remove Room'}</button>` : ''}
-      </div>
-    </details>`;
+      </details>
+    `;
   }).join('');
 }
 
-function tg(i, on) {
-  haptic();
-  const r = S.rooms[i];
-  r.split = on;
-  if (on) {
-    r.sd = r.sd || iso(addD(S.ci, Math.ceil(nights() / 2)));
-    if (r.rate2 === '') r.rate2 = r.rate;
-  }
-  renderRooms();
-  refresh();
-}
+const stp = (i, k, min) => `
+  <div class="stp">
+    <button type="button" onclick="st(${i}, '${k}', -1, ${min})">−</button>
+    <b>${S.rooms[i][k]}</b>
+    <button type="button" onclick="st(${i}, '${k}', 1, ${min})">+</button>
+  </div>
+`;
 
 function st(i, k, d, min) {
   haptic();
@@ -1832,7 +1551,15 @@ function st(i, k, d, min) {
 function setCat(i, v) {
   const r = S.rooms[i];
   r.cat = v;
-  r.rate = S.rates[v] !== undefined ? S.rates[v] : '';
+  // Automatically pull rate from current dates/seasons if available
+  const seasons = S.seasonsTariff || DEFAULT_SEASONAL_SEASONS;
+  const s1 = seasons.find(s => S.ci >= s.start && S.ci <= s.end);
+  if (s1) {
+    r.rate = getRateForCategoryInSeason(s1, v) || S.rates[v] || '';
+  } else {
+    r.rate = S.rates[v] !== undefined ? S.rates[v] : '';
+  }
+  autoAssignRatesFromDates();
   renderRooms();
   refresh();
 }
@@ -1840,6 +1567,18 @@ function setCat(i, v) {
 function setRate(i, v) {
   S.rooms[i].rate = v;
   S.rates[S.rooms[i].cat] = v;
+  refresh();
+}
+
+function tg(i, on) {
+  haptic();
+  const r = S.rooms[i];
+  r.split = on;
+  if (on) {
+    r.sd = r.sd || iso(addD(S.ci, Math.ceil(nights() / 2)));
+    if (r.rate2 === '') r.rate2 = r.rate;
+  }
+  renderRooms();
   refresh();
 }
 
@@ -1859,6 +1598,60 @@ function delRoom(i) {
   refresh();
 }
 
+function chips(id, opts, key) {
+  const el = $(id);
+  if (!el) return;
+  el.innerHTML = opts.map(o => `
+    <button type="button" class="${S[key] === o ? 'on' : ''}" onclick="S.${key}=${o};chips('${id}',[${opts}],'${key}');refresh();">
+      ${o ? o + '%' : 'None'}
+    </button>
+  `).join('');
+}
+
+function addInclusion(text) {
+  haptic();
+  const incEl = $('incl');
+  if (!incEl) return;
+  let cur = (S.incl || '').trim();
+  if (cur.includes(text)) {
+    showToast('Inclusion already added');
+    return;
+  }
+  S.incl = cur ? `${cur}\n${text}` : text;
+  incEl.value = S.incl;
+  refresh();
+  showToast('Inclusion added ✓');
+}
+
+function renderSupCharges() {
+  const container = $('supChargesList');
+  if (!container) return;
+  container.innerHTML = (S.supCharges || []).map((sc, idx) => `
+    <div style="padding:8px;background:var(--soft);border:1px solid var(--line);border-radius:8px;margin-bottom:6px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+        <span style="font-size:10px;font-weight:700;color:var(--mute);">Charge #${idx + 1}</span>
+        ${S.supCharges.length > 1 ? `
+          <button type="button" style="padding:2px 6px;min-height:22px;font-size:9.5px;color:#d9534f;border:0;background:transparent;" onclick="delSupCharge(${idx})">✕ Remove</button>
+        ` : ''}
+      </div>
+      <div class="g" style="margin-bottom:6px;">
+        <div>
+          <label>Adult Rate (USD)</label>
+          <input type="number" inputmode="decimal" placeholder="0.00" value="${sc.ad}" oninput="S.supCharges[${idx}].ad=this.value;refresh();">
+        </div>
+        <div>
+          <label>Child Rate (USD)</label>
+          <input type="number" inputmode="decimal" placeholder="0.00" value="${sc.ch}" oninput="S.supCharges[${idx}].ch=this.value;refresh();">
+        </div>
+      </div>
+      <div>
+        <label>Charge Description / Note</label>
+        <input placeholder="e.g. Christmas Eve Gala Dinner" value="${sc.note || ''}" oninput="S.supCharges[${idx}].note=this.value;refresh();">
+      </div>
+    </div>
+  `).join('');
+}
+
 function addSupCharge() {
   haptic();
   if (!Array.isArray(S.supCharges)) S.supCharges = [];
@@ -1870,387 +1663,497 @@ function addSupCharge() {
 function delSupCharge(i) {
   haptic();
   S.supCharges.splice(i, 1);
+  if (!S.supCharges.length) S.supCharges.push(newSup('', '', ''));
   renderSupCharges();
   refresh();
 }
 
-function setSupVal(i, field, val) {
-  if (S.supCharges[i]) {
-    S.supCharges[i][field] = val;
-    refresh();
-  }
-}
-
-function renderSupCharges() {
-  const container = $('supChargesList');
-  if (!container) return;
-  if (!Array.isArray(S.supCharges) || !S.supCharges.length) {
-    container.innerHTML = `<div style="text-align:center;padding:10px;font-size:11px;color:var(--mute);border:1px dashed var(--line);border-radius:10px;background:var(--soft);">No supplementary charges added.</div>`;
-    return;
-  }
-
-  container.innerHTML = S.supCharges.map((sc, i) => `
-    <div style="background:var(--soft);border:1px solid var(--line);border-radius:10px;padding:9px 10px;margin-bottom:8px;">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
-        <b style="font-size:11px;color:var(--pri);">Charge #${i + 1}</b>
-        <button type="button" onclick="delSupCharge(${i})" style="border:none;background:transparent;color:#d9534f;font-size:11px;padding:0;min-height:auto;cursor:pointer;">Remove</button>
-      </div>
-      <div class="g">
-        <div>
-          <label>Adult Rate (USD, Net)</label>
-          <input type="number" inputmode="decimal" placeholder="e.g. 50" value="${sc.ad || ''}" oninput="setSupVal(${i},'ad',this.value)">
-        </div>
-        <div>
-          <label>Child Rate (USD, Net)</label>
-          <input type="number" inputmode="decimal" placeholder="e.g. 25" value="${sc.ch || ''}" oninput="setSupVal(${i},'ch',this.value)">
-        </div>
-      </div>
-      <div class="mt">
-        <label>Charge Description / Note</label>
-        <input placeholder="e.g. Christmas Eve Gala Dinner" value="${sc.note || ''}" oninput="setSupVal(${i},'note',this.value)">
-      </div>
-    </div>
-  `).join('');
-}
-
-function setDiscType(prefix, type) {
+function nt(d) {
   haptic();
-  S[prefix + 'CustomType'] = type;
-  updateDiscTypeUI(prefix);
+  if (!S.ci) {
+    const today = new Date();
+    S.ci = iso(today);
+    if ($('ci')) $('ci').value = S.ci;
+  }
+
+  const curN = nights();
+  // Ensure we move up or down, maintaining at least 1 night
+  const targetN = Math.max(1, (curN <= 0 ? 1 : curN) + d);
+  
+  const ciDate = new Date(S.ci + 'T00:00');
+  ciDate.setDate(ciDate.getDate() + targetN);
+  S.co = iso(ciDate);
+
+  if ($('co')) $('co').value = S.co;
+  autoAssignRatesFromDates();
+  renderRooms();
   refresh();
 }
 
-function updateDiscTypeUI(prefix) {
-  const isPct = (S[prefix + 'CustomType'] || 'pct') === 'pct';
-  const btnPct = $(prefix + 'TypePct');
-  const btnAmt = $(prefix + 'TypeAmt');
-  const help = $(prefix + 'CustomHelp');
-  const input = $(prefix + 'CustomVal');
-
-  if (btnPct && btnAmt) {
-    if (isPct) {
-      btnPct.style.background = 'var(--pri)';
-      btnPct.style.color = '#fff';
-      btnAmt.style.background = 'transparent';
-      btnAmt.style.color = 'var(--text)';
-      if (input) input.placeholder = 'e.g. 15 (%)';
-      if (help) help.textContent = prefix === 'da' ? 'Percentage discount applied on nightly room rates' : 'Percentage discount applied on roundtrip transfer rate';
-    } else {
-      btnAmt.style.background = 'var(--pri)';
-      btnAmt.style.color = '#fff';
-      btnPct.style.background = 'transparent';
-      btnPct.style.color = 'var(--text)';
-      if (input) input.placeholder = 'e.g. 20 (USD)';
-      if (help) help.textContent = prefix === 'da' ? 'Custom dollar amount off per room per night' : 'Custom dollar amount off per person (roundtrip)';
-    }
-  }
-}
-
-function chips(id, opts, key) {
-  const customKey = key === 'da' ? 'daCustomVal' : 'dtCustomVal';
-  $(id).innerHTML = opts.map(o => `
-    <button type="button" class="${S[key] === o && !S[customKey] ? 'on' : ''}" onclick="haptic();S.${key}=${o};S.${customKey}='';$('${customKey}').value='';chips('${id}',[${opts}],'${key}');refresh()">
-      ${o ? o + '%' : 'None'}
-    </button>
-  `).join('');
-}
-
-function updateOverview() {
-  const { N, k, t } = calc();
-  const isOpt = S.opt;
-  
-  $('ovDates').textContent = datesAlt() || `${S.ci} – ${S.co}`;
-  $('ovNights').textContent = `${N} Night${N !== 1 ? 's' : ''}`;
-  $('ovGuests').textContent = `${t.pax} Guest${t.pax !== 1 ? 's' : ''} (${t.ad} Adult${t.ad !== 1 ? 's' : ''}${t.pax - t.ad > 0 ? ', ' + (t.pax - t.ad) + ' Child' : ''})`;
-  $('ovType').textContent = isOpt ? 'Comparative Room Options' : 'Standard Booking';
-  
-  $('ovRoomsList').innerHTML = k.map((item, idx) => `
-    <div class="ov-room-item">
-      <div class="ov-room-title">
-        <span>${isOpt ? 'Option' : 'Room'} ${idx + 1}: ${item.r.cat}</span>
-        <span>$${f(item.roomTot)}</span>
-      </div>
-      <div class="ov-room-sub">
-        ${item.q} room${item.q > 1 ? 's' : ''} · ${MPN[item.mp]} · Nightly: $${f(item.nightly)} (incl. 10% SC &amp; 17% TGST)
-        ${item.r.split && N >= 2 ? `<br><span style="color:var(--cop);">Split season enabled (${item.sg.map(s => s.n + 'n @ $' + f(s.rate)).join(' + ')})</span>` : ''}
-      </div>
-    </div>
-  `).join('');
-
-  $('ovTransType').textContent = S.tr || 'None requested';
-  $('ovTransRate').textContent = isOwnTr() ? 'Arranged by guest' : (S.tr ? `$${f(trNet())} / pax` : '—');
-  $('ovTransTotal').textContent = (S.tr && !isOwnTr()) ? `$${f(t.trans)}` : '$0.00';
-
-  const supAmtNum = t.extraSup;
-  const supContainer = $('ovExtraSupContainer');
-  if (supAmtNum > 0 && Array.isArray(S.supCharges) && S.supCharges.length) {
-    const validSup = S.supCharges.filter(c => (t.ad * n(c.ad) + t.ch * n(c.ch)) > 0);
-    if (supContainer) {
-      supContainer.style.display = 'block';
-      supContainer.innerHTML = validSup.map((sc, idx) => {
-        const itemTot = t.ad * n(sc.ad) + t.ch * n(sc.ch);
-        const label = sc.note && sc.note.trim() ? sc.note.trim() : `Supplementary Charge #${idx + 1}`;
-        return `
-          <div class="ov-row" style="padding:4px 0;">
-            <span class="ov-label">${label}</span>
-            <span class="ov-val" style="color:var(--pri);font-weight:700;">$${f(itemTot)}</span>
-          </div>
-        `;
-      }).join('');
-    }
-
-    $('ovExtraSupFinRow').style.display = 'flex';
-    $('ovExtraSupFinLabel').textContent = `Supplementary Charges (${validSup.length})`;
-    $('ovExtraSupFinVal').textContent = `$${f(supAmtNum)}`;
-  } else {
-    if (supContainer) {
-      supContainer.style.display = 'none';
-      supContainer.innerHTML = '';
-    }
-    $('ovExtraSupFinRow').style.display = 'none';
-  }
-
-  const inclLines = (S.incl || '').split('\n').map(l => l.trim()).filter(Boolean);
-  if (inclLines.length > 0) {
-    $('ovInclCard').style.display = 'block';
-    $('ovInclList').innerHTML = inclLines.map(l => `<div>• ${l}</div>`).join('');
-  } else {
-    $('ovInclCard').style.display = 'none';
-  }
-
-  const daPct = getAccDiscPct(), daAmt = getAccDiscAmt();
-  const dtPct = getTrDiscPct(), dtAmt = getTrDiscAmt();
-  const hasAccDisc = daPct > 0 || daAmt > 0;
-  const hasTrDisc = S.tr && !isOwnTr() && (dtPct > 0 || dtAmt > 0);
-  const totalSavings = t.disc + (t.tdisc || 0);
-
-  if (hasAccDisc || hasTrDisc) {
-    let discItemsHtml = '';
-    if (hasAccDisc) {
-      const accDetail = [
-        daPct > 0 ? `${daPct}% off` : '',
-        daAmt > 0 ? `$${f(daAmt)} off / room / night` : ''
-      ].filter(Boolean).join(' + ');
-
-      discItemsHtml += `
-        <div class="ov-disc-item">
-          <div>
-            <div class="ov-disc-title">Accommodation Discount (${accDetail})</div>
-            <div class="ov-disc-desc">${S.adn ? 'Client Note: ' + S.adn : 'Direct rate markdown applied'}</div>
-          </div>
-          <div class="ov-disc-val">−$${f(t.disc)}</div>
-        </div>
-      `;
-    }
-
-    if (hasTrDisc) {
-      const trDetail = [
-        dtPct > 0 ? `${dtPct}% off` : '',
-        dtAmt > 0 ? `$${f(dtAmt)} off / pax` : ''
-      ].filter(Boolean).join(' + ');
-
-      discItemsHtml += `
-        <div class="ov-disc-item">
-          <div>
-            <div class="ov-disc-title">Transfer Discount (${trDetail})</div>
-            <div class="ov-disc-desc">${S.tdn ? 'Client Note: ' + S.tdn : 'Transfer rate concession'}</div>
-          </div>
-          <div class="ov-disc-val">−$${f(t.tdisc)}</div>
-        </div>
-      `;
-    }
-
-    $('ovDiscItems').innerHTML = discItemsHtml;
-    $('ovDiscCard').style.display = 'block';
-
-    const grossTotal = t.total + totalSavings;
-    $('ovOrigRow').style.display = 'flex';
-    $('ovGrossTotal').textContent = `$${f(grossTotal)}`;
-    $('ovDiscRow').style.display = 'flex';
-    $('ovDiscounts').textContent = `−$${f(totalSavings)}`;
-  } else {
-    $('ovDiscCard').style.display = 'none';
-    $('ovOrigRow').style.display = 'none';
-    $('ovDiscRow').style.display = 'none';
-  }
-
-  $('ovAccNet').textContent = `$${f(t.sub)}`;
-  $('ovSupTotal').textContent = `$${f(t.sup)}`;
-  $('ovTaxes').textContent = `$${f(t.tax)}`;
-  $('ovGreenTax').textContent = `$${f(t.green)}`;
-  $('ovTransfersFin').textContent = `$${f(t.trans)}`;
-  $('ovGrandTotal').textContent = `$${f(t.total)}`;
-}
-
-function refresh() {
-  const { N, k, t } = calc();
-
-  k.forEach((x, i) => {
-    const a = $('rn' + i), b = $('rt' + i);
-    if (a) {
-      a.textContent = x.sg.length > 1 ? x.sg.map(s => '$' + f(s.nightly)).join(' / ') : '$' + f(x.nightly);
-      b.textContent = '$' + f(x.roomTot);
-    }
-    const q = $('rs' + i);
-    if (q) {
-      q.textContent = `${x.ad} adult${x.ad !== 1 ? 's' : ''}${x.ch ? ', ' + x.ch + ' child' + (x.ch > 1 ? 'ren' : '') : ''}${x.q > 1 ? ' · ×' + x.q : ''} · ${MPN[x.mp]} · $${f(x.sg.length > 1 ? x.roomTot / (x.q * N) : x.nightly)}/night${x.sg.length > 1 ? ' avg' : ''}`;
-    }
-    const sp = $('sp' + i);
-    if (sp) {
-      sp.textContent = x.sg.map(s => `${s.n} night${s.n > 1 ? 's' : ''} at $${f(s.rate)}`).join(' + ') + ' (net rate)';
-    }
-  });
-
-  const chip = $('chip');
-  if (chip) chip.textContent = `${N}n · ${t.pax}pax`;
-  const nn = $('nn');
-  if (nn) nn.textContent = N + (N === 1 ? ' night' : ' nights');
-  const addb = $('addb');
-  if (addb) addb.textContent = S.opt ? '+ Add another room option' : '+ Add another room';
-  const bdg = $('bdg');
-  if (bdg) bdg.textContent = k.length;
-  const out = $('out');
-  if (out) out.value = build();
-
-  if (currentStep === 3) updateOverview();
-  save();
-}
-
-function showToast(text) {
-  const t = $('toast');
-  t.textContent = text;
-  t.classList.add('on');
-  setTimeout(() => t.classList.remove('on'), 2000);
-}
-
-async function shareMsg() {
+function toggleTheme() {
   haptic();
-  const text = $('out').value;
-  if (navigator.share) {
-    try {
-      await navigator.share({
-        title: 'Stone Hotels Reservation Proposal',
-        text: text
-      });
-      showToast('Shared successfully ✓');
-      return;
-    } catch (err) {
-      if (err.name === 'AbortError') return;
-    }
-  }
-  copyMsg();
+  const root = document.documentElement;
+  const isDark = root.getAttribute('data-theme') === 'dark';
+  const newTheme = isDark ? 'light' : 'dark';
+  root.setAttribute('data-theme', newTheme);
+  try { localStorage.setItem('stone_theme', newTheme); } catch (e) {}
+  updateThemeIcon(newTheme);
 }
 
-function wa() {
-  haptic();
-  const t = $('out').value;
-  const u = 'https://wa.me/?text=' + encodeURIComponent(t);
-  let w = null;
-  try {
-    w = window.open(u, '_blank');
-  } catch (e) {}
-  if (!w) {
-    try {
-      const a = document.createElement('a');
-      a.href = u;
-      a.target = '_blank';
-      a.rel = 'noopener';
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-    } catch (e) {}
+function updateThemeIcon(theme) {
+  const icon = $('themeIcon');
+  if (!icon) return;
+  if (theme === 'dark') {
+    icon.innerHTML = '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>';
+  } else {
+    icon.innerHTML = '<circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>';
   }
-  (async () => {
-    try {
-      await navigator.clipboard.writeText(t);
-    } catch (e) {
-      try {
-        $('out').select();
-        document.execCommand('copy');
-      } catch (e2) {}
-    }
-  })();
-  showToast('Copied & opening WhatsApp...');
 }
 
 async function copyMsg() {
   haptic();
-  const text = $('out').value;
+  const t = $('out') ? $('out').value : '';
   try {
-    await navigator.clipboard.writeText(text);
+    await navigator.clipboard.writeText(t);
   } catch (e) {
-    $('out').select();
-    document.execCommand('copy');
+    if ($('out')) {
+      $('out').select();
+      document.execCommand('copy');
+    }
   }
-  showToast('Proposal copied to clipboard ✓');
+  showToast('Copied to clipboard ✓');
+}
+
+function shareMsg() {
+  haptic();
+  const t = $('out') ? $('out').value : '';
+  if (navigator.share) {
+    navigator.share({ title: 'Stone Hotels Reservation', text: t }).catch(() => {});
+  } else {
+    copyMsg();
+  }
+}
+
+function wa() {
+  haptic();
+  const t = $('out') ? $('out').value : '';
+  const u = 'https://wa.me/?text=' + encodeURIComponent(t);
+  let w = null;
+  try { w = window.open(u, '_blank'); } catch (e) {}
+  if (!w) {
+    const a = document.createElement('a');
+    a.href = u;
+    a.target = '_blank';
+    a.rel = 'noopener';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+  }
+  showToast('Opening WhatsApp...');
 }
 
 function reset() {
   haptic();
   S = clone(D);
+  save();
   init();
   go(0);
-  showToast('All fields reset to defaults');
+  showToast('Reset to defaults ✓');
+}
+
+let activeRateChannel = 'direct';
+
+// Google Sheet Sync & Parser Engine
+const DEFAULT_SHEET_ID = '1fpEvO1ZbWgJIdkZpFvcpWIXgi_DF20oihpzw2cWl9VA';
+
+function extractSheetId(url) {
+  if (!url) return DEFAULT_SHEET_ID;
+  const m = url.match(/\/d\/([a-zA-Z0-9-_]+)/);
+  return m ? m[1] : url.trim();
+}
+
+function parseCSVLine(text) {
+  const p = [];
+  let cur = '', inQuotes = false;
+  for (let i = 0; i < text.length; i++) {
+    const c = text[i];
+    if (c === '"') {
+      if (inQuotes && text[i + 1] === '"') {
+        cur += '"';
+        i++;
+      } else {
+        inQuotes = !inQuotes;
+      }
+    } else if (c === ',' && !inQuotes) {
+      p.push(cur.trim());
+      cur = '';
+    } else {
+      cur += c;
+    }
+  }
+  p.push(cur.trim());
+  return p;
+}
+
+function parseDateFromSeasonString(str) {
+  // Looks for dates like "1 Nov 2026 - 19 Dec 2026" or "20 Dec 2026 - 10 Jan 2027"
+  const m = str.match(/(\d{1,2}\s+[A-Za-z]{3}\s+\d{4})\s*[-–]\s*(\d{1,2}\s+[A-Za-z]{3}\s+\d{4})/);
+  if (m) {
+    const d1 = new Date(m[1]), d2 = new Date(m[2]);
+    if (!isNaN(d1) && !isNaN(d2)) {
+      return {
+        start: iso(d1),
+        end: iso(d2),
+        period: `${m[1]} - ${m[2]}`
+      };
+    }
+  }
+  return null;
+}
+
+function parseGoogleSheetCSV(csvText) {
+  const lines = csvText.split(/\r?\n/).map(l => parseCSVLine(l)).filter(r => r.some(c => c.length > 0));
+  const parsedSeasons = [];
+  let currentSeason = null;
+
+  for (let i = 0; i < lines.length; i++) {
+    const row = lines[i];
+    const cell0 = (row[0] || '').trim();
+
+    // Check for Season header: e.g. "1 Nov 2026 - 19 Dec 2026 | Winter 2026- Low"
+    if (cell0.includes('|') || /\b(Winter|Summer|Spring|Autumn|Peak|High|Low)\b/i.test(cell0)) {
+      const parts = cell0.split('|').map(s => s.trim());
+      const datesObj = parseDateFromSeasonString(parts[0]) || parseDateFromSeasonString(cell0);
+      const title = parts[1] || parts[0];
+
+      currentSeason = {
+        season: title,
+        period: datesObj ? datesObj.period : (parts[0] || 'Seasonal Period'),
+        start: datesObj ? datesObj.start : '2026-11-01',
+        end: datesObj ? datesObj.end : '2027-02-28',
+        rooms: []
+      };
+      parsedSeasons.push(currentSeason);
+      continue;
+    }
+
+    // Match room rows
+    if (currentSeason && TYPES.includes(cell0)) {
+      // Row format: Category | No. of Rooms | Earlier Rate | Base Rate | Base Diff | OTA | Direct | Agent | Agent S.Offer | Affiliate
+      currentSeason.rooms.push({
+        cat: cell0,
+        qty: n(row[1]) || 1,
+        prev: n(row[2]) || 0,
+        base: n(row[3]) || n(row[4]) || 0,
+        ota: n(row[5]) || 0,
+        direct: n(row[6]) || 0,
+        agent: n(row[7]) || 0,
+        agentOffer: n(row[8]) || 0,
+        affiliate: n(row[9]) || 0
+      });
+    }
+  }
+
+  return parsedSeasons.filter(s => s.rooms.length > 0);
+}
+
+async function syncGoogleSheet(showFeedback = true) {
+  const btn = $('syncSheetBtn');
+  if (btn) {
+    btn.disabled = true;
+    btn.textContent = 'Syncing...';
+  }
+
+  const sheetId = extractSheetId(S.sheetUrl || DEFAULT_SHEET_ID);
+  const endpoint = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv`;
+
+  try {
+    const response = await fetch(endpoint);
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    const csv = await response.text();
+    const seasons = parseGoogleSheetCSV(csv);
+
+    if (seasons && seasons.length) {
+      S.seasonsTariff = seasons;
+      save();
+      renderRatesTab();
+      if (showFeedback) showToast(`Synced ${seasons.length} seasons from Google Sheet ✓`);
+    } else {
+      if (showFeedback) showToast('Sheet loaded, but no matching seasons found. Check sharing permissions.');
+    }
+  } catch (err) {
+    console.warn('Sync failed:', err);
+    if (showFeedback) showToast('Sync failed: Make sure the Google Sheet is shared as "Anyone with link can view"');
+  } finally {
+    if (btn) {
+      btn.disabled = false;
+      btn.textContent = '↻ Sync Sheet';
+    }
+  }
+}
+
+function renderRatesTab() {
+  const container = $('ratesTabContainer');
+  if (!container) return;
+
+  const seasons = S.seasonsTariff || DEFAULT_SEASONAL_SEASONS;
+  const channelLabels = {
+    direct: 'Direct',
+    ota: 'OTA',
+    agent: 'Agent',
+    agentOffer: 'Agent S.Offer',
+    affiliate: 'Affiliate',
+    base: 'Base Rate'
+  };
+
+  const channelButtons = Object.keys(channelLabels).map(ch => `
+    <button type="button" class="${activeRateChannel === ch ? 'on' : ''}" style="border-radius:99px;padding:5px 10px;font-size:10px;min-height:28px;" onclick="setRateChannel('${ch}')">
+      ${channelLabels[ch]}
+    </button>
+  `).join('');
+
+  container.innerHTML = `
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;gap:8px;">
+        <h3 style="margin:0;">Seasonal Tariffs 2026/27</h3>
+        <button type="button" id="syncSheetBtn" class="pri" style="padding:4px 9px;min-height:26px;font-size:10.5px;border-radius:6px;" onclick="syncGoogleSheet(true)">
+          ↻ Sync Sheet
+        </button>
+      </div>
+
+      <div style="margin-bottom:8px;">
+        <label>Linked Google Sheet</label>
+        <div style="display:flex;gap:6px;">
+          <input id="sheetUrlInput" value="${S.sheetUrl || ''}" placeholder="Paste Google Sheet URL" style="font-size:12px;padding:6px 8px;min-height:36px;" onchange="S.sheetUrl=this.value;save();">
+        </div>
+      </div>
+
+      <div class="sub" style="margin-bottom:8px;">Select a channel tier to view or apply rates directly to your active room proposal:</div>
+      <div class="chips" style="margin-bottom:12px;">${channelButtons}</div>
+
+      ${seasons.map((s, sIdx) => {
+        const isCurrent = S.ci >= s.start && S.ci <= s.end;
+        return `
+          <details class="room"${isCurrent || sIdx === 0 ? ' open' : ''} style="margin-bottom:8px;">
+            <summary style="padding:9px 12px;">
+              <div>
+                <b>${s.season}</b>
+                <small>${s.period}${isCurrent ? ' · (Matches check-in)' : ''}</small>
+              </div>
+            </summary>
+            <div class="rb" style="padding-top:4px;">
+              <div style="display:grid;gap:6px;">
+                ${s.rooms.map(rm => {
+                  const rateVal = rm[activeRateChannel] !== undefined ? rm[activeRateChannel] : (rm.direct || rm.base);
+                  return `
+                    <div style="display:flex;align-items:center;justify-content:space-between;padding:6px 8px;background:var(--card);border:1px solid var(--line);border-radius:8px;font-size:11px;">
+                      <div style="min-width:0;flex:1;">
+                        <div style="font-weight:600;color:var(--text);">${rm.cat}</div>
+                        <div style="font-size:9.5px;color:var(--mute);">${rm.qty} rooms · Base: $${rm.base}</div>
+                      </div>
+                      <div style="display:flex;align-items:center;gap:8px;">
+                        <b style="font-size:13px;color:var(--acc);">$${rateVal}</b>
+                        <button type="button" class="pri" style="padding:4px 9px;min-height:26px;font-size:10px;border-radius:6px;" onclick="applyTariffRate('${rm.cat}', ${rateVal})">
+                          Apply
+                        </button>
+                      </div>
+                    </div>
+                  `;
+                }).join('')}
+              </div>
+            </div>
+          </details>
+        `;
+      }).join('')}
+    </div>
+  `;
+}
+
+function setRateChannel(ch) {
+  haptic();
+  activeRateChannel = ch;
+  renderRatesTab();
+}
+
+function applyTariffRate(category, rate) {
+  haptic();
+  if (S.rooms && S.rooms.length) {
+    const target = S.rooms.find(r => r.cat === category) || S.rooms[0];
+    target.cat = category;
+    target.rate = rate;
+    S.rates[category] = rate;
+    renderRooms();
+    refresh();
+    showToast(`Applied $${rate} to ${category} ✓`);
+  }
+}
+
+function go(i) {
+  haptic();
+  const prevStep = curStep;
+  curStep = Math.max(0, Math.min(STEPS.length - 1, i));
+
+  // If navigating from Overview (step 3) to Message (step 4), record snapshot log
+  if (prevStep === 3 && curStep === 4) {
+    recordSummaryLog();
+  }
+
+  document.querySelectorAll('.pn').forEach((p, j) => p.classList.toggle('on', curStep === j));
+  document.querySelectorAll('.nav-tabs button').forEach((b, j) => b.classList.toggle('on', curStep === j));
+
+  const stepTitle = $('stepTitle');
+  if (stepTitle) stepTitle.textContent = STEPS[curStep].name;
+  const stepCount = $('stepCount');
+  if (stepCount) {
+    stepCount.textContent = curStep >= 5 ? 'Reference & History' : `Step ${curStep + 1} of 5`;
+  }
+
+  const backBtn = $('dockBackBtn');
+  if (backBtn) backBtn.disabled = curStep === 0;
+
+  const nextBtn = $('dockNextBtn');
+  if (nextBtn) {
+    if (curStep === 4) {
+      // Step 4 is the Message screen
+      nextBtn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z"/></svg>Send via WhatsApp';
+      nextBtn.onclick = wa;
+    } else if (curStep === 5) {
+      // In Log tab: return to Room editing
+      nextBtn.innerHTML = 'Return to Booking <svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>';
+      nextBtn.onclick = () => go(1);
+    } else if (curStep === 6) {
+      // In Rates reference tab: quick button to return to booking
+      nextBtn.innerHTML = 'Return to Booking <svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>';
+      nextBtn.onclick = () => go(1);
+    } else {
+      nextBtn.innerHTML = `Next: ${STEPS[curStep].next} <svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>`;
+      nextBtn.onclick = () => stepNav(1);
+    }
+  }
+
+  if (curStep === 3) renderOverview();
+  if (curStep === 5) renderLogList();
+  window.scrollTo(0, 0);
+}
+
+function stepNav(dir) {
+  // If in reference/log tab and tapping Back, return to Room configuration
+  if (curStep >= 5 && dir < 0) {
+    go(1);
+    return;
+  }
+  // Standard 5-step flow (0 to 4)
+  const nextTarget = Math.max(0, Math.min(4, curStep + dir));
+  go(nextTarget);
 }
 
 function init() {
-  applyTheme(currentTheme);
+  // Restore theme
+  let savedTheme = 'light';
+  try { savedTheme = localStorage.getItem('stone_theme') || 'light'; } catch (e) {}
+  document.documentElement.setAttribute('data-theme', savedTheme);
+  updateThemeIcon(savedTheme);
 
-  ['ci', 'co', 'tr', 'trr', 'hba', 'hbc', 'fba', 'fbc', 'adn', 'tdn', 'daCustomVal', 'dtCustomVal', 'incl', 'lk1', 'lk2'].forEach(i => {
-    const e = $(i);
-    if (!e) return;
-    e.value = S[i] || '';
-    e.oninput = e.onchange = () => {
-      S[i] = e.value;
-      if (i === 'ci' || i === 'co') renderRooms();
-      if (i === 'daCustomVal' && e.value !== '') {
-        S.da = 0;
-        chips('dpA', [0, 5, 10, 15, 20], 'da');
+  // Check-in and Check-out specific handlers to keep nights valid
+  if ($('ci')) {
+    $('ci').value = S.ci || '';
+    $('ci').onchange = $('ci').oninput = () => {
+      S.ci = $('ci').value;
+      if (S.ci) {
+        const curN = nights();
+        // If check-out is now before or same day as check-in, push check-out ahead
+        if (curN < 1) {
+          const nextDay = addD(S.ci, 1);
+          S.co = iso(nextDay);
+          if ($('co')) $('co').value = S.co;
+        }
       }
-      if (i === 'dtCustomVal' && e.value !== '') {
-        S.dt = 0;
-        chips('dpT', [0, 10, 25, 50, 100], 'dt');
+      autoAssignRatesFromDates();
+      renderRooms();
+      refresh();
+    };
+  }
+
+  if ($('co')) {
+    $('co').value = S.co || '';
+    $('co').onchange = $('co').oninput = () => {
+      S.co = $('co').value;
+      if (S.co && S.ci) {
+        if (new Date(S.co + 'T00:00') <= new Date(S.ci + 'T00:00')) {
+          const nextDay = addD(S.ci, 1);
+          S.co = iso(nextDay);
+          $('co').value = S.co;
+        }
       }
+      autoAssignRatesFromDates();
+      renderRooms();
+      refresh();
+    };
+  }
+
+  // Other field bindings
+  ['tr', 'trr', 'hba', 'hbc', 'fba', 'fbc', 'adn', 'tdn', 'daCustomVal', 'dtCustomVal', 'incl', 'lk1', 'lk2'].forEach(id => {
+    const el = $(id);
+    if (!el) return;
+    el.value = S[id] !== undefined ? S[id] : '';
+    el.oninput = el.onchange = () => {
+      S[id] = el.value;
       refresh();
     };
   });
 
-  renderSupCharges();
-  updateDiscTypeUI('da');
-  updateDiscTypeUI('dt');
+  if ($('mp')) {
+    $('mp').value = S.mp;
+    $('mp').onchange = () => {
+      S.mp = $('mp').value;
+      S.rooms.forEach(r => r.mp = S.mp);
+      renderRooms();
+      refresh();
+    };
+  }
 
-  $('mp').value = S.mp;
-  $('mp').onchange = () => {
-    S.mp = $('mp').value;
-    S.rooms.forEach(r => r.mp = S.mp);
-    renderRooms();
-    refresh();
-  };
+  if ($('gt')) {
+    $('gt').checked = S.gt;
+    $('gt').onchange = e => { S.gt = e.target.checked; refresh(); };
+  }
 
-  $('gt').checked = S.gt;
-  $('opt').checked = S.opt;
-  $('gt').onchange = e => {
-    haptic();
-    S.gt = e.target.checked;
-    refresh();
-  };
-  $('opt').onchange = e => {
-    haptic();
-    S.opt = e.target.checked;
-    renderRooms();
-    refresh();
-  };
+  if ($('opt')) {
+    $('opt').checked = S.opt;
+    $('opt').onchange = e => { S.opt = e.target.checked; renderRooms(); refresh(); };
+  }
+
+  if ($('daCustomType')) {
+    $('daCustomType').value = S.daCustomType || 'pct';
+    $('daCustomType').onchange = e => { S.daCustomType = e.target.value; refresh(); };
+  }
+  if ($('dtCustomType')) {
+    $('dtCustomType').value = S.dtCustomType || 'pct';
+    $('dtCustomType').onchange = e => { S.dtCustomType = e.target.value; refresh(); };
+  }
 
   chips('dpA', [0, 5, 10, 15, 20], 'da');
   chips('dpT', [0, 10, 25, 50, 100], 'dt');
+  autoAssignRatesFromDates();
   renderRooms();
+  renderSupCharges();
+  renderRatesTab();
+  updateLogBadge();
   refresh();
-  go(0);
+
+  // Background sync from Google Sheet if online
+  if (navigator.onLine) {
+    syncGoogleSheet(false);
+  }
 }
 
-window.onload = function() {
+window.addEventListener('DOMContentLoaded', () => {
   init();
-};
-</script>
+  go(0);
+});
+if (document.readyState === 'complete' || document.readyState === 'interactive') {
+  init();
+  go(0);
+}
+  </script>
 </body>
 </html>
