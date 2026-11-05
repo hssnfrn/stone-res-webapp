@@ -1673,79 +1673,133 @@ function renderOverview() {
         <span>Guests</span>
         <b>${t.ad} Adult${t.ad !== 1 ? 's' : ''}${t.pax > t.ad ? `, ${t.pax - t.ad} Children${childAgesStr}` : ''}</b>
       </div>
-      <div class="overview-row"><span>Mode</span><b>${opt ? 'Room Comparison' : 'Standard Booking'}</b></div>
+      <div class="overview-row"><span>Mode</span><b>${opt ? 'Room Comparison (Multiple Offers)' : 'Standard Booking'}</b></div>
     </div>
 
-    <div class="card">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
-        <h3 style="margin:0;">Accommodation</h3>
-        ${hasRoomDisc && S.adn ? `<span class="disc-pill">${S.adn}</span>` : ''}
-      </div>
-
+    ${opt ? `
+      <!-- Multiple Options Offer Mode (Each room is an independent offer option with package total) -->
       ${Object.keys(propGroups).map(propName => `
-        <div style="margin-bottom:10px;">
-          <div style="font-size:10.5px;font-weight:700;color:var(--acc);text-transform:uppercase;letter-spacing:0.04em;background:var(--soft);padding:4px 8px;border-radius:6px;margin:6px 0 4px;">
+        <div class="card">
+          <div style="font-size:11px;font-weight:800;color:var(--acc);text-transform:uppercase;letter-spacing:0.06em;padding-bottom:6px;border-bottom:1px solid var(--line);margin-bottom:8px;">
             Property: ${propName}
           </div>
           ${propGroups[propName].map(({ item: x, index: i }) => {
-            const extraTags = [];
-            if (x.ebRate > 0) extraTags.push(`Extra Adult: +$${f(x.ebRate)}`);
-            if (x.ecRate > 0) extraTags.push(`Extra Child: +$${f(x.ecRate)}`);
-            
             const roomChildAges = (x.r.ages || []).filter(a => a !== '' && a !== undefined && a !== null).join(', ');
             const roomAgeBadge = roomChildAges ? ` (Ages: ${roomChildAges})` : '';
-
             const origNightly = (x.sg[0].grossAccommodation + x.sup) * 1.10 * 1.17;
             const origRoomTot = x.roomTot + x.disc;
             const itemHasDisc = x.disc > 0;
+            const optTrans = (S.tr && S.tr !== 'Own Transfer (Arranged by guest)') ? trNet() * x.pax * x.q : 0;
+            const optSupTotal = (S.supCharges || []).reduce((sum, sc) => sum + (n(sc.ad) * x.ad) + (n(sc.ch) * x.ch), 0);
+            const optTotal = x.roomTot + (x.gt * N * x.q) + optTrans + optSupTotal;
+            const optOrigTotal = origRoomTot + (x.gt * N * x.q) + ((S.tr && S.tr !== 'Own Transfer (Arranged by guest)') ? n(S.trr) * x.pax * x.q : 0) + optSupTotal;
 
             return `
-            <div style="padding:6px 4px;border-bottom:1px dashed var(--line);">
-              <div style="display:flex;justify-content:space-between;align-items:flex-start;font-weight:600;font-size:12px;">
-                <span>${opt ? `Option ${i + 1}: ` : `${i + 1}. `}${x.r.cat}</span>
-                <div style="text-align:right;">
-                  ${itemHasDisc ? `<span class="strikethrough-tag">$${f(origRoomTot)}</span>` : ''}
-                  <span style="color:var(--text);font-weight:700;">$${f(x.roomTot)}</span>
+              <div style="background:var(--soft);border:1px solid var(--line);border-radius:10px;padding:10px;margin-bottom:10px;">
+                <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+                  <div>
+                    <div style="font-size:13px;font-weight:700;color:var(--text);">Option ${i + 1}: ${x.r.cat}</div>
+                    <div style="font-size:10px;color:var(--mute);margin-top:2px;">
+                      ${MPN[x.mp]} · ${x.ad} Adult${x.ad !== 1 ? 's' : ''}${x.ch ? `, ${x.ch} Child${x.ch > 1 ? 'ren' : ''}${roomAgeBadge}` : ''} · ${x.q} room${x.q > 1 ? 's' : ''}
+                    </div>
+                  </div>
+                  <div style="text-align:right;">
+                    ${itemHasDisc ? `<span class="strikethrough-tag">$${f(origNightly)}</span>` : ''}
+                    <b style="font-size:13px;color:var(--acc);">$${f(x.nightly + x.gt)}</b><span style="font-size:9.5px;color:var(--mute);">/nt</span>
+                  </div>
+                </div>
+
+                <div style="margin-top:8px;padding-top:6px;border-top:1px dashed var(--line);font-size:11px;">
+                  <div class="overview-row" style="padding:2px 0;"><span>Accommodation (${N} nts incl. tax)</span><b>$${f(x.roomTot + (x.gt * N * x.q))}</b></div>
+                  ${optTrans > 0 ? `<div class="overview-row" style="padding:2px 0;"><span>Roundtrip Transfer (${x.pax * x.q} pax)</span><b>$${f(optTrans)}</b></div>` : ''}
+                  ${optSupTotal > 0 ? `<div class="overview-row" style="padding:2px 0;"><span>Supplementary Charges</span><b>$${f(optSupTotal)}</b></div>` : ''}
+                </div>
+
+                <div style="display:flex;justify-content:space-between;align-items:baseline;margin-top:8px;padding-top:6px;border-top:1px solid var(--line);font-weight:700;">
+                  <span style="font-size:11.5px;color:var(--acc);text-transform:uppercase;letter-spacing:0.03em;">Option ${i + 1} Package Total</span>
+                  <div>
+                    ${itemHasDisc || hasTransDisc ? `<span class="strikethrough-tag" style="font-size:12px;">$${f(optOrigTotal)}</span>` : ''}
+                    <span style="font-size:15px;color:var(--text);font-weight:800;">$${f(optTotal)}</span>
+                  </div>
                 </div>
               </div>
-              <div style="font-size:10px;color:var(--mute);margin-top:3px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:4px;">
-                <div>
-                  ${MPN[x.mp]} · ${x.q} room${x.q > 1 ? 's' : ''} (${x.ad} Ad${x.ch ? `, ${x.ch} Ch${roomAgeBadge}` : ''}) · 
-                  ${itemHasDisc ? `<span class="strikethrough-tag" style="margin-right:3px;">$${f(origNightly)}</span>` : ''}
-                  <b style="color:var(--acc);">$${f(x.nightly)}</b> / night
-                  ${extraTags.length ? ` · (${extraTags.join(', ')})` : ''}
-                </div>
-                ${itemHasDisc && S.adn ? `<span style="font-size:9.5px;color:var(--acc);font-style:italic;">${S.adn}</span>` : ''}
-              </div>
-            </div>
-          `;}).join('')}
+            `;
+          }).join('')}
         </div>
       `).join('')}
-
-      ${t.sup > 0 ? `
-        <div class="overview-row" style="font-size:11px;color:var(--mute);">
-          <span>Meal Supplement (${MPN[S.mp] || S.mp})</span>
-          <b>+$${f(t.sup)}</b>
+    ` : `
+      <!-- Standard / Multi-room Booking Mode -->
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+          <h3 style="margin:0;">Accommodation</h3>
+          ${hasRoomDisc && S.adn ? `<span class="disc-pill">${S.adn}</span>` : ''}
         </div>
-      ` : ''}
 
-      <div class="overview-row" style="margin-top:6px;"><span>Taxes (10% SC & 17% TGST)</span><b>$${f(t.tax)}</b></div>
-      ${S.gt ? `<div class="overview-row"><span>Green Tax ($6/pax/nt)</span><b>$${f(t.green)}</b></div>` : ''}
-      
-      <div class="overview-row" style="font-size:12.5px;padding-top:8px;">
-        <span>Accommodation Total</span>
-        <div>
-          ${hasRoomDisc ? `<span class="strikethrough-tag">$${f(origAcc)}</span>` : ''}
-          <b style="font-size:13px;color:var(--text);">$${f(t.acc)}</b>
+        ${Object.keys(propGroups).map(propName => `
+          <div style="margin-bottom:10px;">
+            <div style="font-size:10.5px;font-weight:700;color:var(--acc);text-transform:uppercase;letter-spacing:0.04em;background:var(--soft);padding:4px 8px;border-radius:6px;margin:6px 0 4px;">
+              Property: ${propName}
+            </div>
+            ${propGroups[propName].map(({ item: x, index: i }) => {
+              const extraTags = [];
+              if (x.ebRate > 0) extraTags.push(`Extra Adult: +$${f(x.ebRate)}`);
+              if (x.ecRate > 0) extraTags.push(`Extra Child: +$${f(x.ecRate)}`);
+              
+              const roomChildAges = (x.r.ages || []).filter(a => a !== '' && a !== undefined && a !== null).join(', ');
+              const roomAgeBadge = roomChildAges ? ` (Ages: ${roomChildAges})` : '';
+
+              const origNightly = (x.sg[0].grossAccommodation + x.sup) * 1.10 * 1.17;
+              const origRoomTot = x.roomTot + x.disc;
+              const itemHasDisc = x.disc > 0;
+
+              return `
+              <div style="padding:6px 4px;border-bottom:1px dashed var(--line);">
+                <div style="display:flex;justify-content:space-between;align-items:flex-start;font-weight:600;font-size:12px;">
+                  <span>${i + 1}. ${x.r.cat}</span>
+                  <div style="text-align:right;">
+                    ${itemHasDisc ? `<span class="strikethrough-tag">$${f(origRoomTot)}</span>` : ''}
+                    <span style="color:var(--text);font-weight:700;">$${f(x.roomTot)}</span>
+                  </div>
+                </div>
+                <div style="font-size:10px;color:var(--mute);margin-top:3px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:4px;">
+                  <div>
+                    ${MPN[x.mp]} · ${x.q} room${x.q > 1 ? 's' : ''} (${x.ad} Ad${x.ch ? `, ${x.ch} Ch${roomAgeBadge}` : ''}) · 
+                    ${itemHasDisc ? `<span class="strikethrough-tag" style="margin-right:3px;">$${f(origNightly)}</span>` : ''}
+                    <b style="color:var(--acc);">$${f(x.nightly)}</b> / night
+                    ${extraTags.length ? ` · (${extraTags.join(', ')})` : ''}
+                  </div>
+                  ${itemHasDisc && S.adn ? `<span style="font-size:9.5px;color:var(--acc);font-style:italic;">${S.adn}</span>` : ''}
+                </div>
+              </div>
+            `;}).join('')}
+          </div>
+        `).join('')}
+
+        ${t.sup > 0 ? `
+          <div class="overview-row" style="font-size:11px;color:var(--mute);">
+            <span>Meal Supplement (${MPN[S.mp] || S.mp})</span>
+            <b>+$${f(t.sup)}</b>
+          </div>
+        ` : ''}
+
+        <div class="overview-row" style="margin-top:6px;"><span>Taxes (10% SC & 17% TGST)</span><b>$${f(t.tax)}</b></div>
+        ${S.gt ? `<div class="overview-row"><span>Green Tax ($6/pax/nt)</span><b>$${f(t.green)}</b></div>` : ''}
+        
+        <div class="overview-row" style="font-size:12.5px;padding-top:8px;">
+          <span>Accommodation Total</span>
+          <div>
+            ${hasRoomDisc ? `<span class="strikethrough-tag">$${f(origAcc)}</span>` : ''}
+            <b style="font-size:13px;color:var(--text);">$${f(t.acc)}</b>
+          </div>
         </div>
+        ${hasRoomDisc ? `
+          <div style="display:flex;justify-content:space-between;font-size:10.5px;color:var(--ok);margin-top:3px;font-weight:600;">
+            <span>Accommodation Savings (${S.adn || 'Special Offer'})</span>
+            <span>-$${f(t.disc)}</span>
+          </div>
+        ` : ''}
       </div>
-      ${hasRoomDisc ? `
-        <div style="display:flex;justify-content:space-between;font-size:10.5px;color:var(--ok);margin-top:3px;font-weight:600;">
-          <span>Accommodation Savings (${S.adn || 'Special Offer'})</span>
-          <span>-$${f(t.disc)}</span>
-        </div>
-      ` : ''}
-    </div>
+    `}
 
     <div class="card">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
@@ -1819,19 +1873,39 @@ function renderOverview() {
       </div>
     ` : ''}
 
-    <div class="total-card">
-      <small>Total Final Package</small>
-      <div class="val">
-        <span>$${f(t.total)}</span>
-        ${t.disc > 0 || t.tdisc > 0 ? `<span class="og">$${f(t.total + t.disc + t.tdisc)}</span>` : ''}
-      </div>
-      ${t.disc > 0 || t.tdisc > 0 ? `
-        <div style="font-size:11px;margin-top:4px;opacity:0.95;display:flex;justify-content:space-between;align-items:center;">
-          <span>Total Savings Applied</span>
-          <b>-$${f(t.disc + t.tdisc)}</b>
+    ${opt ? `
+      <!-- Comparison Mode Total Box: Lists individual option totals -->
+      <div class="total-card">
+        <small>Total Package Comparison (${N} Nights)</small>
+        <div style="margin-top:6px;display:grid;gap:6px;">
+          ${k.map((x, i) => {
+            const optTrans = (S.tr && S.tr !== 'Own Transfer (Arranged by guest)') ? trNet() * x.pax * x.q : 0;
+            const optSupTotal = (S.supCharges || []).reduce((sum, sc) => sum + (n(sc.ad) * x.ad) + (n(sc.ch) * x.ch), 0);
+            const optPkg = x.roomTot + (x.gt * N * x.q) + optTrans + optSupTotal;
+            return `
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:4px 0;border-bottom:1px dashed rgba(255,255,255,0.25);font-size:12.5px;">
+                <span>Option ${i + 1} – ${x.r.cat}</span>
+                <b style="font-size:16px;">USD ${f(optPkg)}</b>
+              </div>
+            `;
+          }).join('')}
         </div>
-      ` : ''}
-    </div>
+      </div>
+    ` : `
+      <div class="total-card">
+        <small>Total Final Package</small>
+        <div class="val">
+          <span>$${f(t.total)}</span>
+          ${t.disc > 0 || t.tdisc > 0 ? `<span class="og">$${f(t.total + t.disc + t.tdisc)}</span>` : ''}
+        </div>
+        ${t.disc > 0 || t.tdisc > 0 ? `
+          <div style="font-size:11px;margin-top:4px;opacity:0.95;display:flex;justify-content:space-between;align-items:center;">
+            <span>Total Savings Applied</span>
+            <b>-$${f(t.disc + t.tdisc)}</b>
+          </div>
+        ` : ''}
+      </div>
+    `}
   `;
 }
 
@@ -2485,75 +2559,126 @@ function generateFormalInvoiceBody() {
         </div>
       ` : ''}
 
-      <!-- Accommodation Breakdown -->
-      <div style="border:1px solid #d9dee4;border-radius:10px;padding:12px 14px;margin-bottom:12px;background:#fff;">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;border-bottom:1px solid #eef2f7;padding-bottom:6px;">
-          <span style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:#6b7785;">Accommodation</span>
-          ${hasRoomDisc && S.adn ? `<span style="font-size:10px;font-weight:700;color:#526F90;background:#eef2f7;padding:2px 8px;border-radius:99px;">${S.adn}</span>` : ''}
-        </div>
+      ${opt ? `
+        <!-- Multiple Options Breakdown for PDF: Itemized offers with individual package totals -->
+        <div style="border:1px solid #d9dee4;border-radius:10px;padding:12px 14px;margin-bottom:12px;background:#fff;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;border-bottom:1px solid #eef2f7;padding-bottom:6px;">
+            <span style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:#6b7785;">Accommodation Options &amp; Packages</span>
+            ${hasRoomDisc && S.adn ? `<span style="font-size:10px;font-weight:700;color:#526F90;background:#eef2f7;padding:2px 8px;border-radius:99px;">${S.adn}</span>` : ''}
+          </div>
 
-        ${Object.keys(propGroups).map(propName => `
-          <div style="margin-bottom:10px;">
-            <div style="font-size:10px;font-weight:700;color:#526F90;text-transform:uppercase;letter-spacing:0.05em;background:#f4f6f9;padding:4px 8px;border-radius:4px;margin:6px 0 4px;">
-              Property: ${propName}
-            </div>
-            ${propGroups[propName].map(({ item: x, index: i }) => {
-              const roomChildAges = (x.r.ages || []).filter(a => a !== '' && a !== undefined && a !== null).join(', ');
-              const roomAgeBadge = roomChildAges ? ` · Ages: ${roomChildAges}` : '';
-              
-              const origNightly = (x.sg[0].grossAccommodation + x.sup) * 1.10 * 1.17;
-              const origRoomTot = x.roomTot + x.disc;
-              const itemHasDisc = x.disc > 0;
+          ${Object.keys(propGroups).map(propName => `
+            <div style="margin-bottom:12px;">
+              <div style="font-size:10px;font-weight:700;color:#526F90;text-transform:uppercase;letter-spacing:0.05em;background:#f4f6f9;padding:4px 8px;border-radius:4px;margin:6px 0 6px;">
+                Property: ${propName}
+              </div>
+              ${propGroups[propName].map(({ item: x, index: i }) => {
+                const roomChildAges = (x.r.ages || []).filter(a => a !== '' && a !== undefined && a !== null).join(', ');
+                const roomAgeBadge = roomChildAges ? ` · Ages: ${roomChildAges}` : '';
+                const origNightly = (x.sg[0].grossAccommodation + x.sup) * 1.10 * 1.17;
+                const origRoomTot = x.roomTot + x.disc;
+                const itemHasDisc = x.disc > 0;
+                const optTrans = (S.tr && S.tr !== 'Own Transfer (Arranged by guest)') ? trNet() * x.pax * x.q : 0;
+                const optSupTotal = (S.supCharges || []).reduce((sum, sc) => sum + (n(sc.ad) * x.ad) + (n(sc.ch) * x.ch), 0);
+                const optTotal = x.roomTot + (x.gt * N * x.q) + optTrans + optSupTotal;
+                const optOrigTotal = origRoomTot + (x.gt * N * x.q) + ((S.tr && S.tr !== 'Own Transfer (Arranged by guest)') ? n(S.trr) * x.pax * x.q : 0) + optSupTotal;
 
-              return `
-                <div style="padding:7px 4px;border-bottom:1px dashed #eef2f7;">
-                  <div style="display:flex;justify-content:space-between;align-items:flex-start;font-size:12px;font-weight:700;">
-                    <span>${opt ? `Option ${i + 1}: ` : `${i + 1}. `}${x.r.cat}</span>
-                    <div style="text-align:right;">
-                      ${itemHasDisc ? `<span class="strikethrough-tag">$${f(origRoomTot)}</span>` : ''}
-                      <span style="color:#27313d;">$${f(x.roomTot)}</span>
+                return `
+                  <div style="padding:8px;background:#f9fafb;border:1px solid #eef2f7;border-radius:6px;margin-bottom:8px;">
+                    <div style="display:flex;justify-content:space-between;align-items:flex-start;font-size:12px;font-weight:700;">
+                      <span>Option ${i + 1}: ${x.r.cat}</span>
+                      <div>
+                        ${itemHasDisc ? `<span class="strikethrough-tag">$${f(origNightly)}</span>` : ''}
+                        <span style="color:#526F90;">$${f(x.nightly + x.gt)}</span><span style="font-size:9.5px;color:#6b7785;font-weight:500;"> / night</span>
+                      </div>
+                    </div>
+                    <div style="font-size:10.5px;color:#6b7785;margin-top:2px;">
+                      ${MPN[x.mp]} · ${x.ad} Adult${x.ad !== 1 ? 's' : ''}${x.ch ? `, ${x.ch} Child${x.ch > 1 ? 'ren' : ''}${roomAgeBadge}` : ''} · Includes 17% TGST, 10% Service Charge${S.gt ? ' & Green Tax' : ''}
+                    </div>
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px;padding-top:6px;border-top:1px dashed #d9dee4;font-size:11.5px;font-weight:700;">
+                      <span style="color:#27313d;">Option ${i + 1} Total Package (${N} Nights)</span>
+                      <div>
+                        ${itemHasDisc || hasTransDisc ? `<span class="strikethrough-tag">$${f(optOrigTotal)}</span>` : ''}
+                        <span style="color:#526F90;font-size:13px;">USD ${f(optTotal)}</span>
+                      </div>
                     </div>
                   </div>
-                  <div style="font-size:10.5px;color:#6b7785;margin-top:3px;display:flex;justify-content:space-between;">
-                    <span>
-                      ${MPN[x.mp]} · ${x.q} room${x.q > 1 ? 's' : ''} (${x.ad} Ad${x.ch ? `, ${x.ch} Ch${roomAgeBadge}` : ''}) · 
-                      ${itemHasDisc ? `<span class="strikethrough-tag">$${f(origNightly)}</span>` : ''}
-                      <b style="color:#526F90;">$${f(x.nightly)}</b> / night
-                    </span>
-                    ${itemHasDisc && S.adn ? `<span style="color:#526F90;font-style:italic;">${S.adn}</span>` : ''}
+                `;
+              }).join('')}
+            </div>
+          `).join('')}
+        </div>
+      ` : `
+        <!-- Accommodation Breakdown for Standard Booking -->
+        <div style="border:1px solid #d9dee4;border-radius:10px;padding:12px 14px;margin-bottom:12px;background:#fff;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;border-bottom:1px solid #eef2f7;padding-bottom:6px;">
+            <span style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:#6b7785;">Accommodation</span>
+            ${hasRoomDisc && S.adn ? `<span style="font-size:10px;font-weight:700;color:#526F90;background:#eef2f7;padding:2px 8px;border-radius:99px;">${S.adn}</span>` : ''}
+          </div>
+
+          ${Object.keys(propGroups).map(propName => `
+            <div style="margin-bottom:10px;">
+              <div style="font-size:10px;font-weight:700;color:#526F90;text-transform:uppercase;letter-spacing:0.05em;background:#f4f6f9;padding:4px 8px;border-radius:4px;margin:6px 0 4px;">
+                Property: ${propName}
+              </div>
+              ${propGroups[propName].map(({ item: x, index: i }) => {
+                const roomChildAges = (x.r.ages || []).filter(a => a !== '' && a !== undefined && a !== null).join(', ');
+                const roomAgeBadge = roomChildAges ? ` · Ages: ${roomChildAges}` : '';
+                
+                const origNightly = (x.sg[0].grossAccommodation + x.sup) * 1.10 * 1.17;
+                const origRoomTot = x.roomTot + x.disc;
+                const itemHasDisc = x.disc > 0;
+
+                return `
+                  <div style="padding:7px 4px;border-bottom:1px dashed #eef2f7;">
+                    <div style="display:flex;justify-content:space-between;align-items:flex-start;font-size:12px;font-weight:700;">
+                      <span>${i + 1}. ${x.r.cat}</span>
+                      <div style="text-align:right;">
+                        ${itemHasDisc ? `<span class="strikethrough-tag">$${f(origRoomTot)}</span>` : ''}
+                        <span style="color:#27313d;">$${f(x.roomTot)}</span>
+                      </div>
+                    </div>
+                    <div style="font-size:10.5px;color:#6b7785;margin-top:3px;display:flex;justify-content:space-between;">
+                      <span>
+                        ${MPN[x.mp]} · ${x.q} room${x.q > 1 ? 's' : ''} (${x.ad} Ad${x.ch ? `, ${x.ch} Ch${roomAgeBadge}` : ''}) · 
+                        ${itemHasDisc ? `<span class="strikethrough-tag">$${f(origNightly)}</span>` : ''}
+                        <b style="color:#526F90;">$${f(x.nightly)}</b> / night
+                      </span>
+                      ${itemHasDisc && S.adn ? `<span style="color:#526F90;font-style:italic;">${S.adn}</span>` : ''}
+                    </div>
                   </div>
-                </div>
-              `;
-            }).join('')}
-          </div>
-        `).join('')}
+                `;
+              }).join('')}
+            </div>
+          `).join('')}
 
-        ${t.sup > 0 ? `
+          ${t.sup > 0 ? `
+            <div style="display:flex;justify-content:space-between;padding:6px 0;font-size:11px;color:#6b7785;">
+              <span>Meal Supplement (${MPN[S.mp] || S.mp})</span>
+              <b>+$${f(t.sup)}</b>
+            </div>
+          ` : ''}
+
           <div style="display:flex;justify-content:space-between;padding:6px 0;font-size:11px;color:#6b7785;">
-            <span>Meal Supplement (${MPN[S.mp] || S.mp})</span>
-            <b>+$${f(t.sup)}</b>
+            <span>Taxes (10% Service Charge & 17% TGST)</span>
+            <b>$${f(t.tax)}</b>
           </div>
-        ` : ''}
+          ${S.gt ? `
+            <div style="display:flex;justify-content:space-between;padding:6px 0;font-size:11px;color:#6b7785;">
+              <span>Green Tax ($6.00 / pax / night)</span>
+              <b>$${f(t.green)}</b>
+            </div>
+          ` : ''}
 
-        <div style="display:flex;justify-content:space-between;padding:6px 0;font-size:11px;color:#6b7785;">
-          <span>Taxes (10% Service Charge & 17% TGST)</span>
-          <b>$${f(t.tax)}</b>
-        </div>
-        ${S.gt ? `
-          <div style="display:flex;justify-content:space-between;padding:6px 0;font-size:11px;color:#6b7785;">
-            <span>Green Tax ($6.00 / pax / night)</span>
-            <b>$${f(t.green)}</b>
-          </div>
-        ` : ''}
-
-        <div style="display:flex;justify-content:space-between;align-items:center;padding-top:8px;border-top:1px solid #eef2f7;font-size:12px;font-weight:700;">
-          <span>Accommodation Subtotal</span>
-          <div>
-            ${hasRoomDisc ? `<span class="strikethrough-tag">$${f(origAcc)}</span>` : ''}
-            <span style="color:#526F90;font-size:13px;">$${f(t.acc)}</span>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding-top:8px;border-top:1px solid #eef2f7;font-size:12px;font-weight:700;">
+            <span>Accommodation Subtotal</span>
+            <div>
+              ${hasRoomDisc ? `<span class="strikethrough-tag">$${f(origAcc)}</span>` : ''}
+              <span style="color:#526F90;font-size:13px;">$${f(t.acc)}</span>
+            </div>
           </div>
         </div>
-      </div>
+      `}
 
       <!-- Transfers & Supplementary Charges -->
       <div style="border:1px solid #d9dee4;border-radius:10px;padding:12px 14px;margin-bottom:12px;background:#fff;">
@@ -2610,19 +2735,38 @@ function generateFormalInvoiceBody() {
       ` : ''}
 
       <!-- Total Summary Card -->
-      <div style="background:#526F90;color:#ffffff;border-radius:10px;padding:14px;margin-top:12px;">
-        <div style="font-size:10px;text-transform:uppercase;letter-spacing:0.06em;opacity:0.85;">Total Package Cost</div>
-        <div style="font-size:24px;font-weight:800;display:flex;justify-content:space-between;align-items:baseline;margin-top:2px;">
-          <span>USD ${f(t.total)}</span>
-          ${t.disc > 0 || t.tdisc > 0 ? `<span class="og" style="font-size:14px;text-decoration:line-through;color:#ff9b9b;">USD ${f(t.total + t.disc + t.tdisc)}</span>` : ''}
-        </div>
-        ${t.disc > 0 || t.tdisc > 0 ? `
-          <div style="font-size:11px;margin-top:4px;opacity:0.95;display:flex;justify-content:space-between;">
-            <span>Total Promotional Savings</span>
-            <b>-USD ${f(t.disc + t.tdisc)}</b>
+      ${opt ? `
+        <div style="background:#526F90;color:#ffffff;border-radius:10px;padding:14px;margin-top:12px;">
+          <div style="font-size:10px;text-transform:uppercase;letter-spacing:0.06em;opacity:0.85;">Package Option Summary (${N} Nights)</div>
+          <div style="margin-top:8px;display:grid;gap:6px;">
+            ${k.map((x, i) => {
+              const optTrans = (S.tr && S.tr !== 'Own Transfer (Arranged by guest)') ? trNet() * x.pax * x.q : 0;
+              const optSupTotal = (S.supCharges || []).reduce((sum, sc) => sum + (n(sc.ad) * x.ad) + (n(sc.ch) * x.ch), 0);
+              const optPkg = x.roomTot + (x.gt * N * x.q) + optTrans + optSupTotal;
+              return `
+                <div style="display:flex;justify-content:space-between;align-items:center;padding:4px 0;border-bottom:1px dashed rgba(255,255,255,0.25);font-size:12px;">
+                  <span>Option ${i + 1} – ${x.r.cat}</span>
+                  <b style="font-size:15px;">USD ${f(optPkg)}</b>
+                </div>
+              `;
+            }).join('')}
           </div>
-        ` : ''}
-      </div>
+        </div>
+      ` : `
+        <div style="background:#526F90;color:#ffffff;border-radius:10px;padding:14px;margin-top:12px;">
+          <div style="font-size:10px;text-transform:uppercase;letter-spacing:0.06em;opacity:0.85;">Total Package Cost</div>
+          <div style="font-size:24px;font-weight:800;display:flex;justify-content:space-between;align-items:baseline;margin-top:2px;">
+            <span>USD ${f(t.total)}</span>
+            ${t.disc > 0 || t.tdisc > 0 ? `<span class="og" style="font-size:14px;text-decoration:line-through;color:#ff9b9b;">USD ${f(t.total + t.disc + t.tdisc)}</span>` : ''}
+          </div>
+          ${t.disc > 0 || t.tdisc > 0 ? `
+            <div style="font-size:11px;margin-top:4px;opacity:0.95;display:flex;justify-content:space-between;">
+              <span>Total Promotional Savings</span>
+              <b>-USD ${f(t.disc + t.tdisc)}</b>
+            </div>
+          ` : ''}
+        </div>
+      `}
 
       <!-- Footer Info -->
       <div style="margin-top:20px;font-size:10px;color:#8592a0;text-align:center;border-top:1px dashed #d9dee4;padding-top:10px;line-height:1.5;">
