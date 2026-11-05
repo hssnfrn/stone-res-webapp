@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#526F90">
-  <title>Stone Hotels Dhiffushi – Reservation Message Generator</title>
+  <title>Stone Hotels Maldives – Reservation Message Generator</title>
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <!-- Client-side PDF Generation Engine -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
@@ -642,7 +642,7 @@
   <header class="app-header">
     <div class="brand-bar">
       <div class="brand-titles">
-        <h1 class="brand-title">Stone Hotels Dhiffushi</h1>
+        <h1 class="brand-title">Stone Hotels Maldives</h1>
         <span class="brand-sub">Reservation Generator</span>
       </div>
       <div class="brand-meta">
@@ -722,6 +722,21 @@
             </div>
           </div>
         </details>
+      </div>
+
+      <!-- Rate Category Selector -->
+      <div class="card">
+        <h3>Rate Category</h3>
+        <label>Select Pricing Tier (Default: Direct Rate)</label>
+        <select id="rateChannelSelect" onchange="setRateChannel(this.value)">
+          <option value="direct" selected>Direct Rate (Default)</option>
+          <option value="ota">OTA Rate</option>
+          <option value="agent">Agent Rate</option>
+          <option value="agentOffer">Agent Special Offer</option>
+          <option value="affiliate">Affiliate Rate</option>
+          <option value="base">Base Tariff</option>
+        </select>
+        <div class="sub mt">Room rates automatically adjust based on season and selected tier.</div>
       </div>
 
       <div class="card">
@@ -1144,6 +1159,7 @@ const newSup = (ad = '', ch = '', note = '') => ({ ad, ch, note });
 const D = {
   ci: '2026-12-01',
   co: '2026-12-02',
+  rateChannel: 'direct',
   guestName: '',
   guestPhone: '',
   guestEmail: '',
@@ -1258,7 +1274,8 @@ const rng = (o, l) => {
 function getRateForCategoryInSeason(seasonObj, category) {
   if (!seasonObj || !seasonObj.rooms) return 0;
   const found = seasonObj.rooms.find(rm => rm.cat === category);
-  return found ? (found.direct || found.base || 0) : 0;
+  const ch = S.rateChannel || activeRateChannel || 'direct';
+  return found ? (found[ch] !== undefined ? found[ch] : (found.direct || found.base || 0)) : 0;
 }
 
 function findSeasonForDate(dStr, seasons) {
@@ -2563,8 +2580,8 @@ function generateFormalInvoiceBody() {
       <!-- Brand Header -->
       <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:2px solid #526F90;padding-bottom:12px;margin-bottom:16px;">
         <div>
-          <div style="font-size:22px;font-weight:800;color:#526F90;letter-spacing:-0.02em;">Stone Hotels Dhiffushi</div>
-          <div style="font-size:10px;text-transform:uppercase;letter-spacing:0.12em;color:#6b7785;margin-top:2px;">Dhiffushi 08030, Maldives · Official Reservation Offer</div>
+          <div style="font-size:18px;font-weight:700;color:#526F90;letter-spacing:-0.01em;">Stone Hotels Maldives</div>
+          <div style="font-size:20px;font-weight:800;text-transform:uppercase;letter-spacing:0.04em;color:#27313d;margin-top:2px;">RESERVATION OFFER</div>
         </div>
         <div style="text-align:right;">
           <div style="font-size:11px;font-weight:700;color:#27313d;">${datesAlt()}</div>
@@ -2806,7 +2823,8 @@ function generateFormalInvoiceBody() {
 
       <!-- Footer Info -->
       <div style="margin-top:20px;font-size:10px;color:#8592a0;text-align:center;border-top:1px dashed #d9dee4;padding-top:10px;line-height:1.5;">
-        <b>Stone Hotels Dhiffushi</b> · Dhiffushi 08030, Maldives · Tel: 332 8888 · reservations@stonehotels.mv
+        <div><b>Stone Hotels Maldives</b> · Dhiffushi 08030, Maldives</div>
+        <div style="margin-top:2px;">Email: reservations@stonehotels.mv · WhatsApp: +960 7312772 · Hotel Main: +960 6659100</div>
       </div>
     </div>
   `;
@@ -2976,7 +2994,7 @@ function generateFormalInvoiceHtml(autoPrint = true, withMobileNavbar = false) {
     <head>
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-      <title>Stone Hotels Dhiffushi - Reservation Offer</title>
+      <title>Stone Hotels Maldives - Reservation Offer</title>
       <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
       <style>
         @page {
@@ -3347,7 +3365,26 @@ function renderRatesTab() {
 function setRateChannel(ch) {
   haptic();
   activeRateChannel = ch;
+  S.rateChannel = ch;
+  if ($('rateChannelSelect')) $('rateChannelSelect').value = ch;
+  
+  // Re-evaluate tariffs with newly selected rate channel tier
+  const seasons = S.seasonsTariff || DEFAULT_SEASONAL_SEASONS;
+  if (seasons && seasons.length && S.ci) {
+    const s1 = seasons.find(s => S.ci >= s.start && S.ci <= s.end) || seasons[0];
+    if (s1 && s1.rooms) {
+      s1.rooms.forEach(rm => {
+        const val = rm[ch] !== undefined ? rm[ch] : (rm.direct || rm.base || 0);
+        if (val) S.rates[rm.cat] = val;
+      });
+    }
+  }
+
+  autoAssignRatesFromDates();
+  renderRooms();
   renderRatesTab();
+  refresh();
+  showToast(`Switched rate category to ${ch.toUpperCase()} ✓`);
 }
 
 function applyTariffRate(category, rate) {
@@ -3495,6 +3532,11 @@ function init() {
   if ($('isAgent')) {
     $('isAgent').checked = !!S.isAgent;
     $('isAgent').onchange = e => { S.isAgent = e.target.checked; refresh(); };
+  }
+
+  if ($('rateChannelSelect')) {
+    $('rateChannelSelect').value = S.rateChannel || 'direct';
+    activeRateChannel = S.rateChannel || 'direct';
   }
 
   if ($('daCustomType')) {
