@@ -6,6 +6,8 @@
   <meta name="theme-color" content="#526F90">
   <title>Stone Hotels Dhiffushi – Reservation Message Generator</title>
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Client-side PDF Generation Engine -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <style>
     :root {
       box-sizing: border-box;
@@ -572,15 +574,20 @@
       display: flex;
       align-items: center;
       gap: 6px;
+      flex-wrap: wrap;
     }
     .pdf-btn {
-      padding: 5px 11px;
+      padding: 6px 12px;
       font-size: 11px;
-      border-radius: 6px;
-      min-height: 30px;
+      border-radius: 8px;
+      min-height: 32px;
       border: 1px solid rgba(255,255,255,0.2);
       background: rgba(255,255,255,0.12);
       color: #fff;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      cursor: pointer;
     }
     .pdf-btn.pri {
       background: var(--cop);
@@ -595,6 +602,7 @@
       background: #f4f5f7;
       display: flex;
       justify-content: center;
+      -webkit-overflow-scrolling: touch;
     }
     .pdf-page-sheet {
       background: #ffffff;
@@ -606,6 +614,25 @@
       box-sizing: border-box;
       font-family: Manrope, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       color: #27313d;
+    }
+    @media (max-width: 640px) {
+      .pdf-modal-backdrop {
+        padding: 0;
+      }
+      .pdf-modal-panel {
+        max-width: 100%;
+        height: 100dvh;
+        max-height: 100dvh;
+        border-radius: 0;
+      }
+      .pdf-modal-bar {
+        padding: 10px 12px calc(10px + env(safe-area-inset-top, 0px));
+      }
+      .pdf-page-sheet {
+        padding: 16px 12px;
+        border-radius: 0;
+        box-shadow: none;
+      }
     }
   </style>
 </head>
@@ -955,11 +982,20 @@
   <div class="pdf-modal-backdrop" id="pdfModal">
     <div class="pdf-modal-panel">
       <div class="pdf-modal-bar">
-        <h4>PDF Quote Draft Preview</h4>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <button type="button" class="pdf-btn" onclick="closePdfPreview()" style="font-weight:700;padding:5px 9px;">
+            ← Back
+          </button>
+          <h4>Offer Preview</h4>
+        </div>
         <div class="pdf-modal-actions">
-          <button type="button" class="pdf-btn pri" onclick="triggerActualPrint()">Print / PDF</button>
-          <button type="button" class="pdf-btn" onclick="openPdfNewTab()">Open Full View</button>
-          <button type="button" class="pdf-btn" onclick="closePdfPreview()">✕</button>
+          <button type="button" class="pdf-btn pri" onclick="exportOrSharePdf()">
+            <svg style="width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2.2;" viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+            <span>Share Doc</span>
+          </button>
+          <button type="button" class="pdf-btn" onclick="downloadPdfFile()">Download</button>
+          <button type="button" class="pdf-btn" onclick="triggerActualPrint()">Print</button>
+          <button type="button" class="pdf-btn" onclick="openPdfNewTab()">Full View</button>
         </div>
       </div>
       <div class="pdf-modal-body">
@@ -2784,6 +2820,11 @@ function openPdfPreviewModal() {
 
   sheet.innerHTML = generateFormalInvoiceBody();
   modal.classList.add('open');
+
+  // Push history state so native mobile back swipe or back button closes the modal
+  try {
+    history.pushState({ pdfOpen: true }, '');
+  } catch (e) {}
 }
 
 function closePdfPreview() {
@@ -2792,48 +2833,212 @@ function closePdfPreview() {
   if (modal) modal.classList.remove('open');
 }
 
+// Listen to browser / Android hardware back button to exit modal cleanly
+window.addEventListener('popstate', (e) => {
+  const modal = $('pdfModal');
+  if (modal && modal.classList.contains('open')) {
+    modal.classList.remove('open');
+  }
+});
+
 function triggerActualPrint() {
   haptic();
   exportOverviewPdf();
 }
 
-function openPdfNewTab() {
-  haptic();
-  const printHtml = generateFormalInvoiceHtml();
-  try {
-    const printWin = window.open('', '_blank');
-    if (printWin) {
-      printWin.document.open();
-      printWin.document.write(printHtml);
-      printWin.document.close();
-    }
-  } catch (err) {}
+// Generate structured file name based on Guest Name, Check-in, Check-out, and Meal Plan
+function getExportFileName() {
+  const ci = S.ci || 'checkin';
+  const co = S.co || 'checkout';
+  const mp = S.mp || 'BB';
+  const guestClean = (S.guestName || '').trim().replace(/[^a-zA-Z0-9_-]/g, '_');
+  const guestPrefix = guestClean ? `${guestClean}_` : '';
+  return `Stone_Hotels_Offer_${guestPrefix}${ci}_to_${co}_${mp}.pdf`;
 }
 
-function generateFormalInvoiceHtml() {
+// Helper to generate a PDF Blob from the preview sheet using html2pdf
+async function createPdfBlob() {
+  const sheet = $('pdfSheetContainer');
+  if (!sheet) throw new Error('Sheet element not found');
+
+  // Temporary container clone to ensure crisp white background & fixed print width
+  const cloneEl = sheet.cloneNode(true);
+  cloneEl.style.width = '680px';
+  cloneEl.style.maxWidth = '680px';
+  cloneEl.style.padding = '24px';
+  cloneEl.style.background = '#ffffff';
+  cloneEl.style.color = '#27313d';
+
+  const wrapper = document.createElement('div');
+  wrapper.style.position = 'fixed';
+  wrapper.style.left = '-9999px';
+  wrapper.style.top = '0';
+  wrapper.style.width = '680px';
+  wrapper.style.background = '#ffffff';
+  wrapper.appendChild(cloneEl);
+  document.body.appendChild(wrapper);
+
+  const opt = {
+    margin: [10, 10, 10, 10],
+    filename: getExportFileName(),
+    image: { type: 'jpeg', quality: 0.98 },
+    html2canvas: { scale: 2, useCORS: true, letterRendering: true, backgroundColor: '#ffffff' },
+    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+  };
+
+  try {
+    const pdfBlob = await html2pdf().set(opt).from(cloneEl).outputPdf('blob');
+    document.body.removeChild(wrapper);
+    return pdfBlob;
+  } catch (err) {
+    if (document.body.contains(wrapper)) document.body.removeChild(wrapper);
+    throw err;
+  }
+}
+
+// Download the offer document directly to device files as .pdf
+async function downloadPdfFile() {
+  haptic();
+  showToast('Generating PDF...');
+  try {
+    const pdfBlob = await createPdfBlob();
+    const fileName = getExportFileName();
+    const url = URL.createObjectURL(pdfBlob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = fileName;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(url), 2500);
+    showToast(`Downloaded: ${fileName} ✓`);
+  } catch (err) {
+    console.warn('PDF generation failed, falling back to print:', err);
+    triggerActualPrint();
+  }
+}
+
+// Share file via native system share sheet (WhatsApp, Files, AirDrop, etc.) as authentic .pdf
+async function exportOrSharePdf() {
+  haptic();
+  showToast('Preparing PDF to share...');
+  const fileName = getExportFileName();
+
+  try {
+    const pdfBlob = await createPdfBlob();
+
+    // Check if navigator.canShare is supported and can handle the PDF file
+    if (navigator.canShare && typeof File !== 'undefined') {
+      const shareFile = new File([pdfBlob], fileName, { type: 'application/pdf' });
+      if (navigator.canShare({ files: [shareFile] })) {
+        await navigator.share({
+          files: [shareFile]
+        });
+        showToast('PDF shared successfully ✓');
+        return;
+      }
+    }
+
+    // Direct download fallback if share sheet is unavailable or declined
+    const url = URL.createObjectURL(pdfBlob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = fileName;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(url), 2500);
+    showToast(`Saved as: ${fileName} ✓`);
+  } catch (err) {
+    if (err.name === 'AbortError') return; // User closed the share sheet
+    console.warn('Native PDF share failed, falling back to download:', err);
+    downloadPdfFile();
+  }
+}
+
+function openPdfNewTab() {
+  haptic();
+  const printHtml = generateFormalInvoiceHtml(false, true);
+  const blob = new Blob([printHtml], { type: 'text/html' });
+  const blobUrl = URL.createObjectURL(blob);
+  
+  const w = window.open(blobUrl, '_blank');
+  if (!w) {
+    location.href = blobUrl;
+  }
+}
+
+function generateFormalInvoiceHtml(autoPrint = true, withMobileNavbar = false) {
   const bodyHtml = generateFormalInvoiceBody();
   return `
     <!DOCTYPE html>
     <html lang="en">
     <head>
       <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
       <title>Stone Hotels Dhiffushi - Reservation Offer</title>
       <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
       <style>
         @page {
           size: A4 portrait;
-          margin: 14mm 14mm 14mm 14mm;
+          margin: 12mm;
         }
+        * { box-sizing: border-box; }
         body {
           font-family: Manrope, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
           color: #27313d;
-          background: #ffffff;
+          background: #f8fafc;
           margin: 0;
           padding: 0;
           font-size: 11.5px;
           line-height: 1.45;
           -webkit-print-color-adjust: exact;
           print-color-adjust: exact;
+        }
+        .fullview-nav {
+          position: sticky;
+          top: 0;
+          z-index: 999;
+          background: #27313d;
+          color: #fff;
+          padding: 8px 14px;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        }
+        .fullview-nav button {
+          border: 1px solid rgba(255,255,255,0.25);
+          background: rgba(255,255,255,0.15);
+          color: #fff;
+          font: 600 12px Manrope, sans-serif;
+          padding: 6px 12px;
+          border-radius: 6px;
+          cursor: pointer;
+        }
+        .fullview-nav button.pri {
+          background: #D4A975;
+          color: #2b2118;
+          border-color: #D4A975;
+          font-weight: 700;
+        }
+        .content-container {
+          max-width: 720px;
+          margin: 16px auto;
+          background: #ffffff;
+          padding: 24px;
+          border-radius: 8px;
+          box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+        }
+        @media print {
+          .fullview-nav { display: none !important; }
+          body { background: #fff; }
+          .content-container {
+            margin: 0;
+            padding: 0;
+            box-shadow: none;
+            max-width: 100%;
+          }
         }
         .strikethrough-tag {
           color: #e04f4f !important;
@@ -2844,14 +3049,25 @@ function generateFormalInvoiceHtml() {
       </style>
     </head>
     <body>
-      ${bodyHtml}
-      <script>
-        window.onload = function() {
-          setTimeout(function() {
-            window.print();
-          }, 250);
-        };
-      <\/script>
+      ${withMobileNavbar ? `
+        <div class="fullview-nav">
+          <button type="button" onclick="if(history.length>1){history.back();}else{window.close();}">← Back to App</button>
+          <div style="font-size:12px;font-weight:700;">Quote View</div>
+          <button type="button" class="pri" onclick="window.print()">Print / PDF</button>
+        </div>
+      ` : ''}
+      <div class="content-container">
+        ${bodyHtml}
+      </div>
+      ${autoPrint ? `
+        <script>
+          window.onload = function() {
+            setTimeout(function() {
+              window.print();
+            }, 300);
+          };
+        <\/script>
+      ` : ''}
     </body>
     </html>
   `;
@@ -2859,8 +3075,14 @@ function generateFormalInvoiceHtml() {
 
 function exportOverviewPdf() {
   haptic();
-  const printHtml = generateFormalInvoiceHtml();
+  const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+  if (isMobile) {
+    // On mobile devices, launch the full screen view with the Back navigation bar and Print action
+    openPdfNewTab();
+    return;
+  }
 
+  const printHtml = generateFormalInvoiceHtml(true, false);
   try {
     const printWin = window.open('', '_blank');
     if (printWin) {
