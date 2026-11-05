@@ -1023,6 +1023,14 @@ const TYPES = [
   'Grand Infinity Seaview'
 ];
 
+// Helper to determine the default property based on room category
+const getPropertyForRoom = cat => {
+  if (cat === 'Standard Ocean View' || cat === 'Deluxe Ocean View') {
+    return 'Stone Beach Club';
+  }
+  return 'Stone Hotels Dhiffushi';
+};
+
 // Exact Seasonal Structure from Stone Hotels Pricing Sheet 2026/27
 const DEFAULT_SEASONAL_SEASONS = [
   {
@@ -1080,6 +1088,7 @@ const DEFAULT_SEASONAL_SEASONS = [
 
 const room = (c, r) => ({
   cat: c || 'Grand Seaview',
+  property: getPropertyForRoom(c || 'Grand Seaview'),
   ad: 2,
   ch: 0,
   inf: 0,
@@ -1391,29 +1400,41 @@ function buildAgent({ N, k, t }) {
   const dStr = dates();
   let m = `Please find the full details of the offer below on ${dStr}:\n\n`;
 
+  // Group rooms by Property
+  const propGroups = {};
   k.forEach(x => {
-    const occ = `${x.ad} adult${x.ad !== 1 ? 's' : ''}${x.ch ? ` and ${x.ch} child${x.ch > 1 ? 'ren' : ''}` : ''}`;
-    const qtyStr = x.q > 1 ? ` x ${x.q} rooms` : '';
-    const extraParts = [];
-    if (x.ebRate > 0) extraParts.push(`Extra Adult: USD ${f(x.ebRate)}`);
-    if (x.ecRate > 0) extraParts.push(`Extra Child: USD ${f(x.ecRate)}`);
-    const extraText = extraParts.length ? ` [${extraParts.join(', ')}]` : '';
-    const noteText = S.adn ? ` (${S.adn})` : '';
+    const propName = x.r.property || getPropertyForRoom(x.r.cat);
+    if (!propGroups[propName]) propGroups[propName] = [];
+    propGroups[propName].push(x);
+  });
 
-    if (x.sg.length === 1) {
-      m += `Room type: ${x.r.cat}${qtyStr} (${occ})${extraText} / Rate: USD ${f(x.sg[0].nightly + x.gt)} per night${x.q > 1 ? ' per room' : ''}${noteText}\n`;
-    } else {
-      let off = 0;
-      x.sg.forEach(s => {
-        m += `Room type: ${x.r.cat}${qtyStr} (${rng(off, s.n)}, ${s.n} night${s.n > 1 ? 's' : ''}) (${occ})${extraText} / Rate: USD ${f(s.nightly + x.gt)} per night${x.q > 1 ? ' per room' : ''}${noteText}\n`;
-        off += s.n;
-      });
-    }
+  Object.keys(propGroups).forEach(propName => {
+    m += `Property: ${propName}\n`;
+    propGroups[propName].forEach(x => {
+      const occ = `${x.ad} adult${x.ad !== 1 ? 's' : ''}${x.ch ? ` and ${x.ch} child${x.ch > 1 ? 'ren' : ''}` : ''}`;
+      const qtyStr = x.q > 1 ? ` x ${x.q} rooms` : '';
+      const extraParts = [];
+      if (x.ebRate > 0) extraParts.push(`Extra Adult: USD ${f(x.ebRate)}`);
+      if (x.ecRate > 0) extraParts.push(`Extra Child: USD ${f(x.ecRate)}`);
+      const extraText = extraParts.length ? ` [${extraParts.join(', ')}]` : '';
+      const noteText = S.adn ? ` (${S.adn})` : '';
 
-    const planName = MPN[x.mp];
-    const taxNote = S.gt ? `+ TGST, Service Charges & Green Tax` : `+ TGST & Service Charges`;
-    const roomCountNote = x.q > 1 ? ` (${x.q} rooms)` : '';
-    m += `Total accommodation for ${N} night${N !== 1 ? 's' : ''}${roomCountNote}: USD ${f(x.roomTot + (x.gt * N * x.q))} on ${planName} ${taxNote}\n\n`;
+      if (x.sg.length === 1) {
+        m += `• Room type: ${x.r.cat}${qtyStr} (${occ})${extraText} / Rate: USD ${f(x.sg[0].nightly + x.gt)} per night${x.q > 1 ? ' per room' : ''}${noteText}\n`;
+      } else {
+        let off = 0;
+        x.sg.forEach(s => {
+          m += `• Room type: ${x.r.cat}${qtyStr} (${rng(off, s.n)}, ${s.n} night${s.n > 1 ? 's' : ''}) (${occ})${extraText} / Rate: USD ${f(s.nightly + x.gt)} per night${x.q > 1 ? ' per room' : ''}${noteText}\n`;
+          off += s.n;
+        });
+      }
+
+      const planName = MPN[x.mp];
+      const taxNote = S.gt ? `+ TGST, Service Charges & Green Tax` : `+ TGST & Service Charges`;
+      const roomCountNote = x.q > 1 ? ` (${x.q} rooms)` : '';
+      m += `  Total accommodation for ${N} night${N !== 1 ? 's' : ''}${roomCountNote}: USD ${f(x.roomTot + (x.gt * N * x.q))} on ${planName} ${taxNote}\n`;
+    });
+    m += `\n`;
   });
 
   const validSup = (S.supCharges || []).filter(sc => n(sc.ad) > 0 || n(sc.ch) > 0);
@@ -1460,21 +1481,33 @@ function buildOpt({ N, k }) {
   const showMp = new Set(k.map(x => x.mp)).size > 1 || k.some(x => x.mp !== 'BB');
   
   let m = `Greetings from Stone Hotels!\n\nPlease find below our accommodation offer for ${datesAlt()} (${N} Night${N !== 1 ? 's' : ''} | ${occ.join(', ')} | ${g.q} Room${g.q > 1 ? 's' : ''}).\n\nAccommodation Options\n`;
-  k.forEach((x, i) => {
-    let off = 0;
-    const extraLines = [];
-    if (x.ebRate > 0) extraLines.push(`• Extra Adult Bed: USD ${f(x.ebRate)} / night`);
-    if (x.ecRate > 0) extraLines.push(`• Extra Child Bed: USD ${f(x.ecRate)} / night`);
-    const extraBlock = extraLines.length ? extraLines.join('\n') + '\n' : '';
 
-    const rl = x.sg.length === 1
-      ? `• Room Rate: USD ${f(x.sg[0].nightly + x.gt)} per night${nt_}\n`
-      : x.sg.map(s => {
-          const l = `• Room Rate (${rng(off, s.n)}, ${s.n} night${s.n > 1 ? 's' : ''}): USD ${f(s.nightly + x.gt)} per night${nt_}\n`;
-          off += s.n;
-          return l;
-        }).join('');
-    m += `Option ${i + 1}: ${x.r.cat}\n${showMp ? `• Meal Plan: ${MPN[x.mp]}\n` : ''}${extraBlock}${rl}• ${inc}\n\n`;
+  // Group rooms by Property
+  const propGroups = {};
+  k.forEach((x, i) => {
+    const propName = x.r.property || getPropertyForRoom(x.r.cat);
+    if (!propGroups[propName]) propGroups[propName] = [];
+    propGroups[propName].push({ item: x, optIndex: i + 1 });
+  });
+
+  Object.keys(propGroups).forEach(propName => {
+    m += `Property: ${propName}\n`;
+    propGroups[propName].forEach(({ item: x, optIndex }) => {
+      let off = 0;
+      const extraLines = [];
+      if (x.ebRate > 0) extraLines.push(`• Extra Adult Bed: USD ${f(x.ebRate)} / night`);
+      if (x.ecRate > 0) extraLines.push(`• Extra Child Bed: USD ${f(x.ecRate)} / night`);
+      const extraBlock = extraLines.length ? extraLines.join('\n') + '\n' : '';
+
+      const rl = x.sg.length === 1
+        ? `• Room Rate: USD ${f(x.sg[0].nightly + x.gt)} per night${nt_}\n`
+        : x.sg.map(s => {
+            const l = `• Room Rate (${rng(off, s.n)}, ${s.n} night${s.n > 1 ? 's' : ''}): USD ${f(s.nightly + x.gt)} per night${nt_}\n`;
+            off += s.n;
+            return l;
+          }).join('');
+      m += `Option ${optIndex}: ${x.r.cat}\n${showMp ? `• Meal Plan: ${MPN[x.mp]}\n` : ''}${extraBlock}${rl}• ${inc}\n\n`;
+    });
   });
 
   if (S.tr === 'Own Transfer (Arranged by guest)') {
@@ -1523,26 +1556,38 @@ function buildStd({ N, k, t }) {
   const nt_ = S.adn ? ` (${S.adn})` : '';
 
   let m = `Greetings from Stone Hotels!\n\nWe are delighted to inform you that we currently have ${units} unit${units > 1 ? 's' : ''} of our ${names} room${units > 1 ? 's are' : ' is'} available — a perfect option for a serene and unforgettable getaway on ${dates()}\n\n`;
+
+  // Group rooms by Property
+  const propGroups = {};
   k.forEach((x, i) => {
-    const o = [`${x.ad} Adult${x.ad !== 1 ? 's' : ''}`];
-    const ag = x.r.ages.filter(a => a !== '').join(', ');
-    if (x.ch) o.push(`${x.ch} Child${x.ch > 1 ? 'ren' : ''}${ag ? ' aged ' + ag : ''}`);
-    if (n(x.r.inf)) o.push(`${n(x.r.inf)} Infant${n(x.r.inf) > 1 ? 's' : ''}`);
+    const propName = x.r.property || getPropertyForRoom(x.r.cat);
+    if (!propGroups[propName]) propGroups[propName] = [];
+    propGroups[propName].push({ item: x, index: i + 1 });
+  });
 
-    const extraLines = [];
-    if (x.ebRate > 0) extraLines.push(`Extra Adult Bed: USD ${f(x.ebRate)} / night included`);
-    if (x.ecRate > 0) extraLines.push(`Extra Child Bed: USD ${f(x.ecRate)} / night included`);
-    const extraBlock = extraLines.length ? extraLines.join('\n') + '\n' : '';
+  Object.keys(propGroups).forEach(propName => {
+    m += `Property: ${propName}\n`;
+    propGroups[propName].forEach(({ item: x, index }) => {
+      const o = [`${x.ad} Adult${x.ad !== 1 ? 's' : ''}`];
+      const ag = x.r.ages.filter(a => a !== '').join(', ');
+      if (x.ch) o.push(`${x.ch} Child${x.ch > 1 ? 'ren' : ''}${ag ? ' aged ' + ag : ''}`);
+      if (n(x.r.inf)) o.push(`${n(x.r.inf)} Infant${n(x.r.inf) > 1 ? 's' : ''}`);
 
-    let off = 0;
-    const rl = x.sg.length === 1
-      ? `Nightly Room Rate on ${MPN[x.mp]}: USD ${f(x.nightly)} per room per night incl. Tax & Service Charge${nt_}\n`
-      : x.sg.map(s => {
-          const l = `Nightly Room Rate on ${MPN[x.mp]} (${rng(off, s.n)}, ${s.n} night${s.n > 1 ? 's' : ''}): USD ${f(s.nightly)} per room per night incl. Tax & Service Charge${nt_}\n`;
-          off += s.n;
-          return l;
-        }).join('');
-    m += `${i + 1}. Room Category: ${x.r.cat} (${o.join(', ')})\n${extraBlock}${rl}Quantity: ${x.q} room${x.q > 1 ? 's' : ''}\nTotal: USD ${f(x.roomTot)}\n\n`;
+      const extraLines = [];
+      if (x.ebRate > 0) extraLines.push(`Extra Adult Bed: USD ${f(x.ebRate)} / night included`);
+      if (x.ecRate > 0) extraLines.push(`Extra Child Bed: USD ${f(x.ecRate)} / night included`);
+      const extraBlock = extraLines.length ? extraLines.join('\n') + '\n' : '';
+
+      let off = 0;
+      const rl = x.sg.length === 1
+        ? `Nightly Room Rate on ${MPN[x.mp]}: USD ${f(x.nightly)} per room per night incl. Tax & Service Charge${nt_}\n`
+        : x.sg.map(s => {
+            const l = `Nightly Room Rate on ${MPN[x.mp]} (${rng(off, s.n)}, ${s.n} night${s.n > 1 ? 's' : ''}): USD ${f(s.nightly)} per room per night incl. Tax & Service Charge${nt_}\n`;
+            off += s.n;
+            return l;
+          }).join('');
+      m += `${index}. Room Category: ${x.r.cat}\nOccupancy: ${o.join(', ')}\n${extraBlock}${rl}Quantity: ${x.q} room${x.q > 1 ? 's' : ''}\nTotal: USD ${f(x.roomTot)}\n\n`;
+    });
   });
 
   const plans = [...new Set(k.map(x => MPN[x.mp]))].join(' / ');
@@ -1589,6 +1634,25 @@ function renderOverview() {
   const hasRoomDisc = t.disc > 0;
   const hasTransDisc = t.tdisc > 0;
 
+  // Extract all entered child ages across configured rooms for top overview
+  const allChildAges = [];
+  (S.rooms || []).forEach(r => {
+    if (Array.isArray(r.ages)) {
+      r.ages.forEach(a => {
+        if (a !== '' && a !== undefined && a !== null) allChildAges.push(a);
+      });
+    }
+  });
+  const childAgesStr = allChildAges.length > 0 ? ` (Ages: ${allChildAges.join(', ')})` : '';
+
+  // Group rooms by property for clean overview display
+  const propGroups = {};
+  k.forEach((x, i) => {
+    const propName = x.r.property || getPropertyForRoom(x.r.cat);
+    if (!propGroups[propName]) propGroups[propName] = [];
+    propGroups[propName].push({ item: x, index: i });
+  });
+
   ovContent.innerHTML = `
     <div class="card">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
@@ -1605,7 +1669,10 @@ function renderOverview() {
       ` : ''}
       <div class="overview-row"><span>Period</span><b>${datesAlt()}</b></div>
       <div class="overview-row"><span>Duration</span><b>${N} night${N !== 1 ? 's' : ''}</b></div>
-      <div class="overview-row"><span>Guests</span><b>${t.ad} Adult${t.ad !== 1 ? 's' : ''}${t.pax > t.ad ? `, ${t.pax - t.ad} Children` : ''}</b></div>
+      <div class="overview-row">
+        <span>Guests</span>
+        <b>${t.ad} Adult${t.ad !== 1 ? 's' : ''}${t.pax > t.ad ? `, ${t.pax - t.ad} Children${childAgesStr}` : ''}</b>
+      </div>
       <div class="overview-row"><span>Mode</span><b>${opt ? 'Room Comparison' : 'Standard Booking'}</b></div>
     </div>
 
@@ -1615,36 +1682,45 @@ function renderOverview() {
         ${hasRoomDisc && S.adn ? `<span class="disc-pill">${S.adn}</span>` : ''}
       </div>
 
-      ${k.map((x, i) => {
-        const extraTags = [];
-        if (x.ebRate > 0) extraTags.push(`Extra Adult: +$${f(x.ebRate)}`);
-        if (x.ecRate > 0) extraTags.push(`Extra Child: +$${f(x.ecRate)}`);
-        
-        // Compute undiscounted original nightly & room totals for this item
-        const origNightly = (x.sg[0].grossAccommodation + x.sup) * 1.10 * 1.17;
-        const origRoomTot = x.roomTot + x.disc;
-        const itemHasDisc = x.disc > 0;
+      ${Object.keys(propGroups).map(propName => `
+        <div style="margin-bottom:10px;">
+          <div style="font-size:10.5px;font-weight:700;color:var(--acc);text-transform:uppercase;letter-spacing:0.04em;background:var(--soft);padding:4px 8px;border-radius:6px;margin:6px 0 4px;">
+            Property: ${propName}
+          </div>
+          ${propGroups[propName].map(({ item: x, index: i }) => {
+            const extraTags = [];
+            if (x.ebRate > 0) extraTags.push(`Extra Adult: +$${f(x.ebRate)}`);
+            if (x.ecRate > 0) extraTags.push(`Extra Child: +$${f(x.ecRate)}`);
+            
+            const roomChildAges = (x.r.ages || []).filter(a => a !== '' && a !== undefined && a !== null).join(', ');
+            const roomAgeBadge = roomChildAges ? ` (Ages: ${roomChildAges})` : '';
 
-        return `
-        <div style="padding:7px 0;border-bottom:1px dashed var(--line);">
-          <div style="display:flex;justify-content:space-between;align-items:center;font-weight:600;font-size:12px;">
-            <span>${opt ? `Option ${i + 1}: ` : `${i + 1}. `}${x.r.cat}</span>
-            <div>
-              ${itemHasDisc ? `<span class="strikethrough-tag">$${f(origRoomTot)}</span>` : ''}
-              <span style="color:var(--text);font-weight:700;">$${f(x.roomTot)}</span>
+            const origNightly = (x.sg[0].grossAccommodation + x.sup) * 1.10 * 1.17;
+            const origRoomTot = x.roomTot + x.disc;
+            const itemHasDisc = x.disc > 0;
+
+            return `
+            <div style="padding:6px 4px;border-bottom:1px dashed var(--line);">
+              <div style="display:flex;justify-content:space-between;align-items:flex-start;font-weight:600;font-size:12px;">
+                <span>${opt ? `Option ${i + 1}: ` : `${i + 1}. `}${x.r.cat}</span>
+                <div style="text-align:right;">
+                  ${itemHasDisc ? `<span class="strikethrough-tag">$${f(origRoomTot)}</span>` : ''}
+                  <span style="color:var(--text);font-weight:700;">$${f(x.roomTot)}</span>
+                </div>
+              </div>
+              <div style="font-size:10px;color:var(--mute);margin-top:3px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:4px;">
+                <div>
+                  ${MPN[x.mp]} · ${x.q} room${x.q > 1 ? 's' : ''} (${x.ad} Ad${x.ch ? `, ${x.ch} Ch${roomAgeBadge}` : ''}) · 
+                  ${itemHasDisc ? `<span class="strikethrough-tag" style="margin-right:3px;">$${f(origNightly)}</span>` : ''}
+                  <b style="color:var(--acc);">$${f(x.nightly)}</b> / night
+                  ${extraTags.length ? ` · (${extraTags.join(', ')})` : ''}
+                </div>
+                ${itemHasDisc && S.adn ? `<span style="font-size:9.5px;color:var(--acc);font-style:italic;">${S.adn}</span>` : ''}
+              </div>
             </div>
-          </div>
-          <div style="font-size:10px;color:var(--mute);margin-top:3px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:4px;">
-            <div>
-              ${MPN[x.mp]} · ${x.q} room${x.q > 1 ? 's' : ''} · 
-              ${itemHasDisc ? `<span class="strikethrough-tag" style="margin-right:3px;">$${f(origNightly)}</span>` : ''}
-              <b style="color:var(--acc);">$${f(x.nightly)}</b> / night
-              ${extraTags.length ? ` · (${extraTags.join(', ')})` : ''}
-            </div>
-            ${itemHasDisc && S.adn ? `<span style="font-size:9.5px;color:var(--acc);font-style:italic;">${S.adn}</span>` : ''}
-          </div>
+          `;}).join('')}
         </div>
-      `;}).join('')}
+      `).join('')}
 
       ${t.sup > 0 ? `
         <div class="overview-row" style="font-size:11px;color:var(--mute);">
@@ -2056,6 +2132,14 @@ function renderRooms() {
           </select>
 
           <div class="mt">
+            <label>Property</label>
+            <select onchange="S.rooms[${i}].property=this.value;renderRooms();refresh();">
+              <option value="Stone Hotels Dhiffushi"${(r.property || getPropertyForRoom(r.cat)) === 'Stone Hotels Dhiffushi' ? ' selected' : ''}>Stone Hotels Dhiffushi</option>
+              <option value="Stone Beach Club"${(r.property || getPropertyForRoom(r.cat)) === 'Stone Beach Club' ? ' selected' : ''}>Stone Beach Club</option>
+            </select>
+          </div>
+
+          <div class="mt">
             <label>Meal Plan</label>
             <select onchange="S.rooms[${i}].mp=this.value;renderRooms();refresh();">
               ${Object.keys(MPN).map(k => `<option value="${k}"${mp === k ? ' selected' : ''}>${MPN[k]}</option>`).join('')}
@@ -2150,6 +2234,7 @@ function st(i, k, d, min) {
 function setCat(i, v) {
   const r = S.rooms[i];
   r.cat = v;
+  r.property = getPropertyForRoom(v);
   const seasons = S.seasonsTariff || DEFAULT_SEASONAL_SEASONS;
   const s1 = seasons.find(s => S.ci >= s.start && S.ci <= s.end);
   if (s1) {
@@ -2343,6 +2428,26 @@ function generateFormalInvoiceBody() {
 
   const validSup = (S.supCharges || []).filter(sc => n(sc.ad) > 0 || n(sc.ch) > 0);
 
+  // Extract all entered child ages across configured rooms
+  const allChildAges = [];
+  (S.rooms || []).forEach(r => {
+    if (Array.isArray(r.ages)) {
+      r.ages.forEach(a => {
+        if (a !== '' && a !== undefined && a !== null) allChildAges.push(a);
+      });
+    }
+  });
+  const childAgesStr = allChildAges.length > 0 ? ` (Ages: ${allChildAges.join(', ')})` : '';
+  const transferModeLabel = S.tr ? S.tr : 'None';
+
+  // Group rooms by Property for the proposal layout
+  const propGroups = {};
+  k.forEach((x, i) => {
+    const propName = x.r.property || getPropertyForRoom(x.r.cat);
+    if (!propGroups[propName]) propGroups[propName] = [];
+    propGroups[propName].push({ item: x, index: i });
+  });
+
   return `
     <div style="max-width:680px;margin:0 auto;font-family:Manrope,-apple-system,sans-serif;color:#27313d;line-height:1.45;">
       <!-- Brand Header -->
@@ -2357,12 +2462,20 @@ function generateFormalInvoiceBody() {
         </div>
       </div>
 
-      <!-- Stay Details Bar -->
-      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;background:#f4f6f9;padding:10px 12px;border-radius:8px;margin-bottom:14px;font-size:11px;">
+      <!-- Stay Details Highlight Score Cards (5-Column Layout) -->
+      <div style="display:grid;grid-template-columns:repeat(5, 1fr);gap:8px;background:#f4f6f9;padding:10px 12px;border-radius:8px;margin-bottom:14px;font-size:11px;">
         <div><span style="color:#6b7785;font-size:9.5px;display:block;text-transform:uppercase;">Check-in</span><b>${dm(new Date(S.ci + 'T00:00'))}</b></div>
         <div><span style="color:#6b7785;font-size:9.5px;display:block;text-transform:uppercase;">Check-out</span><b>${dm(new Date(S.co + 'T00:00'))}</b></div>
         <div><span style="color:#6b7785;font-size:9.5px;display:block;text-transform:uppercase;">Meal Plan</span><b>${MPN[S.mp] || S.mp}</b></div>
-        <div><span style="color:#6b7785;font-size:9.5px;display:block;text-transform:uppercase;">Occupancy</span><b>${t.ad} Ad${t.pax > t.ad ? `, ${t.pax - t.ad} Ch` : ''}</b></div>
+        <div>
+          <span style="color:#6b7785;font-size:9.5px;display:block;text-transform:uppercase;">Occupancy</span>
+          <b>${t.ad} Ad${t.pax > t.ad ? `, ${t.pax - t.ad} Ch` : ''}</b>
+          ${childAgesStr ? `<small style="display:block;font-size:9px;color:#526F90;font-weight:700;line-height:1.2;margin-top:1px;">${childAgesStr}</small>` : ''}
+        </div>
+        <div>
+          <span style="color:#6b7785;font-size:9.5px;display:block;text-transform:uppercase;">Transfer Mode</span>
+          <b style="font-size:10.5px;color:#526F90;">${transferModeLabel}</b>
+        </div>
       </div>
 
       ${S.guestName || S.guestPhone || S.guestEmail ? `
@@ -2379,36 +2492,41 @@ function generateFormalInvoiceBody() {
           ${hasRoomDisc && S.adn ? `<span style="font-size:10px;font-weight:700;color:#526F90;background:#eef2f7;padding:2px 8px;border-radius:99px;">${S.adn}</span>` : ''}
         </div>
 
-        ${k.map((x, i) => {
-          const extraTags = [];
-          if (x.ebRate > 0) extraTags.push(`Extra Adult: +$${f(x.ebRate)}`);
-          if (x.ecRate > 0) extraTags.push(`Extra Child: +$${f(x.ecRate)}`);
-          
-          const origNightly = (x.sg[0].grossAccommodation + x.sup) * 1.10 * 1.17;
-          const origRoomTot = x.roomTot + x.disc;
-          const itemHasDisc = x.disc > 0;
-
-          return `
-            <div style="padding:8px 0;border-bottom:1px dashed #eef2f7;">
-              <div style="display:flex;justify-content:space-between;align-items:center;font-size:12px;font-weight:700;">
-                <span>${opt ? `Option ${i + 1}: ` : `${i + 1}. `}${x.r.cat}</span>
-                <div>
-                  ${itemHasDisc ? `<span class="strikethrough-tag">$${f(origRoomTot)}</span>` : ''}
-                  <span style="color:#27313d;">$${f(x.roomTot)}</span>
-                </div>
-              </div>
-              <div style="font-size:10.5px;color:#6b7785;margin-top:3px;display:flex;justify-content:space-between;">
-                <span>
-                  ${MPN[x.mp]} · ${x.q} room${x.q > 1 ? 's' : ''} · 
-                  ${itemHasDisc ? `<span class="strikethrough-tag">$${f(origNightly)}</span>` : ''}
-                  <b style="color:#526F90;">$${f(x.nightly)}</b> / night
-                  ${extraTags.length ? ` · (${extraTags.join(', ')})` : ''}
-                </span>
-                ${itemHasDisc && S.adn ? `<span style="color:#526F90;font-style:italic;">${S.adn}</span>` : ''}
-              </div>
+        ${Object.keys(propGroups).map(propName => `
+          <div style="margin-bottom:10px;">
+            <div style="font-size:10px;font-weight:700;color:#526F90;text-transform:uppercase;letter-spacing:0.05em;background:#f4f6f9;padding:4px 8px;border-radius:4px;margin:6px 0 4px;">
+              Property: ${propName}
             </div>
-          `;
-        }).join('')}
+            ${propGroups[propName].map(({ item: x, index: i }) => {
+              const roomChildAges = (x.r.ages || []).filter(a => a !== '' && a !== undefined && a !== null).join(', ');
+              const roomAgeBadge = roomChildAges ? ` · Ages: ${roomChildAges}` : '';
+              
+              const origNightly = (x.sg[0].grossAccommodation + x.sup) * 1.10 * 1.17;
+              const origRoomTot = x.roomTot + x.disc;
+              const itemHasDisc = x.disc > 0;
+
+              return `
+                <div style="padding:7px 4px;border-bottom:1px dashed #eef2f7;">
+                  <div style="display:flex;justify-content:space-between;align-items:flex-start;font-size:12px;font-weight:700;">
+                    <span>${opt ? `Option ${i + 1}: ` : `${i + 1}. `}${x.r.cat}</span>
+                    <div style="text-align:right;">
+                      ${itemHasDisc ? `<span class="strikethrough-tag">$${f(origRoomTot)}</span>` : ''}
+                      <span style="color:#27313d;">$${f(x.roomTot)}</span>
+                    </div>
+                  </div>
+                  <div style="font-size:10.5px;color:#6b7785;margin-top:3px;display:flex;justify-content:space-between;">
+                    <span>
+                      ${MPN[x.mp]} · ${x.q} room${x.q > 1 ? 's' : ''} (${x.ad} Ad${x.ch ? `, ${x.ch} Ch${roomAgeBadge}` : ''}) · 
+                      ${itemHasDisc ? `<span class="strikethrough-tag">$${f(origNightly)}</span>` : ''}
+                      <b style="color:#526F90;">$${f(x.nightly)}</b> / night
+                    </span>
+                    ${itemHasDisc && S.adn ? `<span style="color:#526F90;font-style:italic;">${S.adn}</span>` : ''}
+                  </div>
+                </div>
+              `;
+            }).join('')}
+          </div>
+        `).join('')}
 
         ${t.sup > 0 ? `
           <div style="display:flex;justify-content:space-between;padding:6px 0;font-size:11px;color:#6b7785;">
